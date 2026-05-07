@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContractorHub — Find Verified Contractors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="logo">ContractorHub</a>
+    <div class="nav-links">
+      <a href="#">Browse</a>
+      <a href="#">How it works</a>
+      <a href="#" class="btn-outline">Sign in</a>
+      <a href="#" class="btn-primary">Post a job</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="eyebrow">Contractor marketplace</p>
+    <h1>Find the right contractor,<br />fast.</h1>
+    <p class="subheading">Browse verified professionals across construction, tech, design, and more.</p>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by name, skill, or keyword..." oninput="filterCards()" />
+      <select id="categoryFilter" onchange="filterCards()">
+        <option value="">All categories</option>
+        <option>Construction</option>
+        <option>Tech & Dev</option>
+        <option>Design</option>
+        <option>Electrical</option>
+        <option>Plumbing</option>
+      </select>
+      <button onclick="filterCards()">Search</button>
+    </div>
+
+    <div class="tags" id="tagGroup">
+      <span class="tag active" onclick="setTag(this, '')">All</span>
+      <span class="tag" onclick="setTag(this, 'available')">Available now</span>
+      <span class="tag" onclick="setTag(this, 'top rated')">Top rated</span>
+      <span class="tag" onclick="setTag(this, 'construction')">Construction</span>
+      <span class="tag" onclick="setTag(this, 'tech')">Tech & Dev</span>
+      <span class="tag" onclick="setTag(this, 'design')">Design</span>
+      <span class="tag" onclick="setTag(this, 'electrical')">Electrical</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-num">1,240+</div><div class="stat-label">Contractors</div></div>
+      <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Verified</div></div>
+      <div class="stat"><div class="stat-num">4.8</div><div class="stat-label">Avg rating</div></div>
+    </div>
+  </section>
+
+  <!-- LISTINGS -->
+  <section class="listings">
+    <p class="section-label">Featured contractors</p>
+    <div class="grid" id="grid"></div>
+    <div class="no-results" id="noResults" style="display:none;">No contractors match your search.</div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p class="logo">ContractorHub</p>
+    <p>© 2025 ContractorHub. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
