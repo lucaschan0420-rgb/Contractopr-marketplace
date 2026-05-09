@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contractor Portal — ContractorHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #1A1714; --bg: #F5F0E8; --cream: #FDFAF5;
+      --warm: #C4873A; --warm-pale: #FAEEDA;
+      --border: #E0D8CC; --border2: #D0CDC6;
+      --muted: #8A8178; --muted2: #6b6b6b;
+      --green: #0F6E56; --green-bg: #E1F5EE;
+      --red: #C0392B; --red-bg: #FDEAEA;
+      --blue: #185FA5; --blue-bg: #E6F1FB;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: #f0ede8; color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+    .portal { display: grid; grid-template-columns: 240px 1fr; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { background: #0f1117; display: flex; flex-direction: column; overflow: hidden; }
+    .sidebar-header { padding: 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 16px; color: #fff; letter-spacing: -0.02em; }
+    .sidebar-role { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .sidebar-profile { display: flex; align-items: center; gap: 10px; padding: 1rem 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .profile-av { width: 36px; height: 36px; border-radius: 50%; background: rgba(196,135,58,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--warm); flex-shrink: 0; border: 1px solid rgba(196,135,58,0.3); }
+    .profile-name { font-size: 13px; font-weight: 500; color: #fff; }
+    .profile-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .nav { flex: 1; padding: 0.75rem; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
+    .nav-section { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 8px 4px; margin-top: 6px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; font-size: 13px; color: rgba(255,255,255,0.55); cursor: pointer; transition: all .15s; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: rgba(196,135,58,0.15); color: var(--warm); }
+    .nav-item i { font-size: 16px; width: 20px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; font-size: 10px; background: var(--warm); color: #fff; padding: 1px 6px; border-radius: 10px; }
+    .nav-badge.red { background: var(--red); }
+    .credit-panel { margin: 0.75rem; border-radius: 8px; padding: 14px; background: #1a1207; border: 0.5px solid rgba(196,135,58,0.3); }
+    .credit-label { font-size: 10px; color: rgba(196,135,58,0.7); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+    .credit-val { font-size: 24px; font-weight: 500; color: var(--warm); letter-spacing: -0.02em; }
+    .credit-sub { font-size: 11px; color: rgba(196,135,58,0.5); margin-bottom: 8px; }
+    .credit-bar-bg { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 10px; }
+    .credit-bar-fill { height: 4px; background: var(--warm); border-radius: 2px; width: 38%; }
+    .topup-btn { width: 100%; padding: 8px; background: var(--warm); border: none; border-radius: 6px; font-size: 12px; font-weight: 500; color: #fff; cursor: pointer; font-family: inherit; }
+
+    /* MAIN */
+    .main { display: flex; flex-direction: column; overflow: hidden; background: #f0ede8; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #fff; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .topbar-title { font-size: 15px; font-weight: 500; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { width: 32px; height: 32px; border-radius: var(--radius); border: 0.5px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); position: relative; }
+    .notif-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); border: 1.5px solid #fff; }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 20px; border: 0.5px solid var(--border); background: #fff; cursor: pointer; }
+    .user-av { width: 24px; height: 24px; border-radius: 50%; background: var(--warm-pale); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--warm); }
+    .user-name { font-size: 12px; font-weight: 500; }
+
+    .content { flex: 1; overflow-y: auto; padding: 1.25rem; }
+
+    /* METRICS */
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .metric { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+    .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .metric-label i { font-size: 14px; }
+    .metric-val { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .metric-change { font-size: 11px; display: flex; align-items: center; gap: 3px; }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+    .neutral { color: var(--muted); }
+
+    /* CARDS */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+    .card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .card-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .card-title i { font-size: 15px; color: var(--muted); }
+    .card-action { font-size: 12px; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 3px; }
+
+    /* ADS */
+    .ad-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+    .ad-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .ad-icon { width: 34px; height: 34px; border-radius: var(--radius); background: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--muted); }
+    .ad-icon i { font-size: 17px; }
+    .ad-info { flex: 1; min-width: 0; }
+    .ad-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ad-meta { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 8px; }
+    .ad-meta i { font-size: 11px; }
+    .pill { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
+    .pill-active { background: var(--green-bg); color: var(--green); }
+    .pill-draft   { background: var(--warm-pale); color: var(--warm); }
+    .pill-paused  { background: #f0ede8; color: var(--muted); }
+
+    /* REVIEWS */
+    .review-row { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+    .review-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .review-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .review-name { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .review-av { width: 22px; height: 22px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; color: var(--blue); }
+    .stars { color: var(--warm); font-size: 11px; }
+    .review-text { font-size: 12px; color: var(--muted2); line-height: 1.55; margin-bottom: 6px; }
+    .review-actions { display: flex; gap: 6px; }
+    .review-btn { font-size: 11px; padding: 3px 10px; border: 0.5px solid var(--border2); border-radius: 100px; background: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; gap: 4px; font-family: inherit; }
+    .review-btn:hover { border-color: var(--warm); color: var(--warm); }
+    .review-btn i { font-size: 12px; }
+
+    /* TRANSACTIONS */
+    .tx-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+    .tx-row:last-child { border-bottom: none; }
+    .tx-type { font-size: 12px; font-weight: 500; }
+    .tx-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .tx-amt { font-size: 13px; font-weight: 500; }
+    .tx-plus { color: var(--green); }
+    .tx-minus { color: var(--red); }
+
+    /* PACKAGES */
+    .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .pkg { border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; text-align: center; cursor: pointer; transition: border-color .15s; }
+    .pkg:hover { border-color: var(--border2); }
+    .pkg.featured { border: 1.5px solid var(--blue); }
+    .pkg-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: var(--radius); background: var(--blue-bg); color: var(--blue); margin-bottom: 8px; }
+    .pkg-name { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .pkg-price { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
+    .pkg-currency { font-size: 15px; vertical-align: super; }
+    .pkg-desc { font-size: 11px; color: var(--muted); margin: 6px 0 12px; }
+    .pkg-features { text-align: left; margin-bottom: 14px; }
+    .pkg-feat { font-size: 11px; color: var(--muted2); display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+    .pkg-feat i { font-size: 13px; color: var(--green); }
+    .pkg-feat.no i { color: var(--muted); }
+    .pkg-feat.no { color: var(--muted); }
+    .pkg-btn { width: 100%; padding: 9px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: none; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--ink); }
+    .pkg-btn:hover { background: var(--bg); }
+    .pkg.featured .pkg-btn { background: var(--blue); color: #fff; border-color: transparent; }
+
+    /* RATING BARS */
+    .rating-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .rating-lbl { font-size: 11px; color: var(--muted); width: 28px; }
+    .rating-track { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+    .rating-fill { height: 100%; background: var(--warm); border-radius: 3px; }
+    .rating-cnt { font-size: 11px; color: var(--muted); width: 20px; text-align: right; }
+
+    /* PROFILE */
+    .profile-cover { height: 64px; background: var(--blue-bg); border-radius: var(--radius); margin-bottom: -20px; }
+    .profile-av-lg { width: 52px; height: 52px; border-radius: 50%; background: var(--warm-pale); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; color: var(--warm); border: 3px solid #fff; margin-left: 16px; position: relative; z-index: 1; }
+    .field-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+    .field-row:last-child { border-bottom: none; }
+    .field-label { font-size: 11px; color: var(--muted); width: 110px; flex-shrink: 0; padding-top: 1px; display: flex; align-items: center; gap: 5px; }
+    .field-label i { font-size: 13px; }
+    .field-val { font-size: 12px; flex: 1; }
+
+    /* POST AD FORM */
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-label { font-size: 12px; font-weight: 500; }
+    .form-input { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; }
+    .form-input:focus { border-color: var(--muted); }
+    .form-textarea { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; resize: none; }
+    .form-select { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; }
+    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-cost { background: var(--warm-pale); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border: 0.5px solid rgba(196,135,58,0.2); }
+    .form-cost-label { font-size: 12px; color: var(--muted2); }
+    .form-cost-val { font-size: 14px; font-weight: 500; color: var(--warm); }
+    .btn-primary { padding: 11px 20px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+    .btn-secondary { padding: 11px 20px; background: none; border: 0.5px solid var(--border2); border-radius: 100px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .btn-row { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* VERIFY */
+    .verify-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+    .verify-row:last-child { border-bottom: none; }
+    .verify-row i { font-size: 16px; }
+    .verify-row .label { font-size: 12px; flex: 1; }
+    .verify-row .status { font-size: 11px; }
+    .done { color: var(--green); }
+    .pending { color: var(--warm); }
+
+    /* VISIBILITY */
+    .vis-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+    .vis-row:last-child { border-bottom: none; }
+    .vis-row .label { font-size: 12px; }
+
+    .mb10 { margin-bottom: 10px; }
+    .mb12 { margin-bottom: 12px; }
+    .mt8 { margin-top: 8px; }
+    .mt10 { margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="portal">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">ContractorHub</div>
+      <div class="sidebar-role">Contractor Portal</div>
+    </div>
+    <div class="sidebar-profile">
+      <div class="profile-av">AR</div>
+      <div>
+        <div class="profile-name">Ahmad Razali</div>
+        <div class="profile-status"><span class="status-dot"></span>Available for hire</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="nav-item active" onclick="show('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+      <div class="nav-section">Advertising</div>
+      <div class="nav-item" onclick="show('ads',this)"><i class="ti ti-speakerphone"></i>My Ads<span class="nav-badge">3</span></div>
+      <div class="nav-item" onclick="show('post',this)"><i class="ti ti-plus"></i>Post New Ad</div>
+      <div class="nav-section">Insights</div>
+      <div class="nav-item" onclick="show('reviews',this)"><i class="ti ti-star"></i>Reviews & Feedback<span class="nav-badge red">2</span></div>
+      <div class="nav-item" onclick="show('analytics',this)"><i class="ti ti-chart-bar"></i>Analytics</div>
+      <div class="nav-section">Business</div>
+      <div class="nav-item" onclick="show('profile',this)"><i class="ti ti-building"></i>Company Profile</div>
+      <div class="nav-item" onclick="show('credits',this)"><i class="ti ti-credit-card"></i>Credits & Billing</div>
+      <div class="nav-item" onclick="show('settings',this)"><i class="ti ti-settings"></i>Settings</div>
+    </div>
+    <div class="credit-panel">
+      <div class="credit-label">Credit Balance</div>
+      <div class="credit-val">RM 240</div>
+      <div class="credit-sub">~8 ad postings remaining</div>
+      <div class="credit-bar-bg"><div class="credit-bar-fill"></div></div>
+      <button class="topup-btn" onclick="show('credits',null)">+ Top Up Credits</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Overview</div>
+      <div class="topbar-right">
+        <div class="icon-btn"><i class="ti ti-search"></i></div>
+        <div class="icon-btn"><i class="ti ti-bell"></i><div class="notif-dot"></div></div>
+        <div class="user-chip">
+          <div class="user-av">AR</div>
+          <span class="user-name">Ahmad Razali</span>
+          <i class="ti ti-chevron-down" style="font-size:13px;color:var(--muted);"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="tab-dashboard">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Active Ads <i class="ti ti-speakerphone"></i></div><div class="metric-val">3</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i> 1 new this week</div></div>
+          <div class="metric"><div class="metric-label">Profile Views <i class="ti ti-eye"></i></div><div class="metric-val">1,284</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i> +18% this month</div></div>
+          <div class="metric"><div class="metric-label">Avg. Rating <i class="ti ti-star"></i></div><div class="metric-val">4.9</div><div class="metric-change neutral">from 42 reviews</div></div>
+          <div class="metric"><div class="metric-label">Enquiries <i class="ti ti-mail"></i></div><div class="metric-val">18</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i> +6 this week</div></div>
+        </div>
+        <div class="grid2 mb10">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-speakerphone"></i>Active ads</div><div class="card-action" onclick="show('ads',null)">Manage <i class="ti ti-arrow-right" style="font-size:12px;"></i></div></div>
+            <div class="ad-row"><div class="ad-icon"><i class="ti ti-building-arch"></i></div><div class="ad-info"><div class="ad-title">Civil Engineering Services — KL</div><div class="ad-meta"><i class="ti ti-eye"></i>340 views &nbsp;<i class="ti ti-mail"></i>12 enquiries</div></div><div class="pill pill-active">Active</div></div>
+            <div class="ad-row"><div class="ad-icon"><i class="ti ti-ruler-2"></i></div><div class="ad-info"><div class="ad-title">Structural Assessment & BIM</div><div class="ad-meta"><i class="ti ti-eye"></i>145 views &nbsp;<i class="ti ti-mail"></i>5 enquiries</div></div><div class="pill pill-active">Active</div></div>
+            <div class="ad-row"><div class="ad-icon"><i class="ti ti-home-2"></i></div><div class="ad-info"><div class="ad-title">Renovation Consulting Package</div><div class="ad-meta"><i class="ti ti-edit"></i>Draft — not published</div></div><div class="pill pill-draft">Draft</div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-star"></i>Recent reviews</div><div class="card-action" onclick="show('reviews',null)">View all <i class="ti ti-arrow-right" style="font-size:12px;"></i></div></div>
+            <div class="review-row"><div class="review-top"><div class="review-name"><div class="review-av">HM</div>Hazrul M.</div><div class="stars">★★★★★</div></div><div class="review-text">"Excellent work, delivered on time and within budget. Very professional."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>24</button><button class="review-btn"><i class="ti ti-thumb-down"></i>0</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
+            <div class="review-row" style="border:none;padding-bottom:0;"><div class="review-top"><div class="review-name"><div class="review-av">LK</div>Liyana K.</div><div class="stars">★★★★☆</div></div><div class="review-text">"Very professional. Highly recommend for structural work."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>18</button><button class="review-btn"><i class="ti ti-thumb-down"></i>1</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-credit-card"></i>Recent transactions</div><div class="card-action" onclick="show('credits',null)">Full history <i class="ti ti-arrow-right" style="font-size:12px;"></i></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+              <div class="tx-row"><div><div class="tx-type">Top Up — Standard</div><div class="tx-date">2 May 2025 · Online Banking</div></div><div class="tx-amt tx-plus">+RM 100</div></div>
+              <div class="tx-row"><div><div class="tx-type">Ad Posted — Civil Engineering</div><div class="tx-date">30 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
+              <div class="tx-row" style="border:none;"><div><div class="tx-type">Ad Boost — 7 days</div><div class="tx-date">28 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 50</div></div>
+            </div>
+            <div>
+              <div class="tx-row"><div><div class="tx-type">Top Up — Pro Pack</div><div class="tx-date">25 Apr 2025 · Credit Card</div></div><div class="tx-amt tx-plus">+RM 200</div></div>
+              <div class="tx-row"><div><div class="tx-type">Ad Posted — Structural</div><div class="tx-date">20 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
+              <div class="tx-row" style="border:none;"><div><div class="tx-type">Welcome Credit Promo</div><div class="tx-date">15 Apr 2025</div></div><div class="tx-amt tx-plus">+RM 50</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY ADS -->
+      <div id="tab-ads" style="display:none;">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <button class="btn-primary" onclick="show('post',null)"><i class="ti ti-plus"></i>Post New Ad</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-speakerphone"></i>All ads (4)</div></div>
+          <div class="ad-row"><div class="ad-icon"><i class="ti ti-building-arch"></i></div><div class="ad-info"><div class="ad-title">Civil Engineering Services — Kuala Lumpur</div><div class="ad-meta"><i class="ti ti-eye"></i>340 views &nbsp;<i class="ti ti-mail"></i>12 enquiries &nbsp;<i class="ti ti-calendar"></i>Expires 30 Jun 2025</div></div><div class="pill pill-active">Active</div></div>
+          <div class="ad-row"><div class="ad-icon"><i class="ti ti-ruler-2"></i></div><div class="ad-info"><div class="ad-title">Structural Assessment & BIM Coordination</div><div class="ad-meta"><i class="ti ti-eye"></i>145 views &nbsp;<i class="ti ti-mail"></i>5 enquiries &nbsp;<i class="ti ti-calendar"></i>Expires 15 Jun 2025</div></div><div class="pill pill-active">Active</div></div>
+          <div class="ad-row"><div class="ad-icon"><i class="ti ti-home-2"></i></div><div class="ad-info"><div class="ad-title">Renovation Consulting Package</div><div class="ad-meta"><i class="ti ti-edit"></i>Draft · Not published · Costs RM 30 to post</div></div><div class="pill pill-draft">Draft</div></div>
+          <div class="ad-row" style="border:none;padding-bottom:0;"><div class="ad-icon"><i class="ti ti-sofa"></i></div><div class="ad-info"><div class="ad-title">Interior Design Consultation</div><div class="ad-meta"><i class="ti ti-eye"></i>80 views &nbsp;<i class="ti ti-mail"></i>5 enquiries &nbsp;<i class="ti ti-player-pause"></i>Paused by you</div></div><div class="pill pill-paused">Paused</div></div>
+        </div>
+      </div>
+
+      <!-- POST AD -->
+      <div id="tab-post" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-plus"></i>Post a new ad</div></div>
+          <div class="form-group"><label class="form-label">Ad title</label><input class="form-input" placeholder="e.g. Civil Engineering Services — Kuala Lumpur" /></div>
+          <div class="form-row2 mb12">
+            <div class="form-group" style="margin:0;"><label class="form-label">Category</label><select class="form-select"><option>Construction</option><option>Electrical</option><option>Design</option><option>Plumbing</option><option>Renovation</option><option>Tech & Dev</option><option>Solar</option><option>Architecture</option></select></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Location</label><input class="form-input" placeholder="e.g. Kuala Lumpur" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" rows="4" placeholder="Describe your services, experience, and what makes you stand out..."></textarea></div>
+          <div class="form-group"><label class="form-label">Skills / Tags (comma separated)</label><input class="form-input" placeholder="e.g. Renovation, Structural, BIM, AutoCAD" /></div>
+          <div class="form-row2 mb12">
+            <div class="form-group" style="margin:0;"><label class="form-label">Hourly rate (RM)</label><input class="form-input" placeholder="e.g. 180" /></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Ad duration</label><select class="form-select"><option>30 days — RM 30</option><option>60 days — RM 50</option><option>90 days — RM 70</option></select></div>
+          </div>
+          <div class="form-cost"><div class="form-cost-label">Ad posting cost · deducted from credit balance</div><div class="form-cost-val">RM 30 &nbsp;·&nbsp; Balance after: RM 210</div></div>
+          <div class="btn-row"><button class="btn-secondary" onclick="show('ads',null)">Cancel</button><button class="btn-primary"><i class="ti ti-check"></i>Publish Ad</button></div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div id="tab-reviews" style="display:none;">
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+          <div class="metric"><div class="metric-label">Total Reviews</div><div class="metric-val">42</div><div class="metric-change up">+3 this month</div></div>
+          <div class="metric"><div class="metric-label">Average Rating</div><div class="metric-val">4.9 ★</div><div class="metric-change neutral">Top 5% of contractors</div></div>
+          <div class="metric"><div class="metric-label">Total Likes</div><div class="metric-val">128</div><div class="metric-change up">+14 this month</div></div>
+        </div>
+        <div class="grid2 mb10">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Rating breakdown</div></div>
+            <div style="display:flex;align-items:center;gap:16px;">
+              <div style="text-align:center;"><div style="font-size:38px;font-weight:500;letter-spacing:-0.03em;">4.9</div><div class="stars" style="font-size:16px;">★★★★★</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">42 reviews</div></div>
+              <div style="flex:1;">
+                <div class="rating-bar"><div class="rating-lbl">5 ★</div><div class="rating-track"><div class="rating-fill" style="width:85%;"></div></div><div class="rating-cnt">36</div></div>
+                <div class="rating-bar"><div class="rating-lbl">4 ★</div><div class="rating-track"><div class="rating-fill" style="width:12%;"></div></div><div class="rating-cnt">5</div></div>
+                <div class="rating-bar"><div class="rating-lbl">3 ★</div><div class="rating-track"><div class="rating-fill" style="width:3%;"></div></div><div class="rating-cnt">1</div></div>
+                <div class="rating-bar"><div class="rating-lbl">2 ★</div><div class="rating-track"><div class="rating-fill" style="width:0%;"></div></div><div class="rating-cnt">0</div></div>
+                <div class="rating-bar"><div class="rating-lbl">1 ★</div><div class="rating-track"><div class="rating-fill" style="width:0%;"></div></div><div class="rating-cnt">0</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i>Review sentiment</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+              <div style="background:var(--green-bg);border-radius:var(--radius);padding:14px;text-align:center;"><div style="font-size:24px;font-weight:500;color:var(--green);">96%</div><div style="font-size:11px;color:var(--green);margin-top:2px;">Positive</div></div>
+              <div style="background:#f0ede8;border-radius:var(--radius);padding:14px;text-align:center;"><div style="font-size:24px;font-weight:500;color:var(--muted);">4%</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Neutral / Neg</div></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.6;">Top keywords: <strong>professional</strong>, <strong>on-time</strong>, <strong>detailed</strong>, <strong>recommended</strong></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-messages"></i>All reviews</div></div>
+          <div class="review-row"><div class="review-top"><div class="review-name"><div class="review-av">HM</div>Hazrul M. <span style="font-size:10px;color:var(--muted);font-weight:400;">2 May 2025</span></div><div class="stars">★★★★★</div></div><div class="review-text">"Excellent work, delivered on time and within budget. Very professional throughout the entire project. Will definitely hire again."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>24 Likes</button><button class="review-btn"><i class="ti ti-thumb-down"></i>0</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
+          <div class="review-row"><div class="review-top"><div class="review-name"><div class="review-av">LK</div>Liyana K. <span style="font-size:10px;color:var(--muted);font-weight:400;">28 Apr 2025</span></div><div class="stars">★★★★☆</div></div><div class="review-text">"Very professional, highly recommended for structural work. The BIM report was extremely detailed and well-presented."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>18 Likes</button><button class="review-btn"><i class="ti ti-thumb-down"></i>1</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
+          <div class="review-row" style="border:none;padding-bottom:0;"><div class="review-top"><div class="review-name"><div class="review-av">TB</div>TechBuild Sdn Bhd <span style="font-size:10px;color:var(--muted);font-weight:400;">20 Apr 2025</span></div><div class="stars">★★★★★</div></div><div class="review-text">"Great communication throughout. The structural report was clear and all findings well documented. Would recommend to others."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>12 Likes</button><button class="review-btn"><i class="ti ti-thumb-down"></i>0</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="tab-analytics" style="display:none;">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Total Views</div><div class="metric-val">1,284</div><div class="metric-change up">+18% vs last month</div></div>
+          <div class="metric"><div class="metric-label">Click-Through</div><div class="metric-val">8.4%</div><div class="metric-change up">+1.2% this month</div></div>
+          <div class="metric"><div class="metric-label">Enquiries</div><div class="metric-val">18</div><div class="metric-change up">+6 this week</div></div>
+          <div class="metric"><div class="metric-label">Conversion Rate</div><div class="metric-val">1.4%</div><div class="metric-change neutral">Industry avg: 1.1%</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Profile views — last 30 days</div></div>
+          <div style="position:relative;width:100%;height:200px;">
+            <canvas id="viewsChart" role="img" aria-label="Bar chart of profile views over last 30 days">Profile views data</canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREDITS -->
+      <div id="tab-credits" style="display:none;">
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+          <div class="metric"><div class="metric-label">Current Balance</div><div class="metric-val" style="color:var(--warm);">RM 240</div><div class="metric-change neutral">~8 postings left</div></div>
+          <div class="metric"><div class="metric-label">Total Topped Up</div><div class="metric-val">RM 350</div><div class="metric-change neutral">since Apr 2025</div></div>
+          <div class="metric"><div class="metric-label">Total Spent</div><div class="metric-val">RM 110</div><div class="metric-change neutral">4 ads, 1 boost</div></div>
+        </div>
+        <div class="card mb10">
+          <div class="card-header"><div class="card-title"><i class="ti ti-package"></i>Top up credits</div></div>
+          <div class="pkg-grid">
+            <div class="pkg">
+              <div class="pkg-name">Starter</div>
+              <div class="pkg-price"><span class="pkg-currency">RM</span>50</div>
+              <div class="pkg-desc">~1 ad posting</div>
+              <div class="pkg-features">
+                <div class="pkg-feat"><i class="ti ti-check"></i>1 standard ad post</div>
+                <div class="pkg-feat"><i class="ti ti-check"></i>30-day listing</div>
+                <div class="pkg-feat no"><i class="ti ti-x"></i>No boost credits</div>
+              </div>
+              <button class="pkg-btn">Buy RM 50</button>
+            </div>
+            <div class="pkg featured">
+              <div class="pkg-badge">Most popular</div>
+              <div class="pkg-name">Standard</div>
+              <div class="pkg-price"><span class="pkg-currency">RM</span>150</div>
+              <div class="pkg-desc">~5 ad postings</div>
+              <div class="pkg-features">
+                <div class="pkg-feat"><i class="ti ti-check"></i>5 standard ad posts</div>
+                <div class="pkg-feat"><i class="ti ti-check"></i>30–90 day listings</div>
+                <div class="pkg-feat"><i class="ti ti-check"></i>RM 20 boost credit</div>
+              </div>
+              <button class="pkg-btn">Buy RM 150</button>
+            </div>
+            <div class="pkg">
+              <div class="pkg-name">Pro</div>
+              <div class="pkg-price"><span class="pkg-currency">RM</span>300</div>
+              <div class="pkg-desc">~12 ad postings</div>
+              <div class="pkg-features">
+                <div class="pkg-feat"><i class="ti ti-check"></i>12 standard ad posts</div>
+                <div class="pkg-feat"><i class="ti ti-check"></i>Priority listing placement</div>
+                <div class="pkg-feat"><i class="ti ti-check"></i>RM 80 boost credit</div>
+              </div>
+              <button class="pkg-btn">Buy RM 300</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>Transaction history</div></div>
+          <div class="tx-row"><div><div class="tx-type">Top Up — Standard Pack</div><div class="tx-date">2 May 2025 · Online Banking (Maybank2u)</div></div><div class="tx-amt tx-plus">+RM 100</div></div>
+          <div class="tx-row"><div><div class="tx-type">Ad Posted — Civil Engineering Services</div><div class="tx-date">30 Apr 2025 · 30-day listing</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
+          <div class="tx-row"><div><div class="tx-type">Ad Boost — Civil Engineering (7 days)</div><div class="tx-date">28 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 50</div></div>
+          <div class="tx-row"><div><div class="tx-type">Top Up — Pro Pack</div><div class="tx-date">25 Apr 2025 · Credit Card (Visa ···4521)</div></div><div class="tx-amt tx-plus">+RM 200</div></div>
+          <div class="tx-row"><div><div class="tx-type">Ad Posted — Structural Assessment</div><div class="tx-date">20 Apr 2025 · 30-day listing</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
+          <div class="tx-row" style="border:none;"><div><div class="tx-type">Welcome Credit Promo</div><div class="tx-date">15 Apr 2025 · Promotional</div></div><div class="tx-amt tx-plus">+RM 50</div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div id="tab-profile" style="display:none;">
+        <div class="grid2">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-building"></i>Company profile</div><div class="card-action">Edit <i class="ti ti-edit" style="font-size:12px;"></i></div></div>
+            <div class="profile-cover"></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;padding-top:8px;">
+              <div class="profile-av-lg">AR</div>
+              <div style="display:flex;gap:6px;"><span class="pill pill-active" style="font-size:11px;padding:3px 10px;">Available</span><span style="font-size:11px;padding:3px 10px;border-radius:10px;background:var(--blue-bg);color:var(--blue);font-weight:500;">Verified ✓</span></div>
+            </div>
+            <div style="margin-bottom:10px;"><div style="font-size:16px;font-weight:500;">Ahmad Razali</div><div style="font-size:13px;color:var(--muted);margin-top:1px;">Civil Engineer · Construction</div></div>
+            <div style="font-size:12px;color:var(--muted2);line-height:1.65;margin-bottom:12px;">Civil engineer with 12+ years delivering residential and commercial projects across Malaysia. Specialist in structural assessments, BIM workflows, and renovation consulting.</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">Renovation</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">Structural</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">BIM</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">AutoCAD</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">Concrete</span></div>
+            <div class="field-row"><div class="field-label"><i class="ti ti-map-pin"></i>Location</div><div class="field-val">Kuala Lumpur, Malaysia</div></div>
+            <div class="field-row"><div class="field-label"><i class="ti ti-briefcase"></i>Experience</div><div class="field-val">12+ years</div></div>
+            <div class="field-row"><div class="field-label"><i class="ti ti-clock"></i>Hourly rate</div><div class="field-val">RM 180 / hr</div></div>
+            <div class="field-row"><div class="field-label"><i class="ti ti-phone"></i>Contact</div><div class="field-val">+60 12-345 6789</div></div>
+            <div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-mail"></i>Email</div><div class="field-val">ahmad@razalicivil.com</div></div>
+          </div>
+          <div>
+            <div class="card mb10">
+              <div class="card-header"><div class="card-title"><i class="ti ti-eye"></i>Profile visibility</div></div>
+              <div class="vis-row"><div class="label">Profile visibility</div><span class="pill pill-active">Public</span></div>
+              <div class="vis-row"><div class="label">Show contact info</div><span class="pill pill-active">Visible</span></div>
+              <div class="vis-row" style="border:none;"><div class="label">Accept direct enquiries</div><span class="pill pill-active">On</span></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title"><i class="ti ti-certificate"></i>Verification status</div></div>
+              <div class="verify-row"><i class="ti ti-check done"></i><div class="label">Identity verified</div><span class="status done">Done</span></div>
+              <div class="verify-row"><i class="ti ti-check done"></i><div class="label">Business registration</div><span class="status done">Done</span></div>
+              <div class="verify-row"><i class="ti ti-check done"></i><div class="label">Professional cert. uploaded</div><span class="status done">Done</span></div>
+              <div class="verify-row" style="border:none;"><i class="ti ti-clock pending"></i><div class="label">Portfolio review</div><span class="status pending">In review</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="tab-settings" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i>Account settings</div></div>
+          <div class="field-row"><div class="field-label"><i class="ti ti-bell"></i>Notifications</div><div class="field-val">Email + SMS enabled</div></div>
+          <div class="field-row"><div class="field-label"><i class="ti ti-lock"></i>Password</div><div class="field-val">Last changed 3 months ago</div></div>
+          <div class="field-row"><div class="field-label"><i class="ti ti-language"></i>Language</div><div class="field-val">English (Malaysia)</div></div>
+          <div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-trash"></i>Delete account</div><div class="field-val" style="color:var(--red);cursor:pointer;">Request deletion</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var tabs = ['dashboard','ads','post','reviews','analytics','credits','profile','settings'];
+var titles = { dashboard:'Overview', ads:'My Ads', post:'Post New Ad', reviews:'Reviews & Feedback', analytics:'Analytics', credits:'Credits & Billing', profile:'Company Profile', settings:'Settings' };
+
+function show(tab, navEl) {
+  tabs.forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.getElementById('pageTitle').textContent = titles[tab] || tab;
+  document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
+  if (navEl) navEl.classList.add('active');
+  if (tab === 'analytics') initChart();
+}
+
+var chartInited = false;
+function initChart() {
+  if (chartInited) return;
+  chartInited = true;
+  var ctx = document.getElementById('viewsChart');
+  if (!ctx) return;
+  var labels = [];
+  for (var i = 30; i >= 1; i--) labels.push(i === 1 ? 'Today' : (i % 5 === 0 ? i + 'd' : ''));
+  var data = [18,22,15,28,32,25,20,18,35,42,38,30,25,22,18,28,45,52,48,40,35,30,28,32,38,42,35,28,25,30];
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels, datasets: [{ label: 'Views', data: data, backgroundColor: 'rgba(196,135,58,0.25)', borderColor: '#C4873A', borderWidth: 1, borderRadius: 3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } } } }
+  });
+}
+</script>
+</body>
+</html>
