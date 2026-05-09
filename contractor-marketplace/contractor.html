@@ -186,10 +186,69 @@
     .mb12 { margin-bottom: 12px; }
     .mt8 { margin-top: 8px; }
     .mt10 { margin-top: 10px; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+      backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.show { display: block; }
+
+    .hamburger {
+      display: none;
+      align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+
+      .portal { grid-template-columns: 1fr; }
+
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: 260px;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      }
+      .sidebar.open { transform: translateX(0); }
+
+      .main { height: 100vh; }
+
+      .topbar { padding: 12px 14px; gap: 8px; }
+      .topbar-title { font-size: 14px; }
+      .user-chip .user-name { display: none; }
+
+      .metrics { grid-template-columns: repeat(2,1fr); }
+      .grid2 { grid-template-columns: 1fr; }
+      .grid3 { grid-template-columns: 1fr; }
+      .form-row2 { grid-template-columns: 1fr; }
+      .pkg-grid { grid-template-columns: 1fr; }
+
+      .content { padding: 1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .metrics { grid-template-columns: repeat(2,1fr); }
+    }
+
   </style>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 <div class="portal">
 
   <!-- SIDEBAR -->
@@ -230,7 +289,10 @@
   <!-- MAIN -->
   <div class="main">
     <div class="topbar">
-      <div class="topbar-title" id="pageTitle">Overview</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu"><i class="ti ti-menu-2"></i></button>
+        <div class="topbar-title" id="pageTitle">Overview</div>
+      </div>
       <div class="topbar-right">
         <div class="icon-btn"><i class="ti ti-search"></i></div>
         <div class="icon-btn"><i class="ti ti-bell"></i><div class="notif-dot"></div></div>
@@ -479,7 +541,31 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+function toggleSidebar() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var isOpen = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+// Close sidebar when nav item clicked on mobile
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+
+</script>
 <script>
 var tabs = ['dashboard','ads','post','reviews','analytics','credits','profile','settings'];
 var titles = { dashboard:'Overview', ads:'My Ads', post:'Post New Ad', reviews:'Reviews & Feedback', analytics:'Analytics', credits:'Credits & Billing', profile:'Company Profile', settings:'Settings' };
@@ -510,6 +596,30 @@ function initChart() {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } } } }
   });
 }
+
+function toggleSidebar() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var isOpen = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+// Close sidebar when nav item clicked on mobile
+document.querySelectorAll('.nav-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+
 </script>
 </body>
 </html>
