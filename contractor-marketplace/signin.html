@@ -5,297 +5,203 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In — ContractorHub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --cream: #F5F0E8;
-      --ink: #1A1714;
-      --warm: #C4873A;
-      --warm-light: #F0DFC0;
-      --muted: #8A8178;
-      --border: #E0D8CC;
-      --white: #FDFAF5;
-      --error: #C0392B;
+      --ink: #1A1714; --cream: #FDFAF5; --bg: #F5F0E8;
+      --warm: #C4873A; --warm-pale: #FAEEDA;
+      --muted: #8A8178; --border: #E0D8CC; --border2: #D0CDC6;
+      --green: #0F6E56; --green-bg: #E1F5EE;
+      --red: #C0392B; --radius: 10px; --radius-lg: 14px;
     }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--cream);
-      color: var(--ink);
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    .auth-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
 
-    /* LEFT PANEL */
-    .left {
-      background: var(--ink);
-      padding: 3rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-    .left::before {
-      content: '';
-      position: absolute;
-      bottom: -20%;
-      right: -20%;
-      width: 500px; height: 500px;
-      background: radial-gradient(ellipse, rgba(196,135,58,0.18) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    .left-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      color: var(--cream);
-      text-decoration: none;
-    }
-    .left-content { position: relative; }
-    .left-content h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(32px, 3.5vw, 48px);
-      color: var(--cream);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-    }
-    .left-content h2 em { color: var(--warm); font-style: italic; }
-    .left-content p { font-size: 15px; color: rgba(245,240,232,0.5); font-weight: 300; line-height: 1.7; max-width: 360px; }
-    .left-features { display: flex; flex-direction: column; gap: 1rem; margin-top: 2.5rem; }
-    .feature-item { display: flex; align-items: center; gap: 12px; font-size: 14px; color: rgba(245,240,232,0.7); }
-    .feature-dot { width: 8px; height: 8px; background: var(--warm); border-radius: 50%; flex-shrink: 0; }
-    .left-bottom { font-size: 12px; color: rgba(245,240,232,0.3); position: relative; }
+    /* LEFT */
+    .auth-left { background: #111; padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+    .auth-glow  { position: absolute; width: 340px; height: 340px; border-radius: 50%; background: rgba(196,135,58,0.12); filter: blur(70px); bottom: -100px; right: -80px; pointer-events: none; }
+    .auth-glow2 { position: absolute; width: 200px; height: 200px; border-radius: 50%; background: rgba(196,135,58,0.07); filter: blur(50px); top: 20%; left: -50px; pointer-events: none; }
+    .auth-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: #fff; text-decoration: none; letter-spacing: -0.02em; position: relative; z-index: 2; }
+    .auth-left-content { position: relative; z-index: 2; }
+    .auth-left-title { font-family: 'DM Serif Display', serif; font-size: clamp(22px, 2.5vw, 32px); color: #fff; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+    .auth-left-title em { color: var(--warm); font-style: italic; }
+    .auth-left-sub { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.65; margin-bottom: 1.5rem; font-weight: 300; }
+    .auth-feat { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+    .auth-feat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warm); flex-shrink: 0; }
+    .guest-banner { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.12); border-radius: var(--radius-lg); padding: 1.25rem; margin-top: 2rem; position: relative; z-index: 2; }
+    .guest-banner-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 5px; }
+    .guest-banner-sub { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 12px; font-weight: 300; }
+    .guest-btn { width: 100%; padding: 10px; background: transparent; border: 0.5px solid rgba(255,255,255,0.2); border-radius: 100px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.2s; }
+    .guest-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .auth-left-copy { font-size: 11px; color: rgba(255,255,255,0.2); position: relative; z-index: 2; }
 
-    /* RIGHT PANEL */
-    .right {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 2rem;
-    }
-    .form-box { width: 100%; max-width: 400px; }
-    .form-tabs {
-      display: flex;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 4px;
-      margin-bottom: 2.5rem;
-      background: var(--white);
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 9px;
-      border-radius: 100px;
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-      background: none;
-      font-family: 'Outfit', sans-serif;
-    }
-    .tab.active {
-      background: var(--ink);
-      color: var(--cream);
-      font-weight: 500;
-    }
-    .form-title { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
-    .form-sub { font-size: 14px; color: var(--muted); margin-bottom: 2rem; font-weight: 300; }
-
-    .form-group { margin-bottom: 1.25rem; }
-    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--ink); }
-    input[type="text"], input[type="email"], input[type="password"] {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'Outfit', sans-serif;
-      background: var(--white);
-      color: var(--ink);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus { border-color: var(--warm); }
-    .role-select {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 1.25rem;
-    }
-    .role-btn {
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--white);
-    }
-    .role-btn:hover { border-color: var(--warm); background: var(--warm-light); }
-    .role-btn.selected { border-color: var(--warm); background: var(--warm-light); }
-    .role-btn .role-icon { font-size: 22px; margin-bottom: 4px; }
-    .role-btn .role-label { font-size: 13px; font-weight: 500; color: var(--ink); }
-    .role-btn .role-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-    .forgot { font-size: 13px; color: var(--muted); text-decoration: none; float: right; margin-top: -4px; }
-    .forgot:hover { color: var(--warm); }
-
-    .btn-submit {
-      width: 100%;
-      padding: 13px;
-      background: var(--ink);
-      color: var(--cream);
-      border: none;
-      border-radius: 100px;
-      font-size: 15px;
-      font-weight: 500;
-      font-family: 'Outfit', sans-serif;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      margin-top: 0.5rem;
-    }
-    .btn-submit:hover { opacity: 0.82; }
-
-    .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .divider span { font-size: 12px; color: var(--muted); }
-
-    .btn-google {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      background: var(--white);
-      font-size: 14px;
-      font-family: 'Outfit', sans-serif;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      color: var(--ink);
-      transition: background 0.2s;
-    }
-    .btn-google:hover { background: var(--warm-light); border-color: var(--warm); }
-
-    .switch-text { text-align: center; font-size: 13px; color: var(--muted); margin-top: 1.5rem; }
-    .switch-text a { color: var(--warm); text-decoration: none; font-weight: 500; }
-
-    /* panel toggle */
+    /* RIGHT */
+    .auth-right { background: var(--cream); padding: 3rem 2.5rem; display: flex; align-items: center; justify-content: center; overflow-y: auto; }
+    .auth-right-inner { max-width: 400px; width: 100%; }
+    .auth-tabs { display: flex; border: 0.5px solid var(--border); border-radius: 100px; padding: 3px; margin-bottom: 2rem; background: var(--bg); }
+    .auth-tab { flex: 1; text-align: center; padding: 8px; border-radius: 100px; font-size: 13px; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .auth-tab.active { background: var(--cream); color: var(--ink); font-weight: 500; border: 0.5px solid var(--border); }
+    .auth-title { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .auth-sub { font-size: 13px; color: var(--muted); margin-bottom: 1.75rem; font-weight: 300; }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 5px; }
+    .form-input { width: 100%; padding: 11px 14px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--ink); outline: none; transition: border-color 0.15s; }
+    .form-input:focus { border-color: var(--muted); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .forgot { font-size: 12px; color: var(--muted); float: right; cursor: pointer; text-decoration: none; }
+    .forgot:hover { color: var(--ink); }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+    .role-btn { padding: 12px 10px; border: 0.5px solid var(--border); border-radius: var(--radius); text-align: center; cursor: pointer; background: #fff; transition: all 0.15s; }
+    .role-btn.selected { border-color: var(--warm); background: var(--warm-pale); }
+    .role-icon { font-size: 22px; margin-bottom: 4px; }
+    .role-name { font-size: 13px; font-weight: 500; }
+    .role-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .benefits-box { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 1rem; }
+    .benefits-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 9px; }
+    .benefit-row { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .benefit-row:last-child { margin-bottom: 0; }
+    .benefit-check { width: 17px; height: 17px; border-radius: 50%; background: var(--green-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px; color: var(--green); font-weight: 500; }
+    .check-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem; }
+    .check-row { display: flex; align-items: flex-start; gap: 10px; }
+    .check-row input[type="checkbox"] { margin-top: 2px; accent-color: var(--ink); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .check-label { font-size: 12px; color: var(--muted); line-height: 1.55; cursor: pointer; }
+    .check-label a { color: var(--warm); text-decoration: none; }
+    .req-star { color: var(--red); font-size: 11px; margin-left: 2px; }
+    .opt-tag { font-size: 10px; color: var(--muted); opacity: 0.7; }
+    .btn-submit { width: 100%; padding: 13px; background: var(--ink); color: var(--cream); border: none; border-radius: 100px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+    .btn-submit:hover:not(:disabled) { opacity: 0.82; }
+    .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+    .divider { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0; }
+    .divider-line { flex: 1; height: 0.5px; background: var(--border); }
+    .divider-text { font-size: 11px; color: var(--muted); }
+    .btn-google { width: 100%; padding: 12px; border: 0.5px solid var(--border2); border-radius: 100px; background: #fff; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; color: var(--ink); transition: background 0.15s; }
+    .btn-google:hover { background: var(--bg); }
+    .g-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .switch-text { text-align: center; font-size: 13px; color: var(--muted); margin-top: 1.25rem; }
+    .switch-link { color: var(--warm); cursor: pointer; font-weight: 500; }
     #signup-panel { display: none; }
 
     @media (max-width: 768px) {
-      body { grid-template-columns: 1fr; }
-      .left { display: none; }
-      .right { padding: 2rem 1.5rem; align-items: flex-start; padding-top: 3rem; }
+      .auth-wrap { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { padding: 2rem 1.5rem; min-height: 100vh; align-items: flex-start; padding-top: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+<div class="auth-wrap">
 
-<!-- LEFT -->
-<div class="left">
-  <a href="landing.html" class="left-logo">ContractorHub</a>
-  <div class="left-content">
-    <h2>Your next great<br/>hire is <em>one search</em><br/>away.</h2>
-    <p>Join thousands of businesses and contractors already working smarter with ContractorHub.</p>
-    <div class="left-features">
-      <div class="feature-item"><div class="feature-dot"></div>Verified & background-checked professionals</div>
-      <div class="feature-item"><div class="feature-dot"></div>Real-time availability & instant quotes</div>
-      <div class="feature-item"><div class="feature-dot"></div>Secure payments & contracts built-in</div>
-      <div class="feature-item"><div class="feature-dot"></div>Rated 4.8★ by 1,200+ clients</div>
+  <div class="auth-left">
+    <div class="auth-glow"></div>
+    <div class="auth-glow2"></div>
+    <a href="index.html" class="auth-logo">ContractorHub</a>
+    <div class="auth-left-content">
+      <div class="auth-left-title">Your next great<br/>hire is <em>one search</em><br/>away.</div>
+      <div class="auth-left-sub">Join thousands of businesses and contractors already working smarter across Malaysia.</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Save your favourite contractors</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Keep full conversation &amp; quote history</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Receive exclusive offers &amp; alerts</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Rated 4.8&#9733; by 1,200+ clients</div>
+      <div class="guest-banner">
+        <div class="guest-banner-title">Just browsing?</div>
+        <div class="guest-banner-sub">No account needed to explore contractors. Sign up only when you're ready to save favourites or start a conversation.</div>
+        <button class="guest-btn" onclick="window.location.href='marketplace.html'">Browse as guest &#8594;</button>
+      </div>
     </div>
+    <div class="auth-left-copy">&#169; 2025 ContractorHub Sdn. Bhd. All rights reserved.</div>
   </div>
-  <div class="left-bottom">© 2025 ContractorHub. All rights reserved.</div>
-</div>
 
-<!-- RIGHT -->
-<div class="right">
-  <div class="form-box">
-
-    <div class="form-tabs">
-      <button class="tab active" onclick="showPanel('signin')">Sign in</button>
-      <button class="tab" onclick="showPanel('signup')">Create account</button>
-    </div>
-
-    <!-- SIGN IN -->
-    <div id="signin-panel">
-      <h2 class="form-title">Welcome back</h2>
-      <p class="form-sub">Sign in to your ContractorHub account</p>
-      <div class="form-group">
-        <label>Email address</label>
-        <input type="email" placeholder="you@example.com" />
+  <div class="auth-right">
+    <div class="auth-right-inner">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="showPanel('signin')">Sign in</button>
+        <button class="auth-tab" onclick="showPanel('signup')">Create account</button>
       </div>
-      <div class="form-group">
-        <label>Password <a href="#" class="forgot">Forgot password?</a></label>
-        <input type="password" placeholder="••••••••" />
-      </div>
-      <button class="btn-submit" onclick="window.location.href='marketplace.html'">Sign in →</button>
-      <div class="divider"><span>or</span></div>
-      <button class="btn-google">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      </button>
-      <p class="switch-text">Don't have an account? <a href="#" onclick="showPanel('signup')">Create one</a></p>
-    </div>
 
-    <!-- SIGN UP -->
-    <div id="signup-panel">
-      <h2 class="form-title">Create account</h2>
-      <p class="form-sub">Join ContractorHub — it's free</p>
-      <p style="font-size:13px;font-weight:500;margin-bottom:10px;">I am a...</p>
-      <div class="role-select">
-        <div class="role-btn selected" onclick="selectRole(this)">
-          <div class="role-icon">🏢</div>
-          <div class="role-label">Client</div>
-          <div class="role-desc">Looking to hire</div>
+      <div id="signin-panel">
+        <div class="auth-title">Welcome back</div>
+        <div class="auth-sub">Sign in to access your saved contractors &amp; history</div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input class="form-input" type="email" placeholder="you@example.com" />
         </div>
-        <div class="role-btn" onclick="selectRole(this)">
-          <div class="role-icon">🔨</div>
-          <div class="role-label">Contractor</div>
-          <div class="role-desc">Looking for work</div>
+        <div class="form-group">
+          <label class="form-label">Password <a href="#" class="forgot">Forgot password?</a></label>
+          <input class="form-input" type="password" placeholder="••••••••" />
         </div>
+        <button class="btn-submit" onclick="window.location.href='marketplace.html'">Sign in &#8594;</button>
+        <div class="divider"><div class="divider-line"></div><span class="divider-text">or</span><div class="divider-line"></div></div>
+        <button class="btn-google">
+          <svg class="g-icon" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div class="switch-text">Don't have an account? <span class="switch-link" onclick="showPanel('signup')">Create one free</span></div>
       </div>
-      <div class="form-group">
-        <label>Full name</label>
-        <input type="text" placeholder="Ahmad Razali" />
-      </div>
-      <div class="form-group">
-        <label>Email address</label>
-        <input type="email" placeholder="you@example.com" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" placeholder="Min. 8 characters" />
-      </div>
-      <button class="btn-submit" onclick="window.location.href='marketplace.html'">Create account →</button>
-      <div class="divider"><span>or</span></div>
-      <button class="btn-google">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      </button>
-      <p class="switch-text">Already have an account? <a href="#" onclick="showPanel('signin')">Sign in</a></p>
-    </div>
 
+      <div id="signup-panel">
+        <div class="auth-title">Create account</div>
+        <div class="auth-sub">Free forever &#8212; no credit card needed</div>
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px;">I am a...</div>
+        <div class="role-grid">
+          <div class="role-btn selected" onclick="selRole(this)"><div class="role-icon">&#127970;</div><div class="role-name">Client</div><div class="role-desc">Looking to hire</div></div>
+          <div class="role-btn" onclick="selRole(this)"><div class="role-icon">&#128296;</div><div class="role-name">Contractor</div><div class="role-desc">Looking for work</div></div>
+        </div>
+        <div class="benefits-box">
+          <div class="benefits-title">Why create an account?</div>
+          <div class="benefit-row"><div class="benefit-check">&#10003;</div>Save favourite contractors &amp; revisit anytime</div>
+          <div class="benefit-row"><div class="benefit-check">&#10003;</div>Keep full conversation &amp; quote history</div>
+          <div class="benefit-row"><div class="benefit-check">&#10003;</div>Receive exclusive deals &amp; contractor alerts</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">First name</label><input class="form-input" placeholder="Ahmad" /></div>
+          <div class="form-group"><label class="form-label">Last name</label><input class="form-input" placeholder="Razali" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" placeholder="you@example.com" /></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min. 8 characters" /></div>
+        <div class="check-group">
+          <div class="check-row">
+            <input type="checkbox" id="terms" onchange="checkSubmit()" />
+            <label class="check-label" for="terms">I agree to ContractorHub's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a><span class="req-star">*</span></label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="pdpa" onchange="checkSubmit()" />
+            <label class="check-label" for="pdpa">I consent to ContractorHub collecting and processing my personal data in accordance with the <a href="#">PDPA</a><span class="req-star">*</span></label>
+          </div>
+          <div class="check-row">
+            <input type="checkbox" id="marketing" />
+            <label class="check-label" for="marketing">I'd like to receive offers, recommendations, and updates <span class="opt-tag">(optional)</span></label>
+          </div>
+        </div>
+        <button class="btn-submit" id="submitBtn" disabled onclick="window.location.href='marketplace.html'">Create account &#8594;</button>
+        <div class="divider"><div class="divider-line"></div><span class="divider-text">or</span><div class="divider-line"></div></div>
+        <button class="btn-google">
+          <svg class="g-icon" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div class="switch-text">Already have an account? <span class="switch-link" onclick="showPanel('signin')">Sign in</span></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-function showPanel(panel) {
-  document.getElementById('signin-panel').style.display = panel === 'signin' ? 'block' : 'none';
-  document.getElementById('signup-panel').style.display = panel === 'signup' ? 'block' : 'none';
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', (panel === 'signin' && i === 0) || (panel === 'signup' && i === 1));
+function showPanel(p) {
+  document.getElementById('signin-panel').style.display = p === 'signin' ? 'block' : 'none';
+  document.getElementById('signup-panel').style.display = p === 'signup' ? 'block' : 'none';
+  document.querySelectorAll('.auth-tab').forEach(function(t, i) {
+    t.classList.toggle('active', (p === 'signin' && i === 0) || (p === 'signup' && i === 1));
   });
 }
-function selectRole(el) {
-  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+function selRole(el) {
+  document.querySelectorAll('.role-btn').forEach(function(b) { b.classList.remove('selected'); });
   el.classList.add('selected');
+}
+function checkSubmit() {
+  var t = document.getElementById('terms').checked;
+  var p = document.getElementById('pdpa').checked;
+  document.getElementById('submitBtn').disabled = !(t && p);
 }
 </script>
 </body>
