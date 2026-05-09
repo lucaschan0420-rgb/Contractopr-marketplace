@@ -187,6 +187,115 @@
     .mt8 { margin-top: 8px; }
     .mt10 { margin-top: 10px; }
 
+
+
+    /* ── PHOTO UPLOAD ── */
+    .cover-wrap {
+      height: 64px; border-radius: var(--radius);
+      margin-bottom: -20px;
+      background: var(--blue-bg);
+      position: relative; overflow: hidden; cursor: pointer;
+      transition: filter .2s;
+    }
+    .cover-wrap:hover { filter: brightness(0.88); }
+    .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cover-upload-hint {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; font-size: 11px; color: rgba(255,255,255,0.9);
+      font-weight: 500;
+      background: rgba(0,0,0,0.3);
+      opacity: 0; transition: opacity .2s;
+      border-radius: var(--radius);
+    }
+    .cover-wrap:hover .cover-upload-hint { opacity: 1; }
+    .cover-upload-hint i { font-size: 15px; }
+
+    .logo-wrap {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--warm-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 500; color: var(--warm);
+      border: 3px solid #fff;
+      margin-left: 16px; position: relative; z-index: 1;
+      cursor: pointer; overflow: hidden; flex-shrink: 0;
+    }
+    .logo-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .logo-upload-hint {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s;
+    }
+    .logo-wrap:hover .logo-upload-hint { opacity: 1; }
+    .logo-upload-hint i { font-size: 16px; color: #fff; }
+
+    /* ── EDIT MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky; top: 0; background: #fff; z-index: 1;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .modal-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .modal-title i { font-size: 16px; color: var(--muted); }
+    .modal-close {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 0.5px solid var(--border);
+      background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--muted);
+    }
+    .modal-close:hover { background: var(--bg); color: var(--ink); }
+    .modal-body { padding: 20px; }
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 0.5px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end;
+      position: sticky; bottom: 0; background: #fff;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+    .avail-toggle { display: flex; gap: 8px; }
+    .avail-opt {
+      flex: 1; padding: 8px;
+      border: 0.5px solid var(--border); border-radius: var(--radius);
+      text-align: center; font-size: 12px; cursor: pointer;
+      background: #fff; transition: all .15s;
+    }
+    .avail-opt.selected { border-color: var(--green); background: var(--green-bg); color: var(--green); font-weight: 500; }
+    .avail-opt.busy.selected { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+    .save-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px);
+      background: var(--ink); color: #fff;
+      padding: 10px 20px; border-radius: 100px;
+      font-size: 13px; font-weight: 500;
+      z-index: 999; opacity: 0;
+      transition: all 0.3s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
     /* ── MOBILE RESPONSIVE ── */
     .sidebar-overlay {
       display: none;
@@ -493,10 +602,22 @@
       <div id="tab-profile" style="display:none;">
         <div class="grid2">
           <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ti ti-building"></i>Company profile</div><div class="card-action">Edit <i class="ti ti-edit" style="font-size:12px;"></i></div></div>
-            <div class="profile-cover"></div>
+            <div class="card-header"><div class="card-title"><i class="ti ti-building"></i>Company profile</div><div class="card-action" onclick="openEditModal()" style="cursor:pointer;">Edit <i class="ti ti-edit" style="font-size:12px;"></i></div></div>
+            <!-- COVER PHOTO -->
+            <div class="cover-wrap" onclick="document.getElementById('coverInput').click()" title="Upload company photo">
+              <img id="coverImg" src="" alt="" style="display:none;" />
+              <div class="cover-upload-hint"><i class="ti ti-camera"></i>Upload company photo</div>
+            </div>
+            <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="uploadCover(this)" />
+
             <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;padding-top:8px;">
-              <div class="profile-av-lg">AR</div>
+              <!-- LOGO -->
+              <div class="logo-wrap" onclick="document.getElementById('logoInput').click()" title="Upload company logo">
+                <span id="logoInitials">AR</span>
+                <img id="logoImg" src="" alt="" style="display:none;" />
+                <div class="logo-upload-hint"><i class="ti ti-camera"></i></div>
+              </div>
+              <input type="file" id="logoInput" accept="image/*" style="display:none;" onchange="uploadLogo(this)" />
               <div style="display:flex;gap:6px;"><span class="pill pill-active" style="font-size:11px;padding:3px 10px;">Available</span><span style="font-size:11px;padding:3px 10px;border-radius:10px;background:var(--blue-bg);color:var(--blue);font-weight:500;">Verified ✓</span></div>
             </div>
             <div style="margin-bottom:10px;"><div style="font-size:16px;font-weight:500;">Ahmad Razali</div><div style="font-size:13px;color:var(--muted);margin-top:1px;">Civil Engineer · Construction</div></div>
@@ -542,6 +663,136 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+
+
+function uploadCover(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById('coverImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    showToast('Company photo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function uploadLogo(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById('logoImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('logoInitials').style.display = 'none';
+    // Also update sidebar avatar
+    var sidebarAv = document.querySelector('.profile-av');
+    if (sidebarAv) {
+      sidebarAv.style.backgroundImage = 'url(' + e.target.result + ')';
+      sidebarAv.style.backgroundSize = 'cover';
+      sidebarAv.style.backgroundPosition = 'center';
+      sidebarAv.textContent = '';
+    }
+    showToast('Company logo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showToast(msg) {
+  var toast = document.getElementById('saveToast');
+  toast.querySelector('span') && (toast.querySelector('span').textContent = msg);
+  // Update toast text
+  var icon = toast.querySelector('i');
+  toast.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+}
+
+function openEditModal() {
+  document.getElementById('editModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function setAvail(val) {
+  document.getElementById('avail-available').classList.toggle('selected', val === 'available');
+  document.getElementById('avail-busy').classList.toggle('selected', val === 'busy');
+}
+function saveProfile() {
+  // Update displayed values
+  var name    = document.getElementById('edit-name').value;
+  var title   = document.getElementById('edit-title').value;
+  var bio     = document.getElementById('edit-bio').value;
+  var loc     = document.getElementById('edit-location').value;
+  var exp     = document.getElementById('edit-exp').value;
+  var rate    = document.getElementById('edit-rate').value;
+  var phone   = document.getElementById('edit-phone').value;
+  var email   = document.getElementById('edit-email').value;
+  var skills  = document.getElementById('edit-skills').value;
+
+  // Update profile card fields
+  var fields = document.querySelectorAll('.field-val');
+  if (fields.length >= 5) {
+    fields[0].textContent = loc;
+    fields[1].textContent = exp;
+    fields[2].textContent = 'RM ' + rate + ' / hr';
+    fields[3].textContent = phone;
+    fields[4].textContent = email;
+  }
+
+  // Update name and title
+  var nameEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:16px"]');
+  if (nameEl) nameEl.textContent = name;
+  var titleEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:13px"][style*="color:var(--muted)"]');
+  if (titleEl) titleEl.textContent = title;
+
+  // Update bio
+  var bioEl = document.querySelector('#tab-profile .grid2 .card div[style*="line-height:1.65"]');
+  if (bioEl) bioEl.textContent = bio;
+
+  // Update skills
+  var skillsWrap = document.querySelector('#tab-profile .grid2 .card div[style*="flex-wrap:wrap;gap:5px"]');
+  if (skillsWrap) {
+    skillsWrap.innerHTML = '';
+    skills.split(',').forEach(function(s) {
+      s = s.trim();
+      if (s) {
+        var span = document.createElement('span');
+        span.style.cssText = 'font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);';
+        span.textContent = s;
+        skillsWrap.appendChild(span);
+      }
+    });
+  }
+
+  // Update availability
+  var isAvail = document.getElementById('avail-available').classList.contains('selected');
+  var dotEl = document.querySelector('.status-dot');
+  var statusEl = document.querySelector('.profile-status');
+  if (dotEl) dotEl.style.background = isAvail ? 'var(--green)' : 'var(--red)';
+
+  closeEditModal();
+
+  // Show toast
+  var toast = document.getElementById('saveToast');
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+}
+
+// Close modal on overlay click
+document.addEventListener('DOMContentLoaded', function() {
+  var modal = document.getElementById('editModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) closeEditModal();
+    });
+  }
+});
+
 function toggleSidebar() {
   var sidebar = document.querySelector('.sidebar');
   var overlay = document.getElementById('sidebarOverlay');
@@ -559,9 +810,11 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
 // Close sidebar when nav item clicked on mobile
-document.querySelectorAll('.nav-item').forEach(function(item) {
-  item.addEventListener('click', function() {
-    if (window.innerWidth <= 768) closeSidebar();
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
   });
 });
 
@@ -597,6 +850,136 @@ function initChart() {
   });
 }
 
+
+
+function uploadCover(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById('coverImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    showToast('Company photo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function uploadLogo(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = document.getElementById('logoImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('logoInitials').style.display = 'none';
+    // Also update sidebar avatar
+    var sidebarAv = document.querySelector('.profile-av');
+    if (sidebarAv) {
+      sidebarAv.style.backgroundImage = 'url(' + e.target.result + ')';
+      sidebarAv.style.backgroundSize = 'cover';
+      sidebarAv.style.backgroundPosition = 'center';
+      sidebarAv.textContent = '';
+    }
+    showToast('Company logo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showToast(msg) {
+  var toast = document.getElementById('saveToast');
+  toast.querySelector('span') && (toast.querySelector('span').textContent = msg);
+  // Update toast text
+  var icon = toast.querySelector('i');
+  toast.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+}
+
+function openEditModal() {
+  document.getElementById('editModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function setAvail(val) {
+  document.getElementById('avail-available').classList.toggle('selected', val === 'available');
+  document.getElementById('avail-busy').classList.toggle('selected', val === 'busy');
+}
+function saveProfile() {
+  // Update displayed values
+  var name    = document.getElementById('edit-name').value;
+  var title   = document.getElementById('edit-title').value;
+  var bio     = document.getElementById('edit-bio').value;
+  var loc     = document.getElementById('edit-location').value;
+  var exp     = document.getElementById('edit-exp').value;
+  var rate    = document.getElementById('edit-rate').value;
+  var phone   = document.getElementById('edit-phone').value;
+  var email   = document.getElementById('edit-email').value;
+  var skills  = document.getElementById('edit-skills').value;
+
+  // Update profile card fields
+  var fields = document.querySelectorAll('.field-val');
+  if (fields.length >= 5) {
+    fields[0].textContent = loc;
+    fields[1].textContent = exp;
+    fields[2].textContent = 'RM ' + rate + ' / hr';
+    fields[3].textContent = phone;
+    fields[4].textContent = email;
+  }
+
+  // Update name and title
+  var nameEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:16px"]');
+  if (nameEl) nameEl.textContent = name;
+  var titleEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:13px"][style*="color:var(--muted)"]');
+  if (titleEl) titleEl.textContent = title;
+
+  // Update bio
+  var bioEl = document.querySelector('#tab-profile .grid2 .card div[style*="line-height:1.65"]');
+  if (bioEl) bioEl.textContent = bio;
+
+  // Update skills
+  var skillsWrap = document.querySelector('#tab-profile .grid2 .card div[style*="flex-wrap:wrap;gap:5px"]');
+  if (skillsWrap) {
+    skillsWrap.innerHTML = '';
+    skills.split(',').forEach(function(s) {
+      s = s.trim();
+      if (s) {
+        var span = document.createElement('span');
+        span.style.cssText = 'font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);';
+        span.textContent = s;
+        skillsWrap.appendChild(span);
+      }
+    });
+  }
+
+  // Update availability
+  var isAvail = document.getElementById('avail-available').classList.contains('selected');
+  var dotEl = document.querySelector('.status-dot');
+  var statusEl = document.querySelector('.profile-status');
+  if (dotEl) dotEl.style.background = isAvail ? 'var(--green)' : 'var(--red)';
+
+  closeEditModal();
+
+  // Show toast
+  var toast = document.getElementById('saveToast');
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+}
+
+// Close modal on overlay click
+document.addEventListener('DOMContentLoaded', function() {
+  var modal = document.getElementById('editModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) closeEditModal();
+    });
+  }
+});
+
 function toggleSidebar() {
   var sidebar = document.querySelector('.sidebar');
   var overlay = document.getElementById('sidebarOverlay');
@@ -614,12 +997,81 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
 // Close sidebar when nav item clicked on mobile
-document.querySelectorAll('.nav-item').forEach(function(item) {
-  item.addEventListener('click', function() {
-    if (window.innerWidth <= 768) closeSidebar();
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
   });
 });
 
 </script>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-edit"></i>Edit Company Profile</div>
+      <button class="modal-close" onclick="closeEditModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Full name</label>
+        <input class="form-input" id="edit-name" value="Ahmad Razali" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Professional title</label>
+        <input class="form-input" id="edit-title" value="Civil Engineer · Construction" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">About / Bio</label>
+        <textarea class="form-textarea" id="edit-bio" rows="4">Civil engineer with 12+ years delivering residential and commercial projects across Malaysia. Specialist in structural assessments, BIM workflows, and renovation consulting.</textarea>
+      </div>
+      <div class="form-row2">
+        <div class="form-group" style="margin:0 0 12px;">
+          <label class="form-label">Location</label>
+          <input class="form-input" id="edit-location" value="Kuala Lumpur, Malaysia" />
+        </div>
+        <div class="form-group" style="margin:0 0 12px;">
+          <label class="form-label">Years of experience</label>
+          <input class="form-input" id="edit-exp" value="12+ years" />
+        </div>
+      </div>
+      <div class="form-row2">
+        <div class="form-group" style="margin:0 0 12px;">
+          <label class="form-label">Hourly rate (RM)</label>
+          <input class="form-input" id="edit-rate" value="180" type="number" />
+        </div>
+        <div class="form-group" style="margin:0 0 12px;">
+          <label class="form-label">Phone number</label>
+          <input class="form-input" id="edit-phone" value="+60 12-345 6789" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input class="form-input" id="edit-email" value="ahmad@razalicivil.com" type="email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Skills / Tags <span style="font-size:11px;color:var(--muted);">(comma separated)</span></label>
+        <input class="form-input" id="edit-skills" value="Renovation, Structural, BIM, AutoCAD, Concrete" />
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Availability status</label>
+        <div class="avail-toggle" style="margin-top:6px;">
+          <div class="avail-opt selected" id="avail-available" onclick="setAvail('available')">&#9679; Available for hire</div>
+          <div class="avail-opt busy" id="avail-busy" onclick="setAvail('busy')">&#9675; Currently busy</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveProfile()"><i class="ti ti-check"></i>Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="save-toast" id="saveToast"><i class="ti ti-check" style="font-size:15px;"></i>Profile updated successfully</div>
+
 </body>
 </html>
