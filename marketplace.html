@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContractorHub — Find Verified Contractors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f7f6f3; --text: #1a1a1a;
+      --text2: #6b6b6b; --text3: #aaaaaa;
+      --border: #e5e3de; --border2: #d0cdc6;
+      --green: #0f6e56; --amber: #ba7517;
+      --radius: 10px; --radius-lg: 14px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); line-height: 1.6; }
+
+    /* NAV */
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2.5rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-links a { font-size: 14px; color: var(--text2); text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn-outline { padding: 7px 16px; border: 0.5px solid var(--border2); border-radius: var(--radius); color: var(--text) !important; font-size: 13px !important; }
+    .btn-primary { padding: 7px 16px; background: var(--text); color: var(--bg) !important; border-radius: var(--radius); font-size: 13px !important; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 3rem 2rem 1.5rem; background: var(--bg); border-bottom: 0.5px solid var(--border); }
+    .eyebrow { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 42px); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    .subheading { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; }
+    .search-bar { display: flex; gap: 8px; max-width: 600px; margin: 0 auto 1.25rem; }
+    .search-bar input { flex: 1; padding: 10px 16px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--bg); outline: none; }
+    .search-bar select { padding: 10px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text2); outline: none; }
+    .search-bar button { padding: 10px 22px; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; }
+    .stats { display: flex; gap: 2.5rem; justify-content: center; }
+    .stat-num { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text); }
+    .stat-label { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* FILTER BUTTON */
+    .filter-toggle-btn {
+      position: fixed; top: 76px; left: 16px; z-index: 300;
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; background: var(--bg);
+      border: 0.5px solid var(--border); border-radius: 100px;
+      font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+      color: var(--text); cursor: pointer;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+    }
+    .filter-toggle-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .filter-toggle-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+    /* OVERLAY */
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; backdrop-filter: blur(2px); }
+    .sidebar-overlay.show { display: block; }
+
+    /* SIDEBAR */
+    .filter-sidebar {
+      position: fixed; top: 64px; left: 0; bottom: 0;
+      width: 260px; z-index: 250;
+      background: var(--bg); border-right: 0.5px solid var(--border);
+      padding: 1.5rem 1.25rem; overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+    }
+    .filter-sidebar.open { transform: translateX(0); }
+    .sf-close { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .sf-close-title { font-size: 14px; font-weight: 500; }
+    .sf-close-btn { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border); background: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--text2); }
+    .sf-close-btn:hover { background: var(--bg2); }
+    .sf-section { margin-bottom: 1.5rem; }
+    .sf-heading { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .sf-option { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+    .sf-option input[type="checkbox"] { accent-color: var(--text); width: 13px; height: 13px; cursor: pointer; }
+    .sf-option label { font-size: 13px; color: var(--text); cursor: pointer; flex: 1; }
+    .sf-option .sf-count { font-size: 11px; color: var(--text3); }
+    .sf-range { width: 100%; accent-color: var(--text); margin: 8px 0 4px; }
+    .sf-range-vals { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
+    .sf-star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .sf-star-row input { accent-color: var(--text); cursor: pointer; }
+    .sf-star-row label { font-size: 12px; color: var(--text); cursor: pointer; }
+    .stars-gold { color: var(--amber); font-size: 11px; }
+    .sf-avail { display: flex; flex-direction: column; gap: 6px; }
+    .sf-avail-btn { padding: 8px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text2); cursor: pointer; text-align: left; transition: all .15s; }
+    .sf-avail-btn.active { border-color: var(--text); background: var(--text); color: var(--bg); }
+    .sf-divider { border: none; border-top: 0.5px solid var(--border); margin: 0.25rem 0 1.25rem; }
+    .sf-clear { width: 100%; padding: 9px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: none; color: var(--text2); cursor: pointer; margin-top: 0.5rem; }
+    .sf-clear:hover { border-color: var(--text); color: var(--text); }
+
+    /* MAIN */
+    .mp-main { padding: 1.5rem; }
+    .mp-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
+    .mp-toolbar-left { display: flex; align-items: center; gap: 10px; }
+    .mp-count { font-size: 13px; color: var(--text2); }
+    .mp-fav-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 0.5px solid var(--border); border-radius: 100px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text2); cursor: pointer; transition: all .2s; }
+    .mp-fav-btn:hover { border-color: #e05a7a; color: #e05a7a; }
+    .mp-fav-btn.active { background: #fff0f3; border-color: #e05a7a; color: #e05a7a; }
+    .mp-sort { padding: 7px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); cursor: pointer; outline: none; }
+    .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+    .af-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 4px 10px; background: var(--text); color: var(--bg); border-radius: 100px; }
+    .af-tag button { background: none; border: none; color: var(--bg); cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+
+    /* GRID & CARDS */
+    .mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+    .mp-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: border-color .15s, transform .2s, box-shadow .2s; text-decoration: none; display: block; color: inherit; position: relative; }
+    .mp-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+    .card-photo { position: relative; width: 100%; height: 148px; overflow: hidden; background: var(--bg2); }
+    .card-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; display: block; }
+    .mp-card:hover .card-photo img { transform: scale(1.05); }
+    .card-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 32px; background: linear-gradient(135deg,#f0ede8,#e5e0d8); }
+    .card-cat-badge { position: absolute; top: 9px; left: 9px; z-index: 2; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; background: rgba(0,0,0,0.55); color: #fff; backdrop-filter: blur(4px); }
+    .fav-btn { position: absolute; top: 8px; right: 8px; z-index: 2; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.92); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: transform .2s; box-shadow: 0 1px 6px rgba(0,0,0,0.12); }
+    .fav-btn:hover { transform: scale(1.18); }
+    .fav-btn.faved { background: #fff0f3; }
+    .card-body2 { padding: 13px; }
+    .card-top2 { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+    .av-teal   { background: #e1f5ee; color: #0f6e56; }
+    .av-blue   { background: #e6f1fb; color: #185fa5; }
+    .av-amber  { background: #faeeda; color: #854f0b; }
+    .av-pink   { background: #fbeaf0; color: #993556; }
+    .av-purple { background: #eeedfe; color: #534ab7; }
+    .av-coral  { background: #faece7; color: #993c1d; }
+    .c-name { font-size: 13px; font-weight: 500; }
+    .c-role { font-size: 11px; color: var(--text2); margin-top: 1px; }
+    .c-stars { font-size: 11px; color: var(--text3); margin-bottom: 7px; }
+    .c-star-f { color: var(--amber); }
+    .skills { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 9px; }
+    .skill-tag { font-size: 10px; padding: 2px 8px; background: var(--bg2); border-radius: 4px; color: var(--text2); }
+    .card-footer2 { display: flex; justify-content: space-between; align-items: center; padding-top: 9px; border-top: 0.5px solid var(--border); }
+    .c-rate2 { font-size: 12px; font-weight: 500; }
+    .c-avail2 { font-size: 10px; color: var(--green); }
+    .c-busy2  { font-size: 10px; color: var(--text3); }
+
+    /* ── VERIFICATION BADGES ── */
+    .verify-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .vbadge { display: flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.02em; }
+    .vbadge-verified  { background: #E1F5EE; color: #0F6E56; }
+    .vbadge-ssm       { background: #E6F1FB; color: #185FA5; }
+    .vbadge-cidb      { background: #EEEDFE; color: #534ab7; }
+    .vbadge-warranty  { background: #FAEEDA; color: #C4873A; }
+    .vbadge-premium   { background: #1A1714; color: #C4873A; }
+    .vbadge i { font-size: 10px; }
+    .trust-score { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #0F6E56; font-weight: 500; margin-bottom: 6px; }
+    .trust-score-bar { flex: 1; height: 3px; background: #E0D8CC; border-radius: 2px; }
+    .trust-score-fill { height: 3px; background: #0F6E56; border-radius: 2px; }
+
+    .fav-empty { text-align: center; padding: 4rem 2rem; color: var(--text2); font-size: 14px; grid-column: 1/-1; }
+    .fav-empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .no-results2 { text-align: center; padding: 4rem; color: var(--text2); font-size: 14px; grid-column: 1/-1; }
+
+    /* FOOTER */
+    .footer { border-top: 0.5px solid var(--border); padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--bg); margin-top: 2rem; }
+    .footer p { font-size: 13px; color: var(--text3); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 13px; color: var(--text3); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      /* NAV */
+      .nav { padding: 0.875rem 1.25rem; gap: 0; }
+      .nav-links { gap: 0.75rem; }
+      .nav-links a:not(.btn-outline):not(.btn-primary) { display: none; }
+      .btn-outline { padding: 6px 12px; font-size: 12px !important; }
+      .btn-primary { padding: 6px 12px; font-size: 12px !important; }
+
+      /* FILTER BUTTON */
+      .filter-toggle-btn { top: 70px; left: 12px; padding: 7px 12px; font-size: 12px; }
+
+      /* HERO */
+      .hero { padding: 2rem 1.25rem 1.25rem; }
+      .hero h1 { font-size: clamp(22px, 6vw, 32px); margin-bottom: 0.5rem; }
+      .subheading { font-size: 13px; margin-bottom: 1rem; }
+
+      /* SEARCH BAR - stack on mobile */
+      .search-bar { flex-direction: column; gap: 8px; padding: 0 0.25rem; }
+      .search-bar input { width: 100%; }
+      .search-bar select { width: 100%; }
+      .search-bar button { width: 100%; padding: 11px; }
+
+      /* STATS */
+      .stats { gap: 1.25rem; }
+      .stat-num { font-size: 20px; }
+
+      /* MAIN */
+      .mp-main { padding: 1rem; }
+      .mp-toolbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .mp-toolbar-left { flex-wrap: wrap; }
+
+      /* GRID - 1 col on mobile */
+      .mp-grid { grid-template-columns: 1fr; }
+
+      /* FOOTER */
+      footer > div:nth-child(2) { grid-template-columns: 1fr 1fr !important; gap: 1.5rem !important; }
+      footer > div:nth-child(3) { flex-direction: column !important; gap: 1rem !important; }
+      footer > div:nth-child(4) { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+      footer > div:nth-child(4) > div:first-child { gap: 1rem !important; flex-wrap: wrap !important; }
+    }
+
+    @media (max-width: 480px) {
+      .nav { padding: 0.75rem 1rem; }
+      .hero { padding: 1.5rem 1rem 1rem; }
+      .mp-main { padding: 0.75rem; }
+      .mp-grid { grid-template-columns: 1fr; }
+      footer > div:nth-child(2) { grid-template-columns: 1fr !important; }
+      .stats { gap: 1rem; }
+      .stat-num { font-size: 18px; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      /* TABLET */
+      .nav { padding: 1rem 1.5rem; }
+      .hero { padding: 2.5rem 1.5rem 1.25rem; }
+      .search-bar { max-width: 100%; padding: 0 1rem; }
+      .mp-main { padding: 1.25rem; }
+      .mp-grid { grid-template-columns: repeat(2, 1fr); }
+      footer > div:nth-child(2) { grid-template-columns: 1fr 1fr !important; gap: 1.5rem !important; }
+    }
+
+    @media (min-width: 1025px) {
+      .mp-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    }
+
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">ContractorHub</a>
+  <div class="nav-links">
+    <a href="#">Browse</a>
+    <a href="#">How it works</a>
+    <a href="signin.html" class="btn-outline">Sign in</a>
+    <a href="#" class="btn-primary">Post a job</a>
+  </div>
+</nav>
+
+<button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleSidebar()">
+  <span id="filterBtnIcon">⊞</span>
+  <span id="filterBtnLabel">Filters</span>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<aside class="filter-sidebar" id="filterSidebar">
+  <div class="sf-close">
+    <span class="sf-close-title">Filters</span>
+    <button class="sf-close-btn" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div class="sf-section">
+    <div class="sf-heading">Category</div>
+    <div class="sf-option"><input type="checkbox" id="c1" onchange="applyFilters()"><label for="c1">Construction</label><span class="sf-count">320</span></div>
+    <div class="sf-option"><input type="checkbox" id="c2" onchange="applyFilters()"><label for="c2">Tech &amp; Dev</label><span class="sf-count">210</span></div>
+    <div class="sf-option"><input type="checkbox" id="c3" onchange="applyFilters()"><label for="c3">Design</label><span class="sf-count">180</span></div>
+    <div class="sf-option"><input type="checkbox" id="c4" onchange="applyFilters()"><label for="c4">Electrical</label><span class="sf-count">145</span></div>
+    <div class="sf-option"><input type="checkbox" id="c5" onchange="applyFilters()"><label for="c5">Plumbing</label><span class="sf-count">98</span></div>
+    <div class="sf-option"><input type="checkbox" id="c6" onchange="applyFilters()"><label for="c6">Renovation</label><span class="sf-count">260</span></div>
+  </div>
+  <hr class="sf-divider"/>
+  <div class="sf-section">
+    <div class="sf-heading">Hourly Rate (RM)</div>
+    <input type="range" class="sf-range" id="rateRange" min="50" max="300" value="300" oninput="updateRate(this.value); applyFilters()">
+    <div class="sf-range-vals"><span>RM 50</span><span id="rateVal">RM 300+</span></div>
+  </div>
+  <hr class="sf-divider"/>
+  <div class="sf-section">
+    <div class="sf-heading">Min. Rating</div>
+    <div class="sf-star-row"><input type="radio" name="rt" id="r0" value="0" checked onchange="applyFilters()"><label for="r0">Any rating</label></div>
+    <div class="sf-star-row"><input type="radio" name="rt" id="r4" value="4" onchange="applyFilters()"><label for="r4"><span class="stars-gold">★★★★</span>☆ &nbsp;4.0+</label></div>
+    <div class="sf-star-row"><input type="radio" name="rt" id="r45" value="4.5" onchange="applyFilters()"><label for="r45"><span class="stars-gold">★★★★</span>½ &nbsp;4.5+</label></div>
+    <div class="sf-star-row"><input type="radio" name="rt" id="r48" value="4.8" onchange="applyFilters()"><label for="r48"><span class="stars-gold">★★★★★</span>&nbsp;Top rated</label></div>
+  </div>
+  <hr class="sf-divider"/>
+  <div class="sf-section">
+    <div class="sf-heading">Availability</div>
+    <div class="sf-avail">
+      <button class="sf-avail-btn active" id="avAll" onclick="setAvail('all')">All contractors</button>
+      <button class="sf-avail-btn" id="avNow" onclick="setAvail('available')">● Available now</button>
+      <button class="sf-avail-btn" id="avBusy" onclick="setAvail('busy')">○ Currently busy</button>
+    </div>
+  </div>
+  <hr class="sf-divider"/>
+  <div class="sf-section">
+    <div class="sf-heading">Experience</div>
+    <div class="sf-option"><input type="checkbox" id="e1" onchange="applyFilters()"><label for="e1">1–3 years</label></div>
+    <div class="sf-option"><input type="checkbox" id="e2" onchange="applyFilters()"><label for="e2">3–7 years</label></div>
+    <div class="sf-option"><input type="checkbox" id="e3" onchange="applyFilters()"><label for="e3">7–12 years</label></div>
+    <div class="sf-option"><input type="checkbox" id="e4" onchange="applyFilters()"><label for="e4">12+ years</label></div>
+  </div>
+  <button class="sf-clear" onclick="clearAll()">✕ Clear all filters</button>
+</aside>
+
+<section class="hero">
+  <p class="eyebrow">Contractor marketplace</p>
+  <h1>Find the right contractor, fast.</h1>
+  <p class="subheading">Browse verified professionals across construction, tech, design, and more.</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search by name, skill, or keyword..." oninput="applyFilters()" />
+    <select id="catQuick" onchange="applyFilters()">
+      <option value="">All categories</option>
+      <option>Construction</option>
+      <option>Tech &amp; Dev</option>
+      <option>Design</option>
+      <option>Electrical</option>
+      <option>Plumbing</option>
+      <option>Renovation</option>
+    </select>
+    <button onclick="applyFilters()">Search</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">1,240+</div><div class="stat-label">Contractors</div></div>
+    <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Verified</div></div>
+    <div class="stat"><div class="stat-num">4.8</div><div class="stat-label">Avg rating</div></div>
+  </div>
+</section>
+
+<div class="mp-main">
+  <div class="active-filters" id="activeFilters"></div>
+  <div style="background:#E1F5EE;border:0.5px solid rgba(15,110,86,0.2);border-radius:10px;padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:10px;font-size:12px;color:#0F6E56;">
+  <i class="ti ti-shield-check" style="font-size:18px;flex-shrink:0;"></i>
+  <div><strong style="font-weight:500;">All contractors are manually reviewed before approval.</strong> Look for verification badges on contractor cards for added assurance.</div>
+</div>
+<div class="mp-toolbar">
+    <div class="mp-toolbar-left">
+      <span class="mp-count" id="mpCount">Showing 12 contractors</span>
+      <button class="mp-fav-btn" id="favToggle" onclick="toggleFavView()">🤍 Saved <span id="favCount">0</span></button>
+    </div>
+    <select class="mp-sort" id="mpSort" onchange="applyFilters()">
+      <option value="default">Sort: Featured</option>
+      <option value="rating">Highest rated</option>
+      <option value="rate_low">Rate: Low to High</option>
+      <option value="rate_high">Rate: High to Low</option>
+    </select>
+  </div>
+  <div class="mp-grid" id="mpGrid"></div>
+</div>
+
+<!-- BIG FOOTER -->
+<footer style="background:#111;color:#fff;font-family:'DM Sans',sans-serif;margin-top:0;">
+  <!-- TOP: Logo + App Downloads -->
+  <div style="padding:2.5rem 2rem;border-bottom:0.5px solid rgba(255,255,255,0.1);">
+    <div style="font-family:'DM Serif Display',Georgia,serif;font-size:20px;letter-spacing:-0.02em;color:#fff;margin-bottom:0.4rem;">ContractorHub</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:1.5rem;">Malaysia's trusted platform for verified contractors</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="#" style="display:flex;align-items:center;gap:9px;padding:9px 16px;border:0.5px solid rgba(255,255,255,0.2);border-radius:10px;text-decoration:none;color:#fff;background:rgba(255,255,255,0.06);">
+        <span style="font-size:20px;">🍎</span>
+        <span style="display:flex;flex-direction:column;"><span style="font-size:10px;color:rgba(255,255,255,0.5);">Download on the</span><span style="font-size:13px;font-weight:500;">App Store</span></span>
+      </a>
+      <a href="#" style="display:flex;align-items:center;gap:9px;padding:9px 16px;border:0.5px solid rgba(255,255,255,0.2);border-radius:10px;text-decoration:none;color:#fff;background:rgba(255,255,255,0.06);">
+        <span style="font-size:20px;">▶</span>
+        <span style="display:flex;flex-direction:column;"><span style="font-size:10px;color:rgba(255,255,255,0.5);">GET IT ON</span><span style="font-size:13px;font-weight:500;">Google Play</span></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- LINKS GRID -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.5rem 2rem;padding:2.5rem 2rem;border-bottom:0.5px solid rgba(255,255,255,0.1);">
+    <div>
+      <div style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:14px;">Find Contractors</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractors in KL</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractors in Selangor</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractors in Penang</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractors in Johor</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractors in Perak</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">View all states →</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:14px;">By Category</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Construction</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Tech &amp; Development</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Interior Design</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Electrical Works</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Plumbing</a>
+        <a href="marketplace.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Renovation</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:14px;">For Contractors</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <a href="signin.html" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Join as a contractor</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">How it works</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Pricing &amp; plans</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractor resources</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Success stories</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contractor blog</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:14px;">Company</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">About us</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Careers</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Newsroom</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Contact us</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Help centre</a>
+        <a href="#" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Advertise with us</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCIAL + AFFILIATES -->
+  <div style="padding:1.75rem 2rem;border-bottom:0.5px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+    <div style="display:flex;gap:10px;">
+      <a href="#" style="width:36px;height:36px;border:0.5px solid rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:13px;font-weight:500;text-decoration:none;">f</a>
+      <a href="#" style="width:36px;height:36px;border:0.5px solid rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:11px;font-weight:500;text-decoration:none;">in</a>
+      <a href="#" style="width:36px;height:36px;border:0.5px solid rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:13px;text-decoration:none;">𝕏</a>
+      <a href="#" style="width:36px;height:36px;border:0.5px solid rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:11px;text-decoration:none;">ig</a>
+      <a href="#" style="width:36px;height:36px;border:0.5px solid rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:11px;text-decoration:none;">yt</a>
+      <a href="#" style="width:36px;height:36px;border:0.5px solid rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.7);font-size:11px;text-decoration:none;">tt</a>
+    </div>
+    <div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Affiliated sites</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <a href="#" style="font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;">contractorhub.sg</a>
+        <a href="#" style="font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;">contractorhub.com.au</a>
+        <a href="#" style="font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;">buildhub.com.my</a>
+        <a href="#" style="font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;">renovatehub.my</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM LEGAL -->
+  <div style="padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">About Us</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">Newsroom</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">Careers</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">Contact Us</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">Privacy Policy</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">Terms &amp; Conditions</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;">Cookie Policy</a>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.3);">© 2025 ContractorHub Sdn. Bhd. (202501033185). All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+// Add Tabler icons
+if (!document.querySelector('link[href*="tabler-icons"]')) {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
+  document.head.appendChild(link);
+}
+
+var contractors = [
+  { id:1,  name:"Ahmad Razali",      initials:"AR", av:"av-teal",   role:"Civil Engineer",        cat:"Construction", skills:["Renovation","Structural","BIM"],    rate:180, rating:4.9, reviews:42, available:true,  photo:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:'G5', warranty:true, premium:true, trustScore:98 },
+  { id:2,  name:"Siti Norfazlina",   initials:"SN", av:"av-blue",   role:"Full-Stack Developer",  cat:"Tech & Dev",   skills:["React","Node.js","AWS"],           rate:220, rating:5.0, reviews:31, available:true,  photo:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80&fit=crop", verified:true, ssm:true, warranty:false, trustScore:85 },
+  { id:3,  name:"Rajan Pillai",      initials:"RP", av:"av-amber",  role:"Electrical Contractor", cat:"Electrical",   skills:["Wiring","Solar","Inspection"],     rate:130, rating:4.7, reviews:58, available:false, photo:"https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:'G3', warranty:true, trustScore:92 },
+  { id:4,  name:"Mei Ling Tan",      initials:"MT", av:"av-pink",   role:"UI/UX Designer",        cat:"Design",       skills:["Figma","Branding","Research"],     rate:160, rating:4.8, reviews:27, available:true,  photo:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&q=80&fit=crop" },
+  { id:5,  name:"Farouk Hassan",     initials:"FH", av:"av-purple", role:"Plumbing Specialist",   cat:"Plumbing",     skills:["Piping","HVAC","Sanitation"],      rate:110, rating:4.6, reviews:74, available:true,  photo:"https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&q=80&fit=crop" },
+  { id:6,  name:"Lim Chee Keong",    initials:"LK", av:"av-coral",  role:"Interior Designer",     cat:"Design",       skills:["3D Render","Space Plan","Fit-out"],rate:195, rating:4.9, reviews:19, available:false, photo:"https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&q=80&fit=crop" },
+  { id:7,  name:"Nurul Ain",         initials:"NA", av:"av-teal",   role:"Android Developer",     cat:"Tech & Dev",   skills:["Kotlin","Firebase","APIs"],        rate:200, rating:4.7, reviews:22, available:true,  photo:"https://images.unsplash.com/photo-1542621334-a254cf47733d?w=500&q=80&fit=crop" },
+  { id:8,  name:"Vinod Krishnan",    initials:"VK", av:"av-blue",   role:"Structural Engineer",   cat:"Construction", skills:["AutoCAD","Steel","Concrete"],      rate:165, rating:4.8, reviews:36, available:false, photo:"https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500&q=80&fit=crop" },
+  { id:9,  name:"Hafizuddin Omar",   initials:"HO", av:"av-amber",  role:"Network Engineer",      cat:"Tech & Dev",   skills:["Cisco","Networking","Security"],   rate:185, rating:4.5, reviews:44, available:true,  photo:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&fit=crop" },
+  { id:10, name:"Priya Subramaniam", initials:"PS", av:"av-pink",   role:"Graphic Designer",      cat:"Design",       skills:["Illustrator","Branding","Print"],  rate:140, rating:4.6, reviews:33, available:true,  photo:"https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&q=80&fit=crop" },
+  { id:11, name:"Azrul Hakim",       initials:"AH", av:"av-purple", role:"Renovation Contractor", cat:"Renovation",   skills:["Tiling","Painting","Carpentry"],   rate:95,  rating:4.4, reviews:91, available:true,  photo:"https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=500&q=80&fit=crop" },
+  { id:12, name:"Chen Wei Liang",    initials:"CW", av:"av-coral",  role:"Data Engineer",         cat:"Tech & Dev",   skills:["Python","SQL","Airflow"],          rate:210, rating:4.8, reviews:17, available:false, photo:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80&fit=crop" }
+];
+
+var favourites = new Set();
+var showFavOnly = false;
+var availFilter = 'all';
+
+try { favourites = new Set(JSON.parse(localStorage.getItem('ch_favs') || '[]')); } catch(e) {}
+function saveFavs() { try { localStorage.setItem('ch_favs', JSON.stringify(Array.from(favourites))); } catch(e) {} }
+
+function toggleSidebar() {
+  var s = document.getElementById('filterSidebar');
+  var o = document.getElementById('sidebarOverlay');
+  var b = document.getElementById('filterToggleBtn');
+  var l = document.getElementById('filterBtnLabel');
+  var open = s.classList.contains('open');
+  if (open) {
+    s.classList.remove('open'); o.classList.remove('show');
+    b.classList.remove('active'); l.textContent = 'Filters';
+  } else {
+    s.classList.add('open'); o.classList.add('show');
+    b.classList.add('active'); l.textContent = 'Hide filters';
+  }
+}
+
+function toggleFav(id, e) {
+  e.preventDefault(); e.stopPropagation();
+  if (favourites.has(id)) { favourites.delete(id); } else { favourites.add(id); }
+  saveFavs(); applyFilters();
+}
+
+function toggleFavView() {
+  showFavOnly = !showFavOnly;
+  document.getElementById('favToggle').className = 'mp-fav-btn' + (showFavOnly ? ' active' : '');
+  applyFilters();
+}
+
+function setAvail(v) {
+  availFilter = v;
+  document.getElementById('avAll').classList.remove('active');
+  document.getElementById('avNow').classList.remove('active');
+  document.getElementById('avBusy').classList.remove('active');
+  if (v === 'all') document.getElementById('avAll').classList.add('active');
+  else if (v === 'available') document.getElementById('avNow').classList.add('active');
+  else document.getElementById('avBusy').classList.add('active');
+  applyFilters();
+}
+
+function updateRate(v) { document.getElementById('rateVal').textContent = (v >= 300) ? 'RM 300+' : 'RM ' + v; }
+
+function starsFor(r) {
+  var h = '';
+  for (var i = 1; i <= 5; i++) h += '<span class="' + (i <= Math.round(r) ? 'c-star-f' : '') + '">&#9733;</span>';
+  return h;
+}
+
+function renderCard(c) {
+  // Build verification badges based on contractor data
+  var badges = '';
+  if (c.premium) badges += '<span class="vbadge vbadge-premium"><i class="ti ti-star-filled"></i>Premium</span>';
+  if (c.verified) badges += '<span class="vbadge vbadge-verified"><i class="ti ti-shield-check"></i>Verified</span>';
+  if (c.ssm) badges += '<span class="vbadge vbadge-ssm"><i class="ti ti-certificate"></i>SSM</span>';
+  if (c.cidb) badges += '<span class="vbadge vbadge-cidb"><i class="ti ti-award"></i>CIDB ' + (c.cidbGrade||'') + '</span>';
+  if (c.warranty) badges += '<span class="vbadge vbadge-warranty"><i class="ti ti-shield"></i>Warranty</span>';
+  var trust = c.trustScore || 0;
+
+  var isFav = favourites.has(c.id);
+  var skills = '';
+  for (var i = 0; i < c.skills.length; i++) skills += '<span class="skill-tag">' + c.skills[i] + '</span>';
+  return '<a href="profile.html?id=' + c.id + '" class="mp-card">' +
+    '<div class="card-photo">' +
+      '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=\\\'card-photo-placeholder\\\'>&#127959;</div>\'">' +
+      '<span class="card-cat-badge">' + c.cat + '</span>' +
+      '<button class="fav-btn' + (isFav ? ' faved' : '') + '" onclick="toggleFav(' + c.id + ',event)">' + (isFav ? '&#10084;&#65039;' : '&#129293;') + '</button>' +
+    '</div>' +
+    '<div class="card-body2">' +
+      '<div class="card-top2"><div class="avatar ' + c.av + '">' + c.initials + '</div>' +
+      '<div><div class="c-name">' + c.name + '</div><div class="c-role">' + c.role + '</div></div></div>' +
+      '<div class="c-stars">' + starsFor(c.rating) + ' <span style="color:#aaa;font-size:10px;">' + c.rating + ' (' + c.reviews + ')</span></div>' +
+      '<div class="verify-badges">' + badges + '</div>' +
+      '<div class="skills">' + skills + '</div>' +
+      '<div class="card-footer2"><span class="c-rate2">RM ' + c.rate + '/hr</span>' +
+      '<span class="' + (c.available ? 'c-avail2' : 'c-busy2') + '">' + (c.available ? '&#9679; Available' : '&#9675; Busy') + '</span></div>' +
+    '</div></a>';
+}
+
+function applyFilters() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase();
+  var qCat = document.getElementById('catQuick').value;
+  var maxRate = parseInt(document.getElementById('rateRange').value);
+  var minRating = parseFloat(document.querySelector('input[name="rt"]:checked').value);
+  var sort = document.getElementById('mpSort').value;
+  var checkedCats = [];
+  var ids = ['c1','c2','c3','c4','c5','c6'];
+  for (var i = 0; i < ids.length; i++) {
+    if (document.getElementById(ids[i]).checked) {
+      checkedCats.push(document.querySelector('label[for="' + ids[i] + '"]').textContent.trim());
+    }
+  }
+
+  var list = contractors.filter(function(c) {
+    if (showFavOnly && !favourites.has(c.id)) return false;
+    var mQ = !q || c.name.toLowerCase().indexOf(q) > -1 || c.role.toLowerCase().indexOf(q) > -1 || c.skills.some(function(s){ return s.toLowerCase().indexOf(q) > -1; });
+    var mQC = !qCat || c.cat === qCat;
+    var mC = checkedCats.length === 0 || checkedCats.indexOf(c.cat) > -1;
+    var mR = maxRate >= 300 || c.rate <= maxRate;
+    var mRat = c.rating >= minRating;
+    var mA = availFilter === 'all' || (availFilter === 'available' ? c.available : !c.available);
+    return mQ && mQC && mC && mR && mRat && mA;
+  });
+
+  if (sort === 'rating') list.sort(function(a,b){ return b.rating - a.rating; });
+  else if (sort === 'rate_low') list.sort(function(a,b){ return a.rate - b.rate; });
+  else if (sort === 'rate_high') list.sort(function(a,b){ return b.rate - a.rate; });
+
+  var favSize = favourites.size;
+  document.getElementById('mpCount').textContent = showFavOnly
+    ? favSize + ' saved contractor' + (favSize !== 1 ? 's' : '')
+    : 'Showing ' + list.length + ' contractor' + (list.length !== 1 ? 's' : '');
+  document.getElementById('favToggle').innerHTML = (showFavOnly ? '&#10084;&#65039;' : '&#129293;') + ' Saved <span id="favCount">' + favSize + '</span>';
+
+  var grid = document.getElementById('mpGrid');
+  if (showFavOnly && list.length === 0) {
+    grid.innerHTML = '<div class="fav-empty"><div class="fav-empty-icon">&#129293;</div>No saved contractors yet.<br><small style="color:#bbb;margin-top:6px;display:block;">Click the heart on any card to save them here.</small></div>';
+  } else if (list.length === 0) {
+    grid.innerHTML = '<div class="no-results2">No contractors match your filters.</div>';
+  } else {
+    var html = '';
+    for (var j = 0; j < list.length; j++) html += renderCard(list[j]);
+    grid.innerHTML = html;
+  }
+
+  var tags = checkedCats.slice();
+  if (maxRate < 300) tags.push('&#8804; RM ' + maxRate + '/hr');
+  if (minRating > 0) tags.push(minRating + '+ stars');
+  if (availFilter !== 'all') tags.push(availFilter === 'available' ? 'Available now' : 'Currently busy');
+  var th = '';
+  for (var t = 0; t < tags.length; t++) th += '<span class="af-tag">' + tags[t] + ' <button onclick="clearAll()">&#215;</button></span>';
+  document.getElementById('activeFilters').innerHTML = th;
+}
+
+function clearAll() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('catQuick').value = '';
+  var allIds = ['c1','c2','c3','c4','c5','c6','e1','e2','e3','e4'];
+  for (var i = 0; i < allIds.length; i++) document.getElementById(allIds[i]).checked = false;
+  document.getElementById('rateRange').value = 300;
+  document.getElementById('rateVal').textContent = 'RM 300+';
+  document.getElementById('r0').checked = true;
+  setAvail('all');
+}
+
+applyFilters();
+</script>
+</body>
+</html>
