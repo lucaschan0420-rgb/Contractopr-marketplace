@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contractor Registration — ContractorHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #1A1714; --bg: #F5F0E8; --cream: #FDFAF5;
+      --warm: #C4873A; --warm-pale: #FAEEDA; --warm-light: #F0DFC0;
+      --border: #E0D8CC; --border2: #D0CDC6;
+      --muted: #8A8178; --muted2: #6b6b6b;
+      --green: #0F6E56; --green-bg: #E1F5EE; --green-light: #D1F0E4;
+      --red: #C0392B; --red-bg: #FDEAEA;
+      --blue: #185FA5; --blue-bg: #E6F1FB;
+      --radius: 8px; --radius-lg: 12px; --radius-xl: 16px;
+    }
+    html, body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+    /* NAV */
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: #fff; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; z-index: 50; }
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); text-decoration: none; }
+    .nav-trust { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green); font-weight: 500; }
+    .nav-trust i { font-size: 14px; }
+
+    /* HERO BANNER */
+    .signup-hero { background: #fff; border-bottom: 0.5px solid var(--border); padding: 2rem; text-align: center; }
+    .signup-hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(22px, 3vw, 30px); font-weight: 400; margin-bottom: 6px; letter-spacing: -0.01em; }
+    .signup-hero p { font-size: 14px; color: var(--muted); max-width: 480px; margin: 0 auto 1.25rem; line-height: 1.6; }
+    .trust-badges { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .trust-badge { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--green); font-weight: 500; background: var(--green-bg); padding: 4px 10px; border-radius: 100px; }
+    .trust-badge i { font-size: 13px; }
+
+    /* PROGRESS */
+    .progress-wrap { max-width: 720px; margin: 0 auto; padding: 1.5rem 1.5rem 0; }
+    .progress-steps { display: flex; align-items: center; gap: 0; margin-bottom: 0.5rem; }
+    .step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+    .step:not(:last-child)::after { content: ''; position: absolute; top: 14px; left: 50%; width: 100%; height: 1.5px; background: var(--border); z-index: 0; }
+    .step.done::after { background: var(--green); }
+    .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; border: 1.5px solid var(--border); background: #fff; position: relative; z-index: 1; flex-shrink: 0; }
+    .step.done .step-circle { background: var(--green); border-color: var(--green); color: #fff; }
+    .step.active .step-circle { border-color: var(--warm); color: var(--warm); background: var(--warm-pale); }
+    .step-label { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: center; }
+    .step.active .step-label { color: var(--warm); font-weight: 500; }
+    .step.done .step-label { color: var(--green); }
+
+    /* MAIN LAYOUT */
+    .signup-body { max-width: 720px; margin: 0 auto; padding: 1.5rem; }
+
+    /* SECTION CARD */
+    .section-card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1rem; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 0.5px solid var(--border); }
+    .section-icon { width: 38px; height: 38px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .icon-blue   { background: var(--blue-bg); color: var(--blue); }
+    .icon-green  { background: var(--green-bg); color: var(--green); }
+    .icon-warm   { background: var(--warm-pale); color: var(--warm); }
+    .icon-purple { background: #eeedfe; color: #534ab7; }
+    .icon-teal   { background: #e1f5f5; color: #0a6e6e; }
+    .section-info {}
+    .section-title { font-size: 14px; font-weight: 500; }
+    .section-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    /* FORM */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row.col3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-row.col1 { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+    .form-label .req { color: var(--red); }
+    .form-label .opt { font-size: 10px; color: var(--muted); font-weight: 400; }
+    .form-input { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--ink); outline: none; transition: border-color .15s; }
+    .form-input:focus { border-color: var(--muted); }
+    .form-select { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--ink); outline: none; }
+    .form-hint { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 3px; display: flex; align-items: flex-start; gap: 5px; }
+    .form-hint i { font-size: 12px; margin-top: 1px; flex-shrink: 0; }
+
+    /* YES/NO TOGGLE */
+    .yn-toggle { display: flex; gap: 8px; }
+    .yn-btn { flex: 1; padding: 9px; border: 0.5px solid var(--border); border-radius: var(--radius); text-align: center; font-size: 13px; cursor: pointer; background: #fff; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+    .yn-btn:hover { border-color: var(--border2); }
+    .yn-btn.yes.selected { border-color: var(--green); background: var(--green-bg); color: var(--green); font-weight: 500; }
+    .yn-btn.no.selected  { border-color: var(--red);   background: var(--red-bg);   color: var(--red);   font-weight: 500; }
+
+    /* UPLOAD ZONE */
+    .upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 1.25rem; text-align: center; cursor: pointer; background: var(--bg); transition: all .15s; position: relative; }
+    .upload-zone:hover { border-color: var(--warm); background: var(--warm-pale); }
+    .upload-zone.has-file { border-style: solid; border-color: var(--green); background: var(--green-bg); }
+    .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 24px; color: var(--muted); margin-bottom: 6px; }
+    .upload-zone.has-file .upload-icon { color: var(--green); }
+    .upload-label { font-size: 12px; font-weight: 500; color: var(--muted2); }
+    .upload-zone.has-file .upload-label { color: var(--green); }
+    .upload-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* MULTI UPLOAD */
+    .multi-upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 8px; }
+    .upload-thumb { width: 100%; aspect-ratio: 1; border-radius: var(--radius); overflow: hidden; border: 0.5px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--muted); }
+    .upload-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* CIDB INFO BOX */
+    .info-box { background: var(--blue-bg); border: 0.5px solid rgba(24,95,165,0.2); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .info-box i { font-size: 16px; color: var(--blue); margin-top: 1px; flex-shrink: 0; }
+    .info-box-text { font-size: 12px; color: var(--blue); line-height: 1.55; }
+    .info-box-text strong { font-weight: 500; }
+
+    /* CATEGORIES */
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .cat-opt { padding: 8px 10px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 12px; cursor: pointer; background: #fff; text-align: center; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .cat-opt:hover { border-color: var(--border2); }
+    .cat-opt.selected { border-color: var(--warm); background: var(--warm-pale); color: var(--warm); font-weight: 500; }
+    .cat-opt i { font-size: 15px; }
+
+    /* DIVIDER */
+    .section-divider { border: none; border-top: 0.5px solid var(--border); margin: 1rem 0; }
+
+    /* SUBMIT SECTION */
+    .submit-card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1rem; }
+    .submit-checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+    .submit-check { display: flex; align-items: flex-start; gap: 10px; }
+    .submit-check input { margin-top: 2px; accent-color: var(--ink); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .submit-check label { font-size: 12px; color: var(--muted2); line-height: 1.5; cursor: pointer; }
+    .submit-check label a { color: var(--warm); text-decoration: none; }
+    .btn-submit { width: 100%; padding: 14px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s; }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-submit i { font-size: 16px; }
+
+    /* VERIFICATION TIMELINE */
+    .verify-timeline { display: flex; gap: 0; margin-bottom: 1.5rem; overflow-x: auto; }
+    .vt-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 80px; }
+    .vt-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 1.5px solid var(--border); background: #fff; color: var(--muted); margin-bottom: 6px; }
+    .vt-step.done .vt-icon { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+    .vt-label { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.3; }
+    .vt-step.done .vt-label { color: var(--green); }
+    .vt-line { flex: 1; height: 1.5px; background: var(--border); margin-top: 17px; }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-row.col3 { grid-template-columns: 1fr; }
+      .signup-hero { padding: 1.5rem 1rem; }
+      .signup-body { padding: 1rem; }
+      .nav { padding: 0.875rem 1rem; }
+      .trust-badges { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">ContractorHub</a>
+  <div class="nav-trust"><i class="ti ti-shield-check"></i>Verified Platform · Malaysia</div>
+</nav>
+
+<div class="signup-hero">
+  <h1>Join as a Verified Contractor</h1>
+  <p>Complete your profile and verification to start receiving enquiries from clients across Malaysia.</p>
+  <div class="trust-badges">
+    <div class="trust-badge"><i class="ti ti-shield-check"></i>SSM Verified</div>
+    <div class="trust-badge"><i class="ti ti-certificate"></i>CIDB Supported</div>
+    <div class="trust-badge"><i class="ti ti-star"></i>Manually Reviewed</div>
+    <div class="trust-badge"><i class="ti ti-lock"></i>Secure & Private</div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="step done"><div class="step-circle"><i class="ti ti-check" style="font-size:12px;"></i></div><div class="step-label">Account</div></div>
+    <div class="vt-line"></div>
+    <div class="step active"><div class="step-circle">2</div><div class="step-label">Company</div></div>
+    <div class="vt-line"></div>
+    <div class="step"><div class="step-circle">3</div><div class="step-label">CIDB</div></div>
+    <div class="vt-line"></div>
+    <div class="step"><div class="step-circle">4</div><div class="step-label">Identity</div></div>
+    <div class="vt-line"></div>
+    <div class="step"><div class="step-circle">5</div><div class="step-label">Portfolio</div></div>
+    <div class="vt-line"></div>
+    <div class="step"><div class="step-circle">6</div><div class="step-label">Review</div></div>
+  </div>
+</div>
+
+<div class="signup-body">
+
+  <!-- SECTION A: COMPANY INFO -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon icon-blue"><i class="ti ti-building"></i></div>
+      <div class="section-info">
+        <div class="section-title">Company Information</div>
+        <div class="section-sub">Your registered business details for platform verification</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Company Name <span class="req">*</span></label>
+        <input class="form-input" placeholder="e.g. Razali Civil Engineering Sdn Bhd" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">SSM Registration Number <span class="req">*</span></label>
+        <input class="form-input" placeholder="e.g. 1234567-A" />
+        <div class="form-hint"><i class="ti ti-info-circle"></i>Your ROC/ROB number from Suruhanjaya Syarikat Malaysia</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Business Address <span class="req">*</span></label>
+      <input class="form-input" placeholder="e.g. No. 12, Jalan Ampang, 50450 Kuala Lumpur" />
+    </div>
+    <div class="form-row col3">
+      <div class="form-group">
+        <label class="form-label">State <span class="req">*</span></label>
+        <select class="form-select">
+          <option value="">Select state</option>
+          <option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option>
+          <option>Penang</option><option>Perak</option><option>Sabah</option>
+          <option>Sarawak</option><option>Negeri Sembilan</option><option>Melaka</option>
+          <option>Kedah</option><option>Kelantan</option><option>Terengganu</option>
+          <option>Pahang</option><option>Perlis</option><option>Putrajaya</option><option>Labuan</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company Phone <span class="req">*</span></label>
+        <input class="form-input" placeholder="+60 3-XXXX XXXX" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company Email <span class="req">*</span></label>
+        <input class="form-input" type="email" placeholder="info@company.com.my" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Website <span class="opt">(optional)</span></label>
+        <input class="form-input" placeholder="https://www.yourcompany.com.my" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Facebook / Instagram <span class="opt">(optional)</span></label>
+        <input class="form-input" placeholder="https://facebook.com/yourpage" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION B: CIDB -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon icon-green"><i class="ti ti-certificate"></i></div>
+      <div class="section-info">
+        <div class="section-title">CIDB Verification</div>
+        <div class="section-sub">Construction Industry Development Board Malaysia certification</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <i class="ti ti-info-circle"></i>
+      <div class="info-box-text"><strong>CIDB verification improves customer trust and contractor visibility on the platform.</strong> Verified contractors are prioritised in search results and receive a trust badge on their profile.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Do you have CIDB certification? <span class="req">*</span></label>
+      <div class="yn-toggle">
+        <button type="button" class="yn-btn yes" onclick="toggleYN(this,'cidb-yes','cidb-fields')">Yes, I am CIDB registered</button>
+        <button type="button" class="yn-btn no" onclick="toggleYN(this,'cidb-no',null)">No, not yet</button>
+      </div>
+    </div>
+
+    <div id="cidb-fields" style="display:none;">
+      <hr class="section-divider" />
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">CIDB Registration Number <span class="req">*</span></label>
+          <input class="form-input" placeholder="e.g. CIDB-MY-XXXXXXXX" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">CIDB Grade <span class="req">*</span></label>
+          <select class="form-select">
+            <option value="">Select grade</option>
+            <option>G1 — Up to RM 200,000</option>
+            <option>G2 — Up to RM 500,000</option>
+            <option>G3 — Up to RM 1 million</option>
+            <option>G4 — Up to RM 3 million</option>
+            <option>G5 — Up to RM 5 million</option>
+            <option>G6 — Up to RM 10 million</option>
+            <option>G7 — Unlimited</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">CIDB Expiry Date <span class="req">*</span></label>
+          <input class="form-input" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload CIDB Certificate <span class="req">*</span></label>
+          <div class="upload-zone" id="cidb-cert-zone">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="markUploaded(this,'cidb-cert-zone')" />
+            <div class="upload-icon"><i class="ti ti-file-certificate"></i></div>
+            <div class="upload-label">Click to upload CIDB certificate</div>
+            <div class="upload-sub">PDF, JPG or PNG · Max 5MB</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION C: IDENTITY -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon icon-warm"><i class="ti ti-id-badge"></i></div>
+      <div class="section-info">
+        <div class="section-title">Identity Verification</div>
+        <div class="section-sub">Required for platform security and client trust</div>
+      </div>
+    </div>
+
+    <div class="info-box" style="background:var(--warm-pale);border-color:rgba(196,135,58,0.25);">
+      <i class="ti ti-lock" style="color:var(--warm);"></i>
+      <div class="info-box-text" style="color:#7a4e1a;"><strong>All identity documents are stored securely and never shared publicly.</strong> Documents are only used for internal verification by the ContractorHub team.</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Director / Owner IC (Front) <span class="req">*</span></label>
+        <div class="upload-zone" id="ic-front-zone">
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="markUploaded(this,'ic-front-zone')" />
+          <div class="upload-icon"><i class="ti ti-id-badge-2"></i></div>
+          <div class="upload-label">Upload IC front</div>
+          <div class="upload-sub">JPG, PNG · Max 5MB</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Director / Owner IC (Back) <span class="req">*</span></label>
+        <div class="upload-zone" id="ic-back-zone">
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="markUploaded(this,'ic-back-zone')" />
+          <div class="upload-icon"><i class="ti ti-id-badge-2"></i></div>
+          <div class="upload-label">Upload IC back</div>
+          <div class="upload-sub">JPG, PNG · Max 5MB</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Selfie Verification <span class="req">*</span></label>
+        <div class="upload-zone" id="selfie-zone">
+          <input type="file" accept=".jpg,.jpeg,.png" onchange="markUploaded(this,'selfie-zone')" />
+          <div class="upload-icon"><i class="ti ti-camera-selfie"></i></div>
+          <div class="upload-label">Upload selfie holding your IC</div>
+          <div class="upload-sub">Clear face + IC visible · JPG, PNG</div>
+        </div>
+        <div class="form-hint"><i class="ti ti-info-circle"></i>Hold your IC next to your face in the photo</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company Logo <span class="opt">(optional)</span></label>
+        <div class="upload-zone" id="logo-zone">
+          <input type="file" accept=".jpg,.jpeg,.png,.svg" onchange="markUploaded(this,'logo-zone')" />
+          <div class="upload-icon"><i class="ti ti-photo"></i></div>
+          <div class="upload-label">Upload company logo</div>
+          <div class="upload-sub">PNG, SVG preferred · Max 2MB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION D: PORTFOLIO -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon icon-purple"><i class="ti ti-photo-star"></i></div>
+      <div class="section-info">
+        <div class="section-title">Portfolio & Experience</div>
+        <div class="section-sub">Showcase your past work to attract more clients</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Years of Experience <span class="req">*</span></label>
+        <select class="form-select">
+          <option value="">Select years</option>
+          <option>Less than 1 year</option><option>1–3 years</option>
+          <option>3–5 years</option><option>5–10 years</option>
+          <option>10–15 years</option><option>15+ years</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Completed Projects (approx.) <span class="opt">(optional)</span></label>
+        <select class="form-select">
+          <option value="">Select range</option>
+          <option>1–10 projects</option><option>10–50 projects</option>
+          <option>50–100 projects</option><option>100–500 projects</option><option>500+ projects</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Service Categories <span class="req">*</span></label>
+      <div class="cat-grid">
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-building-arch"></i>Construction</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-tools"></i>Renovation</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-bolt"></i>Electrical</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-droplet"></i>Plumbing</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-ruler-2"></i>Structural Eng.</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-sofa"></i>Interior Design</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-home-2"></i>Roofing</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-paint"></i>Painting</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-air-conditioning"></i>HVAC / Air-con</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-solar-panel"></i>Solar</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-layout-grid"></i>Tiling</div>
+        <div class="cat-opt" onclick="toggleCat(this)"><i class="ti ti-trees"></i>Landscaping</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Service Areas <span class="req">*</span></label>
+      <div class="cat-grid">
+        <div class="cat-opt" onclick="toggleCat(this)">Kuala Lumpur</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Selangor</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Johor</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Penang</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Perak</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Sabah</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Sarawak</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Negeri Sembilan</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Melaka</div>
+        <div class="cat-opt" onclick="toggleCat(this)">Kedah</div>
+        <div class="cat-opt" onclick="toggleCat(this)">All Malaysia</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Project Photos <span class="opt">(optional, up to 10)</span></label>
+        <div class="upload-zone" id="proj-zone">
+          <input type="file" accept=".jpg,.jpeg,.png" multiple onchange="handleMultiUpload(this,'proj-zone','proj-grid')" />
+          <div class="upload-icon"><i class="ti ti-photo-plus"></i></div>
+          <div class="upload-label">Upload project photos</div>
+          <div class="upload-sub">JPG, PNG · Max 5MB each</div>
+        </div>
+        <div class="multi-upload-grid" id="proj-grid"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Before / After Photos <span class="opt">(optional)</span></label>
+        <div class="upload-zone" id="ba-zone">
+          <input type="file" accept=".jpg,.jpeg,.png" multiple onchange="handleMultiUpload(this,'ba-zone','ba-grid')" />
+          <div class="upload-icon"><i class="ti ti-arrows-exchange"></i></div>
+          <div class="upload-label">Upload before &amp; after</div>
+          <div class="upload-sub">Helps showcase your quality</div>
+        </div>
+        <div class="multi-upload-grid" id="ba-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION E: WARRANTY -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon icon-teal"><i class="ti ti-shield-check"></i></div>
+      <div class="section-info">
+        <div class="section-title">Warranty &amp; Professionalism</div>
+        <div class="section-sub">Increase trust with workmanship warranties and insurance</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Workmanship Warranty Available? <span class="req">*</span></label>
+        <div class="yn-toggle">
+          <button type="button" class="yn-btn yes" onclick="toggleYN(this,'warranty-yes','warranty-duration')">Yes</button>
+          <button type="button" class="yn-btn no" onclick="toggleYN(this,'warranty-no',null)">No</button>
+        </div>
+      </div>
+      <div class="form-group" id="warranty-duration" style="display:none;">
+        <label class="form-label">Warranty Duration</label>
+        <select class="form-select">
+          <option>3 months</option><option>6 months</option>
+          <option>1 year</option><option>2 years</option><option>5 years</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Insurance Coverage Available? <span class="req">*</span></label>
+        <div class="yn-toggle">
+          <button type="button" class="yn-btn yes" onclick="toggleYN(this,'ins-yes',null)">Yes, insured</button>
+          <button type="button" class="yn-btn no" onclick="toggleYN(this,'ins-no',null)">No</button>
+        </div>
+        <div class="form-hint"><i class="ti ti-info-circle"></i>Public liability or contractor all-risk insurance</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emergency Support Available? <span class="req">*</span></label>
+        <div class="yn-toggle">
+          <button type="button" class="yn-btn yes" onclick="toggleYN(this,'emer-yes',null)">Yes, 24/7</button>
+          <button type="button" class="yn-btn no" onclick="toggleYN(this,'emer-no',null)">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-card">
+    <div class="section-header" style="margin-bottom:1rem;">
+      <div class="section-icon icon-green"><i class="ti ti-send"></i></div>
+      <div class="section-info">
+        <div class="section-title">Submit for Verification</div>
+        <div class="section-sub">Our team will manually review your submission within 1–3 business days</div>
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-bottom:1.25rem;">
+      <i class="ti ti-clock"></i>
+      <div class="info-box-text"><strong>What happens after you submit?</strong> Your profile will be reviewed by our verification team. You'll receive an email update within 1–3 business days. Approved contractors will be listed on the marketplace immediately.</div>
+    </div>
+
+    <div class="submit-checklist">
+      <div class="submit-check">
+        <input type="checkbox" id="terms" onchange="checkSubmit()" />
+        <label for="terms">I agree to ContractorHub's <a href="#">Terms of Service</a> and <a href="#">Contractor Agreement</a> <span style="color:var(--red);font-size:11px;">*</span></label>
+      </div>
+      <div class="submit-check">
+        <input type="checkbox" id="pdpa" onchange="checkSubmit()" />
+        <label for="pdpa">I consent to ContractorHub collecting and verifying my documents in accordance with the <a href="#">PDPA Malaysia</a> <span style="color:var(--red);font-size:11px;">*</span></label>
+      </div>
+      <div class="submit-check">
+        <input type="checkbox" id="accuracy" onchange="checkSubmit()" />
+        <label for="accuracy">I confirm all information and documents submitted are accurate and belong to my company <span style="color:var(--red);font-size:11px;">*</span></label>
+      </div>
+      <div class="submit-check">
+        <input type="checkbox" id="marketing" />
+        <label for="marketing">I'd like to receive tips, platform updates, and business opportunities from ContractorHub <span style="font-size:10px;color:var(--muted);">(optional)</span></label>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="submitBtn" disabled>
+      <i class="ti ti-send"></i>Submit for Verification
+    </button>
+  </div>
+
+</div>
+
+<script>
+function toggleYN(btn, id, showId) {
+  var parent = btn.closest('.yn-toggle');
+  parent.querySelectorAll('.yn-btn').forEach(function(b) {
+    b.classList.remove('selected');
+  });
+  btn.classList.add('selected');
+  if (showId) {
+    document.getElementById(showId).style.display = btn.classList.contains('yes') ? 'block' : 'none';
+  }
+}
+
+function toggleCat(el) {
+  el.classList.toggle('selected');
+}
+
+function markUploaded(input, zoneId) {
+  var zone = document.getElementById(zoneId);
+  if (input.files && input.files.length > 0) {
+    zone.classList.add('has-file');
+    zone.querySelector('.upload-label').textContent = input.files[0].name;
+    zone.querySelector('.upload-sub').textContent = 'File selected ✓';
+  }
+}
+
+function handleMultiUpload(input, zoneId, gridId) {
+  var zone = document.getElementById(zoneId);
+  var grid = document.getElementById(gridId);
+  if (!input.files || input.files.length === 0) return;
+  zone.classList.add('has-file');
+  zone.querySelector('.upload-label').textContent = input.files.length + ' file(s) selected';
+  zone.querySelector('.upload-sub').textContent = 'Click to add more';
+  grid.innerHTML = '';
+  Array.from(input.files).slice(0, 10).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var div = document.createElement('div');
+      div.className = 'upload-thumb';
+      div.innerHTML = '<img src="' + e.target.result + '" alt="preview" />';
+      grid.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function checkSubmit() {
+  var t = document.getElementById('terms').checked;
+  var p = document.getElementById('pdpa').checked;
+  var a = document.getElementById('accuracy').checked;
+  document.getElementById('submitBtn').disabled = !(t && p && a);
+}
+</script>
+</body>
+</html>

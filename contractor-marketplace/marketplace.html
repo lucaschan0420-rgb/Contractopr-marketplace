@@ -135,6 +135,20 @@
     .c-rate2 { font-size: 12px; font-weight: 500; }
     .c-avail2 { font-size: 10px; color: var(--green); }
     .c-busy2  { font-size: 10px; color: var(--text3); }
+
+    /* ── VERIFICATION BADGES ── */
+    .verify-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .vbadge { display: flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.02em; }
+    .vbadge-verified  { background: #E1F5EE; color: #0F6E56; }
+    .vbadge-ssm       { background: #E6F1FB; color: #185FA5; }
+    .vbadge-cidb      { background: #EEEDFE; color: #534ab7; }
+    .vbadge-warranty  { background: #FAEEDA; color: #C4873A; }
+    .vbadge-premium   { background: #1A1714; color: #C4873A; }
+    .vbadge i { font-size: 10px; }
+    .trust-score { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #0F6E56; font-weight: 500; margin-bottom: 6px; }
+    .trust-score-bar { flex: 1; height: 3px; background: #E0D8CC; border-radius: 2px; }
+    .trust-score-fill { height: 3px; background: #0F6E56; border-radius: 2px; }
+
     .fav-empty { text-align: center; padding: 4rem 2rem; color: var(--text2); font-size: 14px; grid-column: 1/-1; }
     .fav-empty-icon { font-size: 40px; margin-bottom: 12px; }
     .no-results2 { text-align: center; padding: 4rem; color: var(--text2); font-size: 14px; grid-column: 1/-1; }
@@ -306,7 +320,11 @@
 
 <div class="mp-main">
   <div class="active-filters" id="activeFilters"></div>
-  <div class="mp-toolbar">
+  <div style="background:#E1F5EE;border:0.5px solid rgba(15,110,86,0.2);border-radius:10px;padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:10px;font-size:12px;color:#0F6E56;">
+  <i class="ti ti-shield-check" style="font-size:18px;flex-shrink:0;"></i>
+  <div><strong style="font-weight:500;">All contractors are manually reviewed before approval.</strong> Look for verification badges on contractor cards for added assurance.</div>
+</div>
+<div class="mp-toolbar">
     <div class="mp-toolbar-left">
       <span class="mp-count" id="mpCount">Showing 12 contractors</span>
       <button class="mp-fav-btn" id="favToggle" onclick="toggleFavView()">🤍 Saved <span id="favCount">0</span></button>
@@ -424,10 +442,18 @@
 </footer>
 
 <script>
+// Add Tabler icons
+if (!document.querySelector('link[href*="tabler-icons"]')) {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
+  document.head.appendChild(link);
+}
+
 var contractors = [
-  { id:1,  name:"Ahmad Razali",      initials:"AR", av:"av-teal",   role:"Civil Engineer",        cat:"Construction", skills:["Renovation","Structural","BIM"],    rate:180, rating:4.9, reviews:42, available:true,  photo:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80&fit=crop" },
-  { id:2,  name:"Siti Norfazlina",   initials:"SN", av:"av-blue",   role:"Full-Stack Developer",  cat:"Tech & Dev",   skills:["React","Node.js","AWS"],           rate:220, rating:5.0, reviews:31, available:true,  photo:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80&fit=crop" },
-  { id:3,  name:"Rajan Pillai",      initials:"RP", av:"av-amber",  role:"Electrical Contractor", cat:"Electrical",   skills:["Wiring","Solar","Inspection"],     rate:130, rating:4.7, reviews:58, available:false, photo:"https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=500&q=80&fit=crop" },
+  { id:1,  name:"Ahmad Razali",      initials:"AR", av:"av-teal",   role:"Civil Engineer",        cat:"Construction", skills:["Renovation","Structural","BIM"],    rate:180, rating:4.9, reviews:42, available:true,  photo:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:'G5', warranty:true, premium:true, trustScore:98 },
+  { id:2,  name:"Siti Norfazlina",   initials:"SN", av:"av-blue",   role:"Full-Stack Developer",  cat:"Tech & Dev",   skills:["React","Node.js","AWS"],           rate:220, rating:5.0, reviews:31, available:true,  photo:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80&fit=crop", verified:true, ssm:true, warranty:false, trustScore:85 },
+  { id:3,  name:"Rajan Pillai",      initials:"RP", av:"av-amber",  role:"Electrical Contractor", cat:"Electrical",   skills:["Wiring","Solar","Inspection"],     rate:130, rating:4.7, reviews:58, available:false, photo:"https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:'G3', warranty:true, trustScore:92 },
   { id:4,  name:"Mei Ling Tan",      initials:"MT", av:"av-pink",   role:"UI/UX Designer",        cat:"Design",       skills:["Figma","Branding","Research"],     rate:160, rating:4.8, reviews:27, available:true,  photo:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&q=80&fit=crop" },
   { id:5,  name:"Farouk Hassan",     initials:"FH", av:"av-purple", role:"Plumbing Specialist",   cat:"Plumbing",     skills:["Piping","HVAC","Sanitation"],      rate:110, rating:4.6, reviews:74, available:true,  photo:"https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&q=80&fit=crop" },
   { id:6,  name:"Lim Chee Keong",    initials:"LK", av:"av-coral",  role:"Interior Designer",     cat:"Design",       skills:["3D Render","Space Plan","Fit-out"],rate:195, rating:4.9, reviews:19, available:false, photo:"https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&q=80&fit=crop" },
@@ -493,6 +519,15 @@ function starsFor(r) {
 }
 
 function renderCard(c) {
+  // Build verification badges based on contractor data
+  var badges = '';
+  if (c.premium) badges += '<span class="vbadge vbadge-premium"><i class="ti ti-star-filled"></i>Premium</span>';
+  if (c.verified) badges += '<span class="vbadge vbadge-verified"><i class="ti ti-shield-check"></i>Verified</span>';
+  if (c.ssm) badges += '<span class="vbadge vbadge-ssm"><i class="ti ti-certificate"></i>SSM</span>';
+  if (c.cidb) badges += '<span class="vbadge vbadge-cidb"><i class="ti ti-award"></i>CIDB ' + (c.cidbGrade||'') + '</span>';
+  if (c.warranty) badges += '<span class="vbadge vbadge-warranty"><i class="ti ti-shield"></i>Warranty</span>';
+  var trust = c.trustScore || 0;
+
   var isFav = favourites.has(c.id);
   var skills = '';
   for (var i = 0; i < c.skills.length; i++) skills += '<span class="skill-tag">' + c.skills[i] + '</span>';
@@ -506,6 +541,7 @@ function renderCard(c) {
       '<div class="card-top2"><div class="avatar ' + c.av + '">' + c.initials + '</div>' +
       '<div><div class="c-name">' + c.name + '</div><div class="c-role">' + c.role + '</div></div></div>' +
       '<div class="c-stars">' + starsFor(c.rating) + ' <span style="color:#aaa;font-size:10px;">' + c.rating + ' (' + c.reviews + ')</span></div>' +
+      '<div class="verify-badges">' + badges + '</div>' +
       '<div class="skills">' + skills + '</div>' +
       '<div class="card-footer2"><span class="c-rate2">RM ' + c.rate + '/hr</span>' +
       '<span class="' + (c.available ? 'c-avail2' : 'c-busy2') + '">' + (c.available ? '&#9679; Available' : '&#9675; Busy') + '</span></div>' +
