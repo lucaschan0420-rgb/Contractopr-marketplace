@@ -3,432 +3,686 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — ContractorHub</title>
+  <title>Admin Portal — ContractorHub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --cream: #F5F0E8; --ink: #1A1714; --warm: #C4873A;
-      --warm-light: #F0DFC0; --muted: #8A8178; --border: #E0D8CC; --white: #FDFAF5;
+      --ink: #1A1714; --bg: #F5F0E8; --cream: #FDFAF5;
+      --warm: #C4873A; --warm-pale: #FAEEDA;
+      --border: #E0D8CC; --border2: #D0CDC6;
+      --muted: #8A8178; --muted2: #6b6b6b;
+      --green: #0F6E56; --green-bg: #E1F5EE;
+      --red: #C0392B; --red-bg: #FDEAEA;
+      --blue: #185FA5; --blue-bg: #E6F1FB;
+      --orange: #c05621; --orange-bg: #fef0e6;
+      --purple: #534ab7; --purple-bg: #eeedfe;
+      --radius: 8px; --radius-lg: 12px;
     }
-    body { font-family: 'Outfit', sans-serif; background: #F0EDE6; color: var(--ink); min-height: 100vh; }
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: #0f1117; color: var(--ink); -webkit-font-smoothing: antialiased; }
 
-    /* NAV */
-    nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--ink); }
-    .nav-logo { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--cream); }
-    .nav-badge { font-size: 11px; background: var(--warm); color: #fff; padding: 3px 10px; border-radius: 100px; letter-spacing: 0.05em; }
-    .nav-links { display: flex; gap: 1rem; align-items: center; }
-    .nav-links a { font-size: 13px; color: rgba(245,240,232,0.6); text-decoration: none; }
-    .nav-links a:hover { color: var(--cream); }
+    /* LOGIN SCREEN */
+    .login-screen { position: fixed; inset: 0; background: #0f1117; display: flex; align-items: center; justify-content: center; z-index: 999; }
+    .login-box { background: #fff; border-radius: var(--radius-lg); padding: 2.5rem; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .login-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); margin-bottom: 4px; }
+    .login-sub { font-size: 12px; color: var(--muted); margin-bottom: 2rem; display: flex; align-items: center; gap: 5px; }
+    .login-sub i { font-size: 13px; color: var(--red); }
+    .login-field { margin-bottom: 1rem; }
+    .login-label { font-size: 12px; font-weight: 500; display: block; margin-bottom: 5px; }
+    .login-input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; outline: none; }
+    .login-input:focus { border-color: var(--muted); }
+    .login-btn { width: 100%; padding: 12px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-family: inherit; font-weight: 500; cursor: pointer; margin-top: 0.5rem; }
+    .login-err { font-size: 12px; color: var(--red); margin-top: 8px; display: none; text-align: center; }
 
     /* LAYOUT */
-    .container { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-    .page-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--ink); margin-bottom: 0.5rem; letter-spacing: -0.01em; }
-    .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 2.5rem; }
+    .admin-wrap { display: grid; grid-template-columns: 220px 1fr; height: 100vh; overflow: hidden; }
 
-    /* CARD */
-    .card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; margin-bottom: 1.5rem; }
-    .card-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
-    .card-sub { font-size: 12px; color: var(--muted); margin-bottom: 1.25rem; }
+    /* SIDEBAR */
+    .sidebar { background: #0f1117; display: flex; flex-direction: column; border-right: 0.5px solid rgba(255,255,255,0.07); }
+    .sidebar-header { padding: 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 16px; color: #fff; }
+    .sidebar-role { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+    .sidebar-role i { font-size: 11px; color: var(--red); }
+    .nav { flex: 1; padding: 0.75rem; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
+    .nav-section { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 8px 4px; margin-top: 6px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; font-size: 13px; color: rgba(255,255,255,0.55); cursor: pointer; transition: all .15s; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: rgba(196,135,58,0.15); color: var(--warm); }
+    .nav-item i { font-size: 16px; width: 20px; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 500; }
+    .badge-red    { background: var(--red); color: #fff; }
+    .badge-warm   { background: var(--warm); color: #fff; }
+    .badge-green  { background: var(--green); color: #fff; }
+    .sidebar-footer { padding: 1rem; border-top: 0.5px solid rgba(255,255,255,0.07); }
+    .logout-btn { width: 100%; padding: 8px; background: rgba(192,57,43,0.15); border: 0.5px solid rgba(192,57,43,0.3); border-radius: 6px; font-size: 12px; font-family: inherit; color: #e87c6e; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .logout-btn:hover { background: rgba(192,57,43,0.25); }
 
-    /* UPLOAD ZONES */
-    .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .upload-zone {
-      border: 2px dashed var(--border); border-radius: 12px;
-      padding: 1.5rem; text-align: center; cursor: pointer;
-      background: var(--cream); transition: all 0.2s; position: relative;
-      min-height: 200px; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-    }
-    .upload-zone:hover { border-color: var(--warm); background: var(--warm-light); }
-    .upload-zone.has-image { border-style: solid; border-color: var(--warm); background: var(--ink); }
-    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .upload-zone img.preview {
-      width: 100%; height: 180px; object-fit: cover; border-radius: 8px;
-      display: none;
-    }
-    .upload-zone.has-image img.preview { display: block; }
-    .upload-zone.has-image .upload-placeholder { display: none; }
-    .upload-icon { font-size: 28px; margin-bottom: 8px; }
-    .upload-label { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
-    .upload-hint { font-size: 11px; color: var(--muted); }
-    .zone-badge {
-      position: absolute; top: 10px; left: 10px;
-      font-size: 10px; font-weight: 600; padding: 4px 10px;
-      border-radius: 100px; letter-spacing: 0.06em; text-transform: uppercase; z-index: 2;
-    }
-    .badge-before { background: rgba(20,16,12,0.65); color: #fff; }
-    .badge-after  { background: rgba(196,135,58,0.9); color: #fff; }
-    .remove-btn {
-      position: absolute; top: 10px; right: 10px; z-index: 3;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: rgba(255,255,255,0.85); border: none; cursor: pointer;
-      font-size: 14px; display: none; align-items: center; justify-content: center;
-      color: var(--ink);
-    }
-    .upload-zone.has-image .remove-btn { display: flex; }
+    /* MAIN */
+    .main { display: flex; flex-direction: column; overflow: hidden; background: #f0ede8; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #fff; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .topbar-title { font-size: 15px; font-weight: 500; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .admin-chip { display: flex; align-items: center; gap: 7px; padding: 5px 12px 5px 6px; border-radius: 20px; border: 0.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 500; }
+    .admin-av { width: 24px; height: 24px; border-radius: 50%; background: var(--red-bg); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--red); }
 
-    /* POSITION CONTROLS */
-    .position-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .ctrl-group { display: flex; flex-direction: column; gap: 6px; }
-    .ctrl-label { font-size: 12px; font-weight: 500; color: var(--ink); }
-    .ctrl-row { display: flex; gap: 8px; align-items: center; }
-    .ctrl-row select, .ctrl-row input[type="range"] { flex: 1; }
-    select {
-      padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
-      font-size: 13px; font-family: 'Outfit', sans-serif;
-      background: var(--cream); color: var(--ink); outline: none; cursor: pointer;
-    }
-    .ctrl-val { font-size: 12px; color: var(--muted); min-width: 36px; text-align: right; }
+    .content { flex: 1; overflow-y: auto; padding: 1.25rem; }
 
-    /* PREVIEW SECTION */
-    .preview-section { margin-bottom: 1.5rem; }
-    .preview-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
-    .ba-preview {
-      position: relative; width: 100%; height: 320px;
-      border-radius: 12px; overflow: hidden;
-      cursor: ew-resize; user-select: none;
-      border: 1px solid var(--border); background: #ddd;
-    }
-    .ba-after-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .ba-before-clip { position: absolute; inset: 0; overflow: hidden; width: 50%; }
-    .ba-before-clip img {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%; object-fit: cover;
-    }
-    .ba-divider {
-      position: absolute; top: 0; bottom: 0; width: 2px;
-      background: #fff; left: 50%; transform: translateX(-50%);
-      z-index: 10; pointer-events: none; box-shadow: 0 0 8px rgba(0,0,0,0.2);
-    }
-    .ba-handle {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%); width: 42px; height: 42px;
-      background: #fff; border-radius: 50%;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 11; pointer-events: none;
-    }
-    .ba-tag {
-      position: absolute; top: 12px; z-index: 12;
-      font-size: 10px; font-weight: 600; padding: 4px 10px;
-      border-radius: 100px; pointer-events: none;
-      letter-spacing: .06em; text-transform: uppercase;
-    }
-    .ba-tag-before { left: 12px; background: rgba(20,16,12,0.65); color: #fff; }
-    .ba-tag-after  { right: 12px; background: rgba(196,135,58,0.9); color: #fff; }
+    /* METRICS */
+    .metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .metric { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+    .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .metric-val { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .metric-change { font-size: 11px; display: flex; align-items: center; gap: 3px; }
+    .up { color: var(--green); } .down { color: var(--red); } .neutral { color: var(--muted); }
 
-    /* ACTIONS */
-    .action-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .btn-save {
-      padding: 12px 28px; background: var(--ink); color: var(--cream);
-      border: none; border-radius: 100px; font-size: 14px;
-      font-family: 'Outfit', sans-serif; font-weight: 500; cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .btn-save:hover { opacity: 0.82; }
-    .btn-secondary {
-      padding: 12px 22px; border: 1px solid var(--border);
-      background: none; color: var(--ink); border-radius: 100px;
-      font-size: 14px; font-family: 'Outfit', sans-serif; cursor: pointer;
-    }
-    .btn-secondary:hover { background: var(--warm-light); border-color: var(--warm); }
-    .save-status { font-size: 13px; color: var(--muted); }
-    .save-status.success { color: #0F6E56; }
+    /* CARDS */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; }
+    .card-last { margin-bottom: 0; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .card-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .card-title i { font-size: 15px; color: var(--muted); }
+    .card-action { font-size: 12px; color: var(--blue); cursor: pointer; }
 
-    /* EMPTY STATE */
-    .empty-preview {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; height: 100%; gap: 8px;
-      color: var(--muted); font-size: 13px;
-    }
-    .empty-preview span { font-size: 28px; }
+    /* STATUS PILLS */
+    .pill { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
+    .pill-pending  { background: var(--orange-bg); color: var(--orange); }
+    .pill-partial  { background: var(--blue-bg); color: var(--blue); }
+    .pill-verified { background: var(--green-bg); color: var(--green); }
+    .pill-premium  { background: #1A1714; color: var(--warm); }
+    .pill-rejected { background: var(--red-bg); color: var(--red); }
+    .pill-active   { background: var(--green-bg); color: var(--green); }
+    .pill-paused   { background: #f0ede8; color: var(--muted); }
 
+    /* TABLE */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--border); background: #faf9f7; }
+    .data-table td { font-size: 12px; padding: 10px 12px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #faf9f7; }
+    .contractor-info { display: flex; align-items: center; gap: 9px; }
+    .contractor-av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+    .av-teal   { background: #e1f5ee; color: #0f6e56; }
+    .av-blue   { background: #e6f1fb; color: #185fa5; }
+    .av-amber  { background: #faeeda; color: #854f0b; }
+    .av-pink   { background: #fbeaf0; color: #993556; }
+    .av-purple { background: #eeedfe; color: #534ab7; }
+    .contractor-name { font-size: 12px; font-weight: 500; }
+    .contractor-sub  { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .verify-badges-sm { display: flex; flex-wrap: wrap; gap: 3px; }
+    .vbsm { font-size: 9px; font-weight: 500; padding: 1px 5px; border-radius: 3px; }
+    .vbsm-ssm     { background: var(--blue-bg); color: var(--blue); }
+    .vbsm-cidb    { background: var(--purple-bg); color: var(--purple); }
+    .vbsm-id      { background: var(--green-bg); color: var(--green); }
+    .vbsm-missing { background: #f0ede8; color: var(--muted); }
+
+    /* ACTION BUTTONS */
+    .action-btns { display: flex; gap: 5px; }
+    .btn-approve { padding: 4px 10px; background: var(--green-bg); color: var(--green); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
+    .btn-reject  { padding: 4px 10px; background: var(--red-bg); color: var(--red); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
+    .btn-view    { padding: 4px 10px; background: var(--blue-bg); color: var(--blue); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
+    .btn-premium { padding: 4px 10px; background: #1A1714; color: var(--warm); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
+    .btn-icon    { width: 28px; height: 28px; border-radius: 6px; border: 0.5px solid var(--border); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
+    .btn-icon:hover { border-color: var(--border2); color: var(--ink); }
+
+    /* TX ROW */
+    .tx-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+    .tx-row:last-child { border-bottom: none; }
+    .tx-type { font-size: 12px; font-weight: 500; }
+    .tx-date { font-size: 11px; color: var(--muted); }
+    .tx-plus  { font-size: 13px; font-weight: 500; color: var(--green); }
+    .tx-minus { font-size: 13px; font-weight: 500; color: var(--red); }
+
+    /* PROGRESS BAR */
+    .progress-bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .progress-label { font-size: 12px; color: var(--muted2); width: 120px; flex-shrink: 0; }
+    .progress-track { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; }
+    .fill-green  { background: var(--green); }
+    .fill-warm   { background: var(--warm); }
+    .fill-blue   { background: var(--blue); }
+    .fill-purple { background: var(--purple); }
+    .progress-count { font-size: 11px; color: var(--muted); width: 30px; text-align: right; }
+
+    /* SPONSORED MGMT */
+    .sponsored-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+    .sponsored-row:last-child { border-bottom: none; }
+    .sponsored-thumb { width: 48px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--bg); }
+    .sponsored-info { flex: 1; min-width: 0; }
+    .sponsored-name { font-size: 12px; font-weight: 500; }
+    .sponsored-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .sponsored-days { font-size: 12px; font-weight: 500; color: var(--warm); white-space: nowrap; }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
+    .modal-overlay.show { display: flex; }
+    .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: #fff; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+    .modal-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .modal-close { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border); background: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 14px 20px; border-top: 0.5px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+    .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .doc-item { background: var(--bg); border-radius: var(--radius); padding: 12px; display: flex; align-items: center; gap: 8px; }
+    .doc-icon { font-size: 20px; flex-shrink: 0; }
+    .doc-label { font-size: 12px; font-weight: 500; }
+    .doc-status { font-size: 10px; }
+    .doc-ok { color: var(--green); }
+    .doc-missing { color: var(--muted); }
+    .detail-row { display: flex; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { font-size: 11px; color: var(--muted); width: 110px; flex-shrink: 0; }
+    .detail-val { font-size: 12px; flex: 1; }
+    .status-select { padding: 6px 10px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: inherit; background: #fff; outline: none; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: all .3s; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* SEARCH INPUT */
+    .table-search { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .table-search input { flex: 1; padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; outline: none; background: #fff; }
+    .table-search select { padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: inherit; outline: none; background: #fff; }
+
+    @media (max-width: 900px) {
+      .metrics { grid-template-columns: repeat(2,1fr); }
+      .grid2 { grid-template-columns: 1fr; }
+    }
     @media (max-width: 600px) {
-      .upload-grid, .position-grid { grid-template-columns: 1fr; }
-      nav { padding: 1rem 1.25rem; }
-      .container { padding: 1.5rem 1.25rem 3rem; }
+      .admin-wrap { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .metrics { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">ContractorHub</div>
-  <div class="nav-links">
-    <div class="nav-badge">Admin</div>
-    <a href="landing.html">← Back to site</a>
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">ContractorHub</div>
+    <div class="login-sub"><i class="ti ti-shield-lock"></i>Admin Portal — Restricted Access</div>
+    <div class="login-field">
+      <label class="login-label">Admin Username</label>
+      <input class="login-input" id="loginUser" placeholder="admin" type="text" />
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="loginPass" placeholder="••••••••" type="password" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <button class="login-btn" onclick="doLogin()"><i class="ti ti-login" style="font-size:15px;"></i> Sign in to Admin</button>
+    <div class="login-err" id="loginErr">Invalid username or password</div>
   </div>
-</nav>
+</div>
 
-<div class="container">
-  <div class="page-title">Before / After Slider</div>
-  <div class="page-sub">Upload your renovation photos and adjust their position for the landing page showcase.</div>
+<!-- ADMIN WRAP -->
+<div class="admin-wrap" id="adminWrap" style="display:none;">
 
-  <!-- UPLOAD -->
-  <div class="card">
-    <div class="card-title">Upload Photos</div>
-    <div class="card-sub">Recommended: same size and angle for best effect. JPG or PNG, max 10MB each.</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">ContractorHub</div>
+      <div class="sidebar-role"><i class="ti ti-shield-lock"></i>Admin Portal</div>
+    </div>
+    <div class="nav">
+      <div class="nav-item active" onclick="show('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
 
-    <div class="upload-grid">
-      <!-- BEFORE -->
-      <div class="upload-zone" id="zBefore">
-        <div class="zone-badge badge-before">Before</div>
-        <button class="remove-btn" onclick="removeImg('before', event)">✕</button>
-        <input type="file" accept="image/*" onchange="loadImg('before', this)" />
-        <img class="preview" id="prevBefore" alt="Before" />
-        <div class="upload-placeholder">
-          <div class="upload-icon">📷</div>
-          <div class="upload-label">Upload Before photo</div>
-          <div class="upload-hint">Empty room / before renovation</div>
-        </div>
-      </div>
+      <div class="nav-section">Contractors</div>
+      <div class="nav-item" onclick="show('pending',this)"><i class="ti ti-clock"></i>Pending Review<span class="nav-badge badge-red">5</span></div>
+      <div class="nav-item" onclick="show('contractors',this)"><i class="ti ti-users"></i>All Contractors</div>
+      <div class="nav-item" onclick="show('verification',this)"><i class="ti ti-shield-check"></i>Verification Queue<span class="nav-badge badge-warm">3</span></div>
 
-      <!-- AFTER -->
-      <div class="upload-zone" id="zAfter">
-        <div class="zone-badge badge-after">After</div>
-        <button class="remove-btn" onclick="removeImg('after', event)">✕</button>
-        <input type="file" accept="image/*" onchange="loadImg('after', this)" />
-        <img class="preview" id="prevAfter" alt="After" />
-        <div class="upload-placeholder">
-          <div class="upload-icon">🏠</div>
-          <div class="upload-label">Upload After photo</div>
-          <div class="upload-hint">Furnished / after renovation</div>
-        </div>
-      </div>
+      <div class="nav-section">Marketplace</div>
+      <div class="nav-item" onclick="show('sponsored',this)"><i class="ti ti-pin"></i>Sponsored Ads</div>
+      <div class="nav-item" onclick="show('credits',this)"><i class="ti ti-credit-card"></i>Credits & Billing</div>
+
+      <div class="nav-section">Platform</div>
+      <div class="nav-item" onclick="show('users',this)"><i class="ti ti-user"></i>Users</div>
+      <div class="nav-item" onclick="show('reports',this)"><i class="ti ti-chart-bar"></i>Reports & Analytics</div>
+      <div class="nav-item" onclick="show('settings',this)"><i class="ti ti-settings"></i>Settings</div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout" style="font-size:14px;"></i>Sign out</button>
     </div>
   </div>
 
-  <!-- POSITION CONTROLS -->
-  <div class="card">
-    <div class="card-title">Adjust Photo Position</div>
-    <div class="card-sub">Fine-tune how each photo is positioned inside the slider.</div>
-
-    <div class="position-grid">
-      <div class="ctrl-group">
-        <div class="ctrl-label">Before — Horizontal position</div>
-        <div class="ctrl-row">
-          <select id="beforeX" onchange="updatePreview()">
-            <option value="left">Left</option>
-            <option value="center" selected>Center</option>
-            <option value="right">Right</option>
-          </select>
-        </div>
-        <div class="ctrl-label" style="margin-top:10px;">Before — Vertical position</div>
-        <div class="ctrl-row">
-          <select id="beforeY" onchange="updatePreview()">
-            <option value="top">Top</option>
-            <option value="center" selected>Center</option>
-            <option value="bottom">Bottom</option>
-          </select>
-        </div>
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-label">After — Horizontal position</div>
-        <div class="ctrl-row">
-          <select id="afterX" onchange="updatePreview()">
-            <option value="left">Left</option>
-            <option value="center" selected>Center</option>
-            <option value="right">Right</option>
-          </select>
-        </div>
-        <div class="ctrl-label" style="margin-top:10px;">After — Vertical position</div>
-        <div class="ctrl-row">
-          <select id="afterY" onchange="updatePreview()">
-            <option value="top">Top</option>
-            <option value="center" selected>Center</option>
-            <option value="bottom">Bottom</option>
-          </select>
-        </div>
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="admin-chip"><div class="admin-av">AD</div>Admin</div>
       </div>
     </div>
 
-    <div class="ctrl-group" style="margin-bottom:0;">
-      <div class="ctrl-label">Slider start position</div>
-      <div class="ctrl-row">
-        <input type="range" id="startPos" min="10" max="90" value="50" oninput="updateSliderPos(this.value)" />
-        <span class="ctrl-val" id="startPosVal">50%</span>
-      </div>
-    </div>
-  </div>
+    <div class="content">
 
-  <!-- LIVE PREVIEW -->
-  <div class="card preview-section">
-    <div class="preview-label">Live Preview — drag to compare</div>
-    <div class="ba-preview" id="baSlider">
-      <div class="empty-preview" id="emptyState">
-        <span>🖼️</span>
-        Upload photos above to preview
-      </div>
-      <img class="ba-after-img" id="baAfterImg" style="display:none;" alt="After" />
-      <div class="ba-before-clip" id="baClip" style="display:none;">
-        <img id="baBeforeImg" alt="Before" />
-      </div>
-      <div class="ba-divider" id="baDivider" style="display:none;"></div>
-      <div class="ba-handle" id="baHandle" style="display:none;">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <path d="M6 10l-4 4m0 0l4 4m-4-4h16m0 0l-4-4m4 4l-4 4" stroke="#1A1714" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="ba-tag ba-tag-before" id="bTagB" style="display:none;">Before</div>
-      <div class="ba-tag ba-tag-after" id="bTagA" style="display:none;">After</div>
-    </div>
-  </div>
+      <!-- ── DASHBOARD ── -->
+      <div id="tab-dashboard">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Total Contractors <i class="ti ti-users"></i></div><div class="metric-val">284</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+12 this month</div></div>
+          <div class="metric"><div class="metric-label">Pending Review <i class="ti ti-clock"></i></div><div class="metric-val" style="color:var(--orange);">5</div><div class="metric-change down">Needs attention</div></div>
+          <div class="metric"><div class="metric-label">Total Users <i class="ti ti-user"></i></div><div class="metric-val">1,842</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+84 this week</div></div>
+          <div class="metric"><div class="metric-label">Revenue (May) <i class="ti ti-coin"></i></div><div class="metric-val">RM 4,280</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+22% vs Apr</div></div>
+        </div>
 
-  <!-- SAVE -->
-  <div class="card">
-    <div class="card-title">Export to Landing Page</div>
-    <div class="card-sub">Download the updated <code>landing.html</code> with your photos baked in, then upload it to GitHub.</div>
-    <div class="action-row">
-      <button class="btn-save" onclick="exportPage()">⬇ Download landing.html</button>
-      <button class="btn-secondary" onclick="window.open('landing.html','_blank')">Preview landing page →</button>
-      <span class="save-status" id="saveStatus"></span>
+        <div class="grid2">
+          <div class="card card-last">
+            <div class="card-header"><div class="card-title"><i class="ti ti-clock"></i>Awaiting approval</div><div class="card-action" onclick="show('pending',null)">View all →</div></div>
+            <table class="data-table">
+              <tr><th>Contractor</th><th>Submitted</th><th>Action</th></tr>
+              <tr>
+                <td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">Construction · Selangor</div></div></div></td>
+                <td style="color:var(--muted);font-size:11px;">2 hrs ago</td>
+                <td><div class="action-btns"><button class="btn-approve" onclick="approveContractor('Zulkifli Ahmad')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Zulkifli Ahmad')"><i class="ti ti-x"></i></button><button class="btn-view" onclick="openDetail('Zulkifli Ahmad')"><i class="ti ti-eye"></i></button></div></td>
+              </tr>
+              <tr>
+                <td><div class="contractor-info"><div class="contractor-av av-pink">MS</div><div><div class="contractor-name">Marina Shafie</div><div class="contractor-sub">Interior Design · KL</div></div></div></td>
+                <td style="color:var(--muted);font-size:11px;">5 hrs ago</td>
+                <td><div class="action-btns"><button class="btn-approve" onclick="approveContractor('Marina Shafie')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Marina Shafie')"><i class="ti ti-x"></i></button><button class="btn-view" onclick="openDetail('Marina Shafie')"><i class="ti ti-eye"></i></button></div></td>
+              </tr>
+              <tr>
+                <td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">Electrical · Johor</div></div></div></td>
+                <td style="color:var(--muted);font-size:11px;">Yesterday</td>
+                <td><div class="action-btns"><button class="btn-approve" onclick="approveContractor('Kumar Rajendran')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Kumar Rajendran')"><i class="ti ti-x"></i></button><button class="btn-view" onclick="openDetail('Kumar Rajendran')"><i class="ti ti-eye"></i></button></div></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card card-last">
+            <div class="card-header"><div class="card-title"><i class="ti ti-chart-pie"></i>Contractor status breakdown</div></div>
+            <div class="progress-bar-wrap"><div class="progress-label">Verified</div><div class="progress-track"><div class="progress-fill fill-green" style="width:52%;"></div></div><div class="progress-count">148</div></div>
+            <div class="progress-bar-wrap"><div class="progress-label">Premium Verified</div><div class="progress-track"><div class="progress-fill fill-warm" style="width:18%;"></div></div><div class="progress-count">52</div></div>
+            <div class="progress-bar-wrap"><div class="progress-label">Partially Verified</div><div class="progress-track"><div class="progress-fill fill-blue" style="width:15%;"></div></div><div class="progress-count">42</div></div>
+            <div class="progress-bar-wrap"><div class="progress-label">Pending</div><div class="progress-track"><div class="progress-fill" style="width:10%;background:var(--orange);"></div></div><div class="progress-count">29</div></div>
+            <div class="progress-bar-wrap"><div class="progress-label">Rejected</div><div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--red);"></div></div><div class="progress-count">13</div></div>
+            <div style="margin-top:1rem;">
+              <div class="card-header" style="margin-bottom:8px;"><div class="card-title"><i class="ti ti-pin"></i>Active sponsored ads</div><div class="card-action" onclick="show('sponsored',null)">Manage →</div></div>
+              <div class="sponsored-row">
+                <img class="sponsored-thumb" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=100&q=60" />
+                <div class="sponsored-info"><div class="sponsored-name">TechBuild Construction</div><div class="sponsored-meta">Construction · G7</div></div>
+                <div class="sponsored-days">12 days left</div>
+              </div>
+              <div class="sponsored-row">
+                <img class="sponsored-thumb" src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=100&q=60" />
+                <div class="sponsored-info"><div class="sponsored-name">EcoReno Malaysia</div><div class="sponsored-meta">Renovation</div></div>
+                <div class="sponsored-days">7 days left</div>
+              </div>
+              <div class="sponsored-row">
+                <img class="sponsored-thumb" src="https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=100&q=60" />
+                <div class="sponsored-info"><div class="sponsored-name">PowerGrid Electrical</div><div class="sponsored-meta">Electrical · Solar</div></div>
+                <div class="sponsored-days">3 days left</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-credit-card"></i>Recent transactions</div><div class="card-action" onclick="show('credits',null)">Full history →</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+              <div class="tx-row"><div><div class="tx-type">Sponsored Ad — TechBuild</div><div class="tx-date">21 May 2025</div></div><div class="tx-plus">+RM 300</div></div>
+              <div class="tx-row"><div><div class="tx-type">Credit Top Up — EcoReno</div><div class="tx-date">20 May 2025</div></div><div class="tx-plus">+RM 150</div></div>
+              <div class="tx-row" style="border:none;"><div><div class="tx-type">Sponsored Ad — PowerGrid</div><div class="tx-date">19 May 2025</div></div><div class="tx-plus">+RM 200</div></div>
+            </div>
+            <div>
+              <div class="tx-row"><div><div class="tx-type">Credit Top Up — Azrul Hakim</div><div class="tx-date">18 May 2025</div></div><div class="tx-plus">+RM 50</div></div>
+              <div class="tx-row"><div><div class="tx-type">Credit Top Up — Vinod K.</div><div class="tx-date">17 May 2025</div></div><div class="tx-plus">+RM 150</div></div>
+              <div class="tx-row" style="border:none;"><div><div class="tx-type">Refund — Cancelled Ad</div><div class="tx-date">15 May 2025</div></div><div class="tx-minus">-RM 30</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PENDING REVIEW ── -->
+      <div id="tab-pending" style="display:none;">
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-clock"></i>Pending Verification (5)</div></div>
+          <div class="table-search">
+            <input placeholder="Search contractor..." />
+            <select><option>All states</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Penang</option></select>
+          </div>
+          <table class="data-table">
+            <tr><th>Contractor</th><th>Category</th><th>Docs Submitted</th><th>Submitted</th><th>Actions</th></tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">SSM: 1234567-A</div></div></div></td>
+              <td>Construction</td>
+              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-cidb">CIDB G4</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-missing">No portfolio</span></div></td>
+              <td style="font-size:11px;color:var(--muted);">2 hrs ago</td>
+              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Zulkifli Ahmad')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Zulkifli Ahmad')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Zulkifli Ahmad')"><i class="ti ti-x"></i>Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-pink">MS</div><div><div class="contractor-name">Marina Shafie</div><div class="contractor-sub">SSM: 9876543-B</div></div></div></td>
+              <td>Interior Design</td>
+              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-id">Portfolio</span></div></td>
+              <td style="font-size:11px;color:var(--muted);">5 hrs ago</td>
+              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Marina Shafie')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Marina Shafie')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Marina Shafie')"><i class="ti ti-x"></i>Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">SSM: 5555432-C</div></div></div></td>
+              <td>Electrical</td>
+              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-cidb">CIDB G3</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-id">Portfolio</span></div></td>
+              <td style="font-size:11px;color:var(--muted);">Yesterday</td>
+              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Kumar Rajendran')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Kumar Rajendran')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Kumar Rajendran')"><i class="ti ti-x"></i>Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-blue">LW</div><div><div class="contractor-name">Lee Wei Ming</div><div class="contractor-sub">SSM: 7654321-D</div></div></div></td>
+              <td>Plumbing</td>
+              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-missing">No CIDB</span><span class="vbsm vbsm-id">IC</span></div></td>
+              <td style="font-size:11px;color:var(--muted);">2 days ago</td>
+              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Lee Wei Ming')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Lee Wei Ming')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Lee Wei Ming')"><i class="ti ti-x"></i>Reject</button></div></td>
+            </tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-purple">NN</div><div><div class="contractor-name">Norizan Nawi</div><div class="contractor-sub">SSM: 3322110-E</div></div></div></td>
+              <td>Renovation</td>
+              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-id">Portfolio</span></div></td>
+              <td style="font-size:11px;color:var(--muted);">2 days ago</td>
+              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Norizan Nawi')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Norizan Nawi')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Norizan Nawi')"><i class="ti ti-x"></i>Reject</button></div></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ALL CONTRACTORS ── -->
+      <div id="tab-contractors" style="display:none;">
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-users"></i>All Contractors (284)</div></div>
+          <div class="table-search">
+            <input placeholder="Search by name, SSM, category..." />
+            <select><option>All statuses</option><option>Verified</option><option>Premium</option><option>Pending</option><option>Rejected</option></select>
+            <select><option>All categories</option><option>Construction</option><option>Electrical</option><option>Design</option><option>Plumbing</option><option>Renovation</option></select>
+          </div>
+          <table class="data-table">
+            <tr><th>Contractor</th><th>Category</th><th>Status</th><th>Rating</th><th>Joined</th><th>Actions</th></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-teal">AR</div><div><div class="contractor-name">Ahmad Razali</div><div class="contractor-sub">SSM · CIDB G5</div></div></div></td><td>Construction</td><td><span class="pill pill-premium">Premium</span></td><td>4.9 ★</td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Ahmad Razali')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Status updated')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-amber">RP</div><div><div class="contractor-name">Rajan Pillai</div><div class="contractor-sub">SSM · CIDB G3</div></div></div></td><td>Electrical</td><td><span class="pill pill-verified">Verified</span></td><td>4.7 ★</td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Rajan Pillai')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Upgraded to Premium')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-purple">AH</div><div><div class="contractor-name">Azrul Hakim</div><div class="contractor-sub">SSM verified</div></div></div></td><td>Renovation</td><td><span class="pill pill-verified">Verified</span></td><td>4.4 ★</td><td style="font-size:11px;color:var(--muted);">Mar 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Azrul Hakim')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Upgraded to Premium')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-blue">VK</div><div><div class="contractor-name">Vinod Krishnan</div><div class="contractor-sub">SSM · CIDB G4</div></div></div></td><td>Construction</td><td><span class="pill pill-partial">Partial</span></td><td>4.8 ★</td><td style="font-size:11px;color:var(--muted);">May 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Vinod Krishnan')"><i class="ti ti-eye"></i>View</button><button class="btn-approve" onclick="approveContractor('Vinod Krishnan')"><i class="ti ti-check"></i>Verify</button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── SPONSORED ADS ── -->
+      <div id="tab-sponsored" style="display:none;">
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+          <div class="metric"><div class="metric-label">Active Sponsored Ads</div><div class="metric-val">3</div><div class="metric-change neutral">2 expiring soon</div></div>
+          <div class="metric"><div class="metric-label">Revenue This Month</div><div class="metric-val" style="color:var(--warm);">RM 700</div><div class="metric-change up">+RM 200 vs last month</div></div>
+          <div class="metric"><div class="metric-label">Avg. Ad Duration</div><div class="metric-val">18 days</div><div class="metric-change neutral">RM 300 avg spend</div></div>
+        </div>
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-pin"></i>Active Sponsored Placements</div></div>
+          <table class="data-table">
+            <tr><th>Contractor</th><th>Category</th><th>Ad Message</th><th>Start</th><th>Expires</th><th>Paid</th><th>Actions</th></tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-teal">TC</div><div><div class="contractor-name">TechBuild Construction</div><div class="contractor-sub">CIDB G7</div></div></div></td>
+              <td>Construction</td>
+              <td style="font-size:11px;color:var(--muted);max-width:160px;">🏗️ Now accepting projects across Klang Valley</td>
+              <td style="font-size:11px;color:var(--muted);">9 May</td>
+              <td><span class="pill pill-active">2 Jun</span></td>
+              <td style="font-size:12px;font-weight:500;color:var(--green);">RM 300</td>
+              <td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-teal">ER</div><div><div class="contractor-name">EcoReno Malaysia</div><div class="contractor-sub">Renovation</div></div></div></td>
+              <td>Renovation</td>
+              <td style="font-size:11px;color:var(--muted);max-width:160px;">✨ Special promo: Free consultation this month</td>
+              <td style="font-size:11px;color:var(--muted);">14 May</td>
+              <td><span class="pill pill-active">28 May</span></td>
+              <td style="font-size:12px;font-weight:500;color:var(--green);">RM 200</td>
+              <td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td>
+            </tr>
+            <tr>
+              <td><div class="contractor-info"><div class="contractor-av av-amber">PG</div><div><div class="contractor-name">PowerGrid Electrical</div><div class="contractor-sub">CIDB G4</div></div></div></td>
+              <td>Electrical</td>
+              <td style="font-size:11px;color:var(--muted);max-width:160px;">⚡ Solar panel installation specialists</td>
+              <td style="font-size:11px;color:var(--muted);">18 May</td>
+              <td><span class="pill" style="background:var(--orange-bg);color:var(--orange);">24 May</span></td>
+              <td style="font-size:12px;font-weight:500;color:var(--green);">RM 200</td>
+              <td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td>
+            </tr>
+          </table>
+          <div style="margin-top:1.25rem;padding-top:1rem;border-top:0.5px solid var(--border);">
+            <div class="card-title" style="margin-bottom:10px;font-size:13px;"><i class="ti ti-package" style="font-size:15px;color:var(--muted);"></i>Sponsored Ad Pricing</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+              <div style="background:var(--bg);border-radius:var(--radius);padding:12px;text-align:center;border:0.5px solid var(--border);">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">7 days</div>
+                <div style="font-size:22px;font-weight:500;color:var(--warm);">RM 100</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:2px;">~RM 14/day</div>
+              </div>
+              <div style="background:var(--warm-pale);border-radius:var(--radius);padding:12px;text-align:center;border:1.5px solid var(--warm);">
+                <div style="font-size:10px;font-weight:500;color:var(--warm);margin-bottom:3px;">POPULAR</div>
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">14 days</div>
+                <div style="font-size:22px;font-weight:500;color:var(--warm);">RM 180</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:2px;">~RM 13/day</div>
+              </div>
+              <div style="background:var(--bg);border-radius:var(--radius);padding:12px;text-align:center;border:0.5px solid var(--border);">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">30 days</div>
+                <div style="font-size:22px;font-weight:500;color:var(--warm);">RM 300</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:2px;">~RM 10/day</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CREDITS ── -->
+      <div id="tab-credits" style="display:none;">
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+          <div class="metric"><div class="metric-label">Total Revenue</div><div class="metric-val" style="color:var(--green);">RM 18,420</div><div class="metric-change up">All time</div></div>
+          <div class="metric"><div class="metric-label">This Month</div><div class="metric-val">RM 4,280</div><div class="metric-change up">+22% vs April</div></div>
+          <div class="metric"><div class="metric-label">Active Credits</div><div class="metric-val">RM 12,840</div><div class="metric-change neutral">Across all contractors</div></div>
+        </div>
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>All Transactions</div></div>
+          <table class="data-table">
+            <tr><th>Contractor</th><th>Type</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr>
+            <tr><td>TechBuild Construction</td><td>Sponsored Ad (30d)</td><td class="tx-plus">+RM 300</td><td style="font-size:11px;">FPX</td><td style="font-size:11px;color:var(--muted);">21 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
+            <tr><td>EcoReno Malaysia</td><td>Credit Top Up</td><td class="tx-plus">+RM 150</td><td style="font-size:11px;">Visa</td><td style="font-size:11px;color:var(--muted);">20 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
+            <tr><td>PowerGrid Electrical</td><td>Sponsored Ad (14d)</td><td class="tx-plus">+RM 200</td><td style="font-size:11px;">FPX</td><td style="font-size:11px;color:var(--muted);">19 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
+            <tr><td>Azrul Hakim</td><td>Credit Top Up</td><td class="tx-plus">+RM 50</td><td style="font-size:11px;">TNG</td><td style="font-size:11px;color:var(--muted);">18 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
+            <tr><td>Ahmad Razali</td><td>Refund — Cancelled Ad</td><td class="tx-minus">-RM 30</td><td style="font-size:11px;">Refund</td><td style="font-size:11px;color:var(--muted);">15 May 2025</td><td><span class="pill pill-rejected">Refunded</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── REPORTS ── -->
+      <div id="tab-reports" style="display:none;">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Total Page Views</div><div class="metric-val">84,291</div><div class="metric-change up">+18% this month</div></div>
+          <div class="metric"><div class="metric-label">Marketplace Searches</div><div class="metric-val">12,840</div><div class="metric-change up">+9% this month</div></div>
+          <div class="metric"><div class="metric-label">Contractor Enquiries</div><div class="metric-val">1,284</div><div class="metric-change up">+24% this month</div></div>
+          <div class="metric"><div class="metric-label">Avg. Session</div><div class="metric-val">4m 32s</div><div class="metric-change up">+12s vs last month</div></div>
+        </div>
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Top categories by enquiry</div></div>
+          <div class="progress-bar-wrap"><div class="progress-label">Construction</div><div class="progress-track"><div class="progress-fill fill-green" style="width:68%;"></div></div><div class="progress-count">874</div></div>
+          <div class="progress-bar-wrap"><div class="progress-label">Renovation</div><div class="progress-track"><div class="progress-fill fill-warm" style="width:52%;"></div></div><div class="progress-count">668</div></div>
+          <div class="progress-bar-wrap"><div class="progress-label">Electrical</div><div class="progress-track"><div class="progress-fill fill-blue" style="width:38%;"></div></div><div class="progress-count">487</div></div>
+          <div class="progress-bar-wrap"><div class="progress-label">Interior Design</div><div class="progress-track"><div class="progress-fill fill-purple" style="width:28%;"></div></div><div class="progress-count">360</div></div>
+          <div class="progress-bar-wrap"><div class="progress-label">Plumbing</div><div class="progress-track"><div class="progress-fill" style="width:18%;background:var(--muted);"></div></div><div class="progress-count">230</div></div>
+        </div>
+      </div>
+
+      <!-- ── VERIFICATION QUEUE ── -->
+      <div id="tab-verification" style="display:none;">
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-shield-check"></i>Verification Queue — Documents to Review (3)</div></div>
+          <table class="data-table">
+            <tr><th>Contractor</th><th>Pending Document</th><th>Submitted</th><th>Actions</th></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">Construction</div></div></div></td><td><span class="vbsm vbsm-cidb" style="font-size:11px;padding:3px 8px;">CIDB Certificate</span></td><td style="font-size:11px;color:var(--muted);">2 hrs ago</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">Electrical</div></div></div></td><td><span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">Selfie Verification</span></td><td style="font-size:11px;color:var(--muted);">Yesterday</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
+            <tr><td><div class="contractor-info"><div class="contractor-av av-blue">VK</div><div><div class="contractor-name">Vinod Krishnan</div><div class="contractor-sub">Construction</div></div></div></td><td><span class="vbsm vbsm-ssm" style="font-size:11px;padding:3px 8px;">SSM Certificate</span></td><td style="font-size:11px;color:var(--muted);">2 days ago</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── USERS ── -->
+      <div id="tab-users" style="display:none;">
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+          <div class="metric"><div class="metric-label">Total Users</div><div class="metric-val">1,842</div><div class="metric-change up">+84 this week</div></div>
+          <div class="metric"><div class="metric-label">New This Month</div><div class="metric-val">284</div><div class="metric-change up">+18%</div></div>
+          <div class="metric"><div class="metric-label">Active Today</div><div class="metric-val">142</div><div class="metric-change neutral">7.7% DAU</div></div>
+        </div>
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-user"></i>Recent Users</div></div>
+          <table class="data-table">
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th></tr>
+            <tr><td>Hazrul Mahmud</td><td style="font-size:11px;color:var(--muted);">hazrul@gmail.com</td><td><span class="pill pill-partial">Client</span></td><td style="font-size:11px;color:var(--muted);">Today</td><td><span class="pill pill-active">Active</span></td></tr>
+            <tr><td>Liyana Kamarudin</td><td style="font-size:11px;color:var(--muted);">liyana@email.com</td><td><span class="pill pill-partial">Client</span></td><td style="font-size:11px;color:var(--muted);">Yesterday</td><td><span class="pill pill-active">Active</span></td></tr>
+            <tr><td>Ahmad Razali</td><td style="font-size:11px;color:var(--muted);">ahmad@razalicivil.com</td><td><span class="pill pill-premium">Contractor</span></td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><span class="pill pill-active">Active</span></td></tr>
+            <tr><td>TechBuild Sdn Bhd</td><td style="font-size:11px;color:var(--muted);">info@techbuild.com</td><td><span class="pill pill-premium">Contractor</span></td><td style="font-size:11px;color:var(--muted);">Mar 2025</td><td><span class="pill pill-active">Active</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div id="tab-settings" style="display:none;">
+        <div class="card card-last">
+          <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i>Platform Settings</div></div>
+          <div class="detail-row"><div class="detail-label">Platform name</div><div class="detail-val">ContractorHub</div></div>
+          <div class="detail-row"><div class="detail-label">Admin email</div><div class="detail-val">admin@contractorhub.com.my</div></div>
+          <div class="detail-row"><div class="detail-label">Verification mode</div><div class="detail-val"><select class="status-select"><option>Manual review required</option><option>Auto-approve with documents</option></select></div></div>
+          <div class="detail-row"><div class="detail-label">New contractor</div><div class="detail-val"><select class="status-select"><option>Pending by default</option><option>Partial by default</option></select></div></div>
+          <div class="detail-row" style="border:none;"><div class="detail-label">Sponsored pricing</div>
+            <div class="detail-val">
+              7 days: <strong>RM 100</strong> &nbsp;·&nbsp; 14 days: <strong>RM 180</strong> &nbsp;·&nbsp; 30 days: <strong>RM 300</strong>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px;">Edit in Credits & Billing section</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
+<!-- CONTRACTOR DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-user"></i><span id="modalName">Contractor Details</span></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-row"><div class="detail-label">Company</div><div class="detail-val" id="md-company">—</div></div>
+      <div class="detail-row"><div class="detail-label">SSM No.</div><div class="detail-val" id="md-ssm">—</div></div>
+      <div class="detail-row"><div class="detail-label">Category</div><div class="detail-val" id="md-cat">—</div></div>
+      <div class="detail-row"><div class="detail-label">State</div><div class="detail-val" id="md-state">—</div></div>
+      <div class="detail-row"><div class="detail-label">CIDB</div><div class="detail-val" id="md-cidb">—</div></div>
+      <div class="detail-row"><div class="detail-label">Verification Status</div>
+        <div class="detail-val">
+          <select class="status-select" id="md-status">
+            <option>Pending Verification</option>
+            <option>Partially Verified</option>
+            <option>Verified</option>
+            <option>Premium Verified</option>
+            <option>Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px;margin-bottom:8px;font-size:12px;font-weight:500;">Documents Submitted</div>
+      <div class="doc-grid" id="md-docs"></div>
+      <div style="margin-top:8px;">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px;">Admin Notes</div>
+        <textarea style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;resize:none;outline:none;" rows="3" placeholder="Add internal notes here..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button style="padding:9px 18px;background:var(--red-bg);color:var(--red);border:none;border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="rejectContractor('');closeModal()"><i class="ti ti-x"></i> Reject</button>
+      <button style="padding:9px 18px;background:var(--ink);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="approveFromModal()"><i class="ti ti-check"></i> Approve & Verify</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <script>
-  // ── State ──
-  const state = {
-    beforeSrc: null, afterSrc: null,
-    beforeX: 'center', beforeY: 'center',
-    afterX: 'center',  afterY: 'center',
-    startPos: 50
-  };
+var ADMIN_USER = 'admin';
+var ADMIN_PASS = 'admin123';
 
-  // ── Load image ──
-  function loadImg(which, input) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const src = e.target.result;
-      if (which === 'before') {
-        state.beforeSrc = src;
-        document.getElementById('prevBefore').src = src;
-        document.getElementById('zBefore').classList.add('has-image');
-      } else {
-        state.afterSrc = src;
-        document.getElementById('prevAfter').src = src;
-        document.getElementById('zAfter').classList.add('has-image');
-      }
-      updatePreview();
-    };
-    reader.readAsDataURL(file);
+function doLogin() {
+  var u = document.getElementById('loginUser').value;
+  var p = document.getElementById('loginPass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminWrap').style.display = 'grid';
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
   }
+}
 
-  function removeImg(which, e) {
-    e.stopPropagation();
-    if (which === 'before') {
-      state.beforeSrc = null;
-      document.getElementById('prevBefore').src = '';
-      document.getElementById('zBefore').classList.remove('has-image');
-    } else {
-      state.afterSrc = null;
-      document.getElementById('prevAfter').src = '';
-      document.getElementById('zAfter').classList.remove('has-image');
-    }
-    updatePreview();
-  }
+function doLogout() {
+  document.getElementById('adminWrap').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+}
 
-  // ── Update live preview ──
-  function updatePreview() {
-    state.beforeX = document.getElementById('beforeX').value;
-    state.beforeY = document.getElementById('beforeY').value;
-    state.afterX  = document.getElementById('afterX').value;
-    state.afterY  = document.getElementById('afterY').value;
+var tabs = ['dashboard','pending','contractors','verification','sponsored','credits','users','reports','settings'];
+var titles = { dashboard:'Dashboard', pending:'Pending Review', contractors:'All Contractors', verification:'Verification Queue', sponsored:'Sponsored Ads', credits:'Credits & Billing', users:'Users', reports:'Reports & Analytics', settings:'Settings' };
 
-    const hasImages = state.beforeSrc && state.afterSrc;
-    document.getElementById('emptyState').style.display  = hasImages ? 'none' : 'flex';
-    document.getElementById('baAfterImg').style.display  = hasImages ? 'block' : 'none';
-    document.getElementById('baClip').style.display      = hasImages ? 'block' : 'none';
-    document.getElementById('baDivider').style.display   = hasImages ? 'block' : 'none';
-    document.getElementById('baHandle').style.display    = hasImages ? 'flex' : 'none';
-    document.getElementById('bTagB').style.display       = hasImages ? 'block' : 'none';
-    document.getElementById('bTagA').style.display       = hasImages ? 'block' : 'none';
-
-    if (hasImages) {
-      const afterImg = document.getElementById('baAfterImg');
-      afterImg.src = state.afterSrc;
-      afterImg.style.objectPosition = state.afterX + ' ' + state.afterY;
-
-      const beforeImg = document.getElementById('baBeforeImg');
-      beforeImg.src = state.beforeSrc;
-      beforeImg.style.objectPosition = state.beforeX + ' ' + state.beforeY;
-      beforeImg.style.cssText = `
-        position:absolute; top:0; left:0;
-        width:100%; height:100%; object-fit:cover;
-        object-position:${state.beforeX} ${state.beforeY};
-      `;
-    }
-  }
-
-  function updateSliderPos(val) {
-    state.startPos = parseInt(val);
-    document.getElementById('startPosVal').textContent = val + '%';
-    const pct = val + '%';
-    document.getElementById('baClip').style.width    = pct;
-    document.getElementById('baDivider').style.left  = pct;
-    document.getElementById('baHandle').style.left   = pct;
-  }
-
-  // ── Drag on preview ──
-  const slider = document.getElementById('baSlider');
-  slider.addEventListener('mousemove', e => {
-    if (!state.beforeSrc || !state.afterSrc) return;
-    const rect = slider.getBoundingClientRect();
-    let pct = (e.clientX - rect.left) / rect.width;
-    pct = Math.max(0.02, Math.min(0.98, pct));
-    const val = (pct * 100).toFixed(1) + '%';
-    document.getElementById('baClip').style.width   = val;
-    document.getElementById('baDivider').style.left = val;
-    document.getElementById('baHandle').style.left  = val;
+function show(tab, navEl) {
+  tabs.forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
   });
+  document.getElementById('pageTitle').textContent = titles[tab] || tab;
+  document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
+  if (navEl) navEl.classList.add('active');
+}
 
-  // ── Export ──
-  async function exportPage() {
-    if (!state.beforeSrc || !state.afterSrc) {
-      document.getElementById('saveStatus').textContent = '⚠ Please upload both photos first.';
-      return;
-    }
-    document.getElementById('saveStatus').textContent = 'Preparing file…';
+var contractorData = {
+  'Ahmad Razali':   { company:'Razali Civil Engineering Sdn Bhd', ssm:'1234567-A', cat:'Construction', state:'Kuala Lumpur', cidb:'G5 — Up to RM 5M', status:'Premium Verified', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)','Selfie Verification','Portfolio Photos'] },
+  'Zulkifli Ahmad': { company:'ZA Construction Works', ssm:'2345678-B', cat:'Construction', state:'Selangor', cidb:'G4 — Up to RM 3M', status:'Pending Verification', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)'] },
+  'Marina Shafie':  { company:'Marina Design Studio', ssm:'9876543-B', cat:'Interior Design', state:'Kuala Lumpur', cidb:'Not submitted', status:'Pending Verification', docs:['SSM Certificate','IC (Front & Back)','Portfolio Photos'] },
+  'Kumar Rajendran':{ company:'KR Electrical Services', ssm:'5555432-C', cat:'Electrical', state:'Johor', cidb:'G3 — Up to RM 1M', status:'Pending Verification', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)','Portfolio Photos'] },
+  'Lee Wei Ming':   { company:'LW Plumbing Solutions', ssm:'7654321-D', cat:'Plumbing', state:'Penang', cidb:'Not submitted', status:'Pending Verification', docs:['SSM Certificate','IC (Front & Back)'] },
+  'Norizan Nawi':   { company:'NN Renovation Works', ssm:'3322110-E', cat:'Renovation', state:'Selangor', cidb:'Not submitted', status:'Pending Verification', docs:['SSM Certificate','IC (Front & Back)','Portfolio Photos'] },
+  'Rajan Pillai':   { company:'Pillai Electrical Sdn Bhd', ssm:'4433221-F', cat:'Electrical', state:'Johor', cidb:'G3 — Up to RM 1M', status:'Verified', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)','Portfolio Photos'] },
+  'Azrul Hakim':    { company:'Hakim Renovation & Builders', ssm:'6677889-G', cat:'Renovation', state:'Selangor', cidb:'Not submitted', status:'Verified', docs:['SSM Certificate','IC (Front & Back)','Portfolio Photos'] },
+  'Vinod Krishnan': { company:'Vinod Structural Engineering', ssm:'8899001-H', cat:'Construction', state:'Kuala Lumpur', cidb:'G4 — Up to RM 3M', status:'Partially Verified', docs:['CIDB Certificate','IC (Front & Back)'] },
+};
 
-    try {
-      const res  = await fetch('landing.html');
-      let html   = await res.text();
+function openDetail(name) {
+  var d = contractorData[name] || { company:'—', ssm:'—', cat:'—', state:'—', cidb:'—', status:'Pending Verification', docs:[] };
+  document.getElementById('modalName').textContent = name;
+  document.getElementById('md-company').textContent = d.company;
+  document.getElementById('md-ssm').textContent = d.ssm;
+  document.getElementById('md-cat').textContent = d.cat;
+  document.getElementById('md-state').textContent = d.state;
+  document.getElementById('md-cidb').textContent = d.cidb;
+  var sel = document.getElementById('md-status');
+  for (var i = 0; i < sel.options.length; i++) { if (sel.options[i].text === d.status) sel.selectedIndex = i; }
+  var allDocs = ['SSM Certificate','CIDB Certificate','IC (Front & Back)','Selfie Verification','Portfolio Photos','Company Logo'];
+  var docsHtml = '';
+  allDocs.forEach(function(doc) {
+    var has = d.docs.indexOf(doc) > -1;
+    docsHtml += '<div class="doc-item"><div class="doc-icon">' + (has ? '✅' : '📄') + '</div><div><div class="doc-label">' + doc + '</div><div class="doc-status ' + (has ? 'doc-ok' : 'doc-missing') + '">' + (has ? 'Submitted' : 'Not submitted') + '</div></div></div>';
+  });
+  document.getElementById('md-docs').innerHTML = docsHtml;
+  document.getElementById('detailModal').classList.add('show');
+}
 
-      const bPos = state.beforeX + ' ' + state.beforeY;
-      const aPos = state.afterX  + ' ' + state.afterY;
+function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
+document.addEventListener('DOMContentLoaded', function() {
+  var m = document.getElementById('detailModal');
+  if (m) m.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+});
 
-      // Replace after image src
-      html = html.replace(
-        /<img class="ba-img-after"[^>]*src="[^"]*"[^>]*>/,
-        `<img class="ba-img-after" src="${state.afterSrc}" alt="After renovation" style="object-position:${aPos};" />`
-      );
+function approveContractor(name) { showToast('✓ ' + (name||'Contractor') + ' approved & verified'); }
+function rejectContractor(name)  { showToast('✗ ' + (name||'Contractor') + ' application rejected'); }
+function approveFromModal() { var n = document.getElementById('modalName').textContent; closeModal(); approveContractor(n); }
 
-      // Replace before image src
-      html = html.replace(
-        /(<div class="ba-before-clip"[^>]*>[\s\S]*?<img)[^>]*src="[^"]*"[^>]*(\/?>)/,
-        `$1 src="${state.beforeSrc}" alt="Before renovation" style="object-position:${bPos};" $2`
-      );
-
-      const blob = new Blob([html], { type: 'text/html' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url; a.download = 'landing.html';
-      a.click();
-      URL.revokeObjectURL(url);
-
-      const el = document.getElementById('saveStatus');
-      el.textContent = '✓ Downloaded! Upload to GitHub to go live.';
-      el.className = 'save-status success';
-      setTimeout(() => { el.textContent = ''; el.className = 'save-status'; }, 5000);
-
-    } catch(e) {
-      document.getElementById('saveStatus').textContent = '⚠ Error: ' + e.message;
-    }
-  }
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
 </script>
 </body>
 </html>
