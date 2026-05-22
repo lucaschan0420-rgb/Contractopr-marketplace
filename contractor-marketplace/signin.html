@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In — ContractorHub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -14,7 +15,9 @@
       --warm: #C4873A; --warm-pale: #FAEEDA;
       --muted: #8A8178; --border: #E0D8CC; --border2: #D0CDC6;
       --green: #0F6E56; --green-bg: #E1F5EE;
-      --red: #C0392B; --radius: 10px; --radius-lg: 14px;
+      --red: #C0392B; --red-bg: #FDEAEA;
+      --blue: #185FA5; --blue-bg: #E6F1FB;
+      --radius: 10px; --radius-lg: 14px;
     }
     html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
     .auth-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
@@ -39,7 +42,7 @@
 
     /* RIGHT */
     .auth-right { background: var(--cream); padding: 3rem 2.5rem; display: flex; align-items: center; justify-content: center; overflow-y: auto; }
-    .auth-right-inner { max-width: 400px; width: 100%; }
+    .auth-right-inner { max-width: 420px; width: 100%; }
     .auth-tabs { display: flex; border: 0.5px solid var(--border); border-radius: 100px; padding: 3px; margin-bottom: 2rem; background: var(--bg); }
     .auth-tab { flex: 1; text-align: center; padding: 8px; border-radius: 100px; font-size: 13px; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
     .auth-tab.active { background: var(--cream); color: var(--ink); font-weight: 500; border: 0.5px solid var(--border); }
@@ -51,7 +54,6 @@
     .form-input:focus { border-color: var(--muted); }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .forgot { font-size: 12px; color: var(--muted); float: right; cursor: pointer; text-decoration: none; }
-    .forgot:hover { color: var(--ink); }
     .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
     .role-btn { padding: 12px 10px; border: 0.5px solid var(--border); border-radius: var(--radius); text-align: center; cursor: pointer; background: #fff; transition: all 0.15s; }
     .role-btn.selected { border-color: var(--warm); background: var(--warm-pale); }
@@ -70,7 +72,7 @@
     .check-label a { color: var(--warm); text-decoration: none; }
     .req-star { color: var(--red); font-size: 11px; margin-left: 2px; }
     .opt-tag { font-size: 10px; color: var(--muted); opacity: 0.7; }
-    .btn-submit { width: 100%; padding: 13px; background: var(--ink); color: var(--cream); border: none; border-radius: 100px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+    .btn-submit { width: 100%; padding: 13px; background: var(--ink); color: var(--cream); border: none; border-radius: 100px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-submit:hover:not(:disabled) { opacity: 0.82; }
     .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
     .divider { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0; }
@@ -83,107 +85,90 @@
     .switch-link { color: var(--warm); cursor: pointer; font-weight: 500; }
     #signup-panel { display: none; }
 
-    @media (max-width: 768px) {
-      .auth-wrap { grid-template-columns: 1fr; }
-      .auth-left { display: none; }
-      .auth-right { padding: 2rem 1.5rem; min-height: 100vh; align-items: flex-start; padding-top: 3rem; }
-      .form-row { grid-template-columns: 1fr; }
-    }
-
-    /* ── CONTRACTOR VERIFICATION SIGNUP ── */
-    .signup-body { display: none; }
-    .signup-body.show { display: block; }
-
-    /* Progress steps */
-    .progress-wrap { margin: 1rem 0 0; }
-    .progress-steps { display: flex; align-items: center; gap: 0; margin-bottom: 0.5rem; }
-    .vt-line { flex: 1; height: 1.5px; background: var(--border); }
-    .vt-line.done { background: var(--green); }
-    .step { display: flex; flex-direction: column; align-items: center; }
-    .step-circle { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; border: 1.5px solid var(--border); background: #fff; color: var(--muted); flex-shrink: 0; }
-    .step.done .step-circle { background: var(--green); border-color: var(--green); color: #fff; }
-    .step.active .step-circle { border-color: var(--warm); color: var(--warm); background: var(--warm-pale); }
-    .step-label { font-size: 9px; color: var(--muted); margin-top: 3px; text-align: center; white-space: nowrap; }
-    .step.active .step-label { color: var(--warm); font-weight: 500; }
-    .step.done .step-label { color: var(--green); }
-
-    /* Section cards */
+    /* CONTRACTOR SIGNUP */
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; margin-bottom: 1rem; background: none; border: none; font-family: inherit; padding: 0; }
+    .back-btn:hover { color: var(--ink); }
     .section-card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 0.875rem; }
     .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 0.875rem; border-bottom: 0.5px solid var(--border); }
-    .section-icon { width: 34px; height: 34px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-    .icon-blue   { background: #E6F1FB; color: #185FA5; }
-    .icon-green  { background: #E1F5EE; color: #0F6E56; }
+    .section-icon { width: 32px; height: 32px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-blue   { background: var(--blue-bg); color: var(--blue); }
+    .icon-green  { background: var(--green-bg); color: var(--green); }
     .icon-warm   { background: var(--warm-pale); color: var(--warm); }
     .icon-purple { background: #eeedfe; color: #534ab7; }
     .icon-teal   { background: #e1f5f5; color: #0a6e6e; }
     .section-title { font-size: 13px; font-weight: 500; }
-    .section-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
-    /* Form elements for contractor signup */
-    .cs-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .cs-form-row.col3 { grid-template-columns: 1fr 1fr 1fr; }
-    .cs-form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-    .cs-form-label { font-size: 11px; font-weight: 500; }
+    .section-sub { font-size: 11px; color: var(--muted); }
+    .cs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .cs-row.col3 { grid-template-columns: 1fr 1fr 1fr; }
+    .cs-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .cs-label { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
     .cs-req { color: var(--red); }
     .cs-opt { font-size: 10px; color: var(--muted); font-weight: 400; }
     .cs-input { padding: 8px 11px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--ink); outline: none; width: 100%; }
     .cs-input:focus { border-color: var(--muted); }
     .cs-select { padding: 8px 11px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: 'DM Sans', sans-serif; background: #fff; color: var(--ink); outline: none; width: 100%; }
-    .cs-hint { font-size: 10px; color: var(--muted); line-height: 1.5; margin-top: 2px; display: flex; align-items: flex-start; gap: 4px; }
-    .cs-hint i { font-size: 11px; margin-top: 1px; flex-shrink: 0; }
-
-    /* Yes/No toggle */
+    .cs-hint { font-size: 10px; color: var(--muted); margin-top: 2px; }
     .yn-toggle { display: flex; gap: 6px; }
     .yn-btn { flex: 1; padding: 8px; border: 0.5px solid var(--border); border-radius: var(--radius); text-align: center; font-size: 12px; cursor: pointer; background: #fff; font-family: 'DM Sans', sans-serif; transition: all .15s; }
-    .yn-btn.yes.selected { border-color: var(--green); background: #E1F5EE; color: var(--green); font-weight: 500; }
-    .yn-btn.no.selected  { border-color: var(--red);   background: #FDEAEA; color: var(--red);   font-weight: 500; }
-
-    /* Upload zones */
+    .yn-btn.yes.selected { border-color: var(--green); background: var(--green-bg); color: var(--green); font-weight: 500; }
+    .yn-btn.no.selected  { border-color: var(--red); background: var(--red-bg); color: var(--red); font-weight: 500; }
+    .info-box { background: var(--blue-bg); border: 0.5px solid rgba(24,95,165,0.2); border-radius: var(--radius); padding: 9px 12px; display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+    .info-box i { font-size: 14px; color: var(--blue); margin-top: 1px; flex-shrink: 0; }
+    .info-box-text { font-size: 11px; color: var(--blue); line-height: 1.55; }
     .upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 1rem; text-align: center; cursor: pointer; background: var(--bg); transition: all .15s; position: relative; }
     .upload-zone:hover { border-color: var(--warm); background: var(--warm-pale); }
-    .upload-zone.has-file { border-style: solid; border-color: var(--green); background: #E1F5EE; }
+    .upload-zone.has-file { border-style: solid; border-color: var(--green); background: var(--green-bg); }
     .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .upload-icon { font-size: 20px; color: var(--muted); margin-bottom: 4px; }
+    .upload-icon { font-size: 18px; color: var(--muted); margin-bottom: 4px; }
     .upload-zone.has-file .upload-icon { color: var(--green); }
-    .upload-label { font-size: 11px; font-weight: 500; color: var(--muted2); }
+    .upload-label { font-size: 11px; font-weight: 500; color: var(--muted); }
     .upload-zone.has-file .upload-label { color: var(--green); }
     .upload-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
-
-    /* Multi upload grid */
-    .multi-upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 6px; margin-top: 6px; }
-    .upload-thumb { width: 100%; aspect-ratio: 1; border-radius: var(--radius); overflow: hidden; border: 0.5px solid var(--border); background: var(--bg); }
+    .multi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px,1fr)); gap: 5px; margin-top: 5px; }
+    .upload-thumb { aspect-ratio: 1; border-radius: 5px; overflow: hidden; border: 0.5px solid var(--border); }
     .upload-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* Info box */
-    .info-box { background: #E6F1FB; border: 0.5px solid rgba(24,95,165,0.2); border-radius: var(--radius); padding: 9px 12px; display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
-    .info-box i { font-size: 14px; color: #185FA5; margin-top: 1px; flex-shrink: 0; }
-    .info-box-text { font-size: 11px; color: #185FA5; line-height: 1.55; }
-    .info-box-text strong { font-weight: 500; }
-
-    /* Category grid */
-    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
-    .cat-opt { padding: 7px 8px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 11px; cursor: pointer; background: #fff; text-align: center; transition: all .15s; display: flex; align-items: center; gap: 5px; }
-    .cat-opt:hover { border-color: var(--border2); }
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 6px; }
+    .cat-opt { padding: 6px 8px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 11px; cursor: pointer; background: #fff; text-align: center; transition: all .15s; display: flex; align-items: center; gap: 5px; }
     .cat-opt.selected { border-color: var(--warm); background: var(--warm-pale); color: var(--warm); font-weight: 500; }
     .cat-opt i { font-size: 13px; }
-
-    /* Section divider */
     .section-divider { border: none; border-top: 0.5px solid var(--border); margin: 0.75rem 0; }
+    .progress-steps { display: flex; align-items: center; margin-bottom: 1.25rem; }
+    .ps-step { display: flex; flex-direction: column; align-items: center; }
+    .ps-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; border: 1.5px solid var(--border); background: #fff; color: var(--muted); flex-shrink: 0; }
+    .ps-step.done .ps-circle { background: var(--green); border-color: var(--green); color: #fff; }
+    .ps-step.active .ps-circle { border-color: var(--warm); color: var(--warm); background: var(--warm-pale); }
+    .ps-label { font-size: 9px; color: var(--muted); margin-top: 3px; text-align: center; white-space: nowrap; }
+    .ps-step.active .ps-label { color: var(--warm); font-weight: 500; }
+    .ps-step.done .ps-label { color: var(--green); }
+    .ps-line { flex: 1; height: 1.5px; background: var(--border); margin-bottom: 14px; }
+    .ps-line.done { background: var(--green); }
 
-    /* Back button */
-    .back-to-simple { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; margin-bottom: 1rem; }
-    .back-to-simple:hover { color: var(--ink); }
+    /* SUBMIT LOADING */
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 600px) {
-      .cs-form-row { grid-template-columns: 1fr; }
-      .cs-form-row.col3 { grid-template-columns: 1fr; }
+    /* SUCCESS */
+    .success-screen { display: none; text-align: center; padding: 2rem 1rem; }
+    .success-icon { font-size: 48px; margin-bottom: 1rem; }
+    .success-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 0.5rem; }
+    .success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
+    .success-id { background: var(--bg); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--muted); margin-bottom: 1.5rem; }
+    .success-id strong { color: var(--ink); font-weight: 500; }
+
+    @media (max-width: 768px) {
+      .auth-wrap { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { padding: 2rem 1.5rem; min-height: 100vh; align-items: flex-start; padding-top: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .cs-row { grid-template-columns: 1fr; }
+      .cs-row.col3 { grid-template-columns: 1fr; }
     }
-
   </style>
 </head>
 <body>
 <div class="auth-wrap">
 
+  <!-- LEFT -->
   <div class="auth-left">
     <div class="auth-glow"></div>
     <div class="auth-glow2"></div>
@@ -204,6 +189,7 @@
     <div class="auth-left-copy">&#169; 2025 ContractorHub Sdn. Bhd. All rights reserved.</div>
   </div>
 
+  <!-- RIGHT -->
   <div class="auth-right">
     <div class="auth-right-inner">
       <div class="auth-tabs">
@@ -211,6 +197,7 @@
         <button class="auth-tab" onclick="showPanel('signup')">Create account</button>
       </div>
 
+      <!-- SIGN IN -->
       <div id="signin-panel">
         <div class="auth-title">Welcome back</div>
         <div class="auth-sub">Sign in to access your saved contractors &amp; history</div>
@@ -231,23 +218,19 @@
         <div class="switch-text">Don't have an account? <span class="switch-link" onclick="showPanel('signup')">Create one free</span></div>
       </div>
 
+      <!-- SIGN UP -->
       <div id="signup-panel">
-
-        <!-- STEP 1: ROLE SELECTION (shown first) -->
-        <div id="role-select-view">
+        <!-- ROLE SELECT -->
+        <div id="role-view">
           <div class="auth-title">Create account</div>
           <div class="auth-sub">Free forever &#8212; no credit card needed</div>
           <div style="font-size:12px;font-weight:500;margin-bottom:8px;">I am a...</div>
           <div class="role-grid">
             <div class="role-btn selected" id="role-client" onclick="selectRole('client')">
-              <div class="role-icon">&#127970;</div>
-              <div class="role-name">Client</div>
-              <div class="role-desc">Looking to hire</div>
+              <div class="role-icon">&#127970;</div><div class="role-name">Client</div><div class="role-desc">Looking to hire</div>
             </div>
             <div class="role-btn" id="role-contractor" onclick="selectRole('contractor')">
-              <div class="role-icon">&#128296;</div>
-              <div class="role-name">Contractor</div>
-              <div class="role-desc">Looking for work</div>
+              <div class="role-icon">&#128296;</div><div class="role-name">Contractor</div><div class="role-desc">Looking for work</div>
             </div>
           </div>
 
@@ -260,189 +243,157 @@
               <div class="benefit-row"><div class="benefit-check">&#10003;</div>Receive exclusive deals &amp; contractor alerts</div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label class="form-label">First name</label><input class="form-input" placeholder="Ahmad" /></div>
-              <div class="form-group"><label class="form-label">Last name</label><input class="form-input" placeholder="Razali" /></div>
+              <div class="form-group"><label class="form-label">First name</label><input class="form-input" id="c-fname" placeholder="Ahmad" /></div>
+              <div class="form-group"><label class="form-label">Last name</label><input class="form-input" id="c-lname" placeholder="Razali" /></div>
             </div>
-            <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" placeholder="you@example.com" /></div>
-            <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min. 8 characters" /></div>
+            <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="c-email" type="email" placeholder="you@example.com" /></div>
+            <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="c-pass" type="password" placeholder="Min. 8 characters" /></div>
             <div class="check-group">
-              <div class="check-row">
-                <input type="checkbox" id="c-terms" onchange="checkClientSubmit()" />
-                <label class="check-label" for="c-terms">I agree to ContractorHub's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a><span class="req-star">*</span></label>
-              </div>
-              <div class="check-row">
-                <input type="checkbox" id="c-pdpa" onchange="checkClientSubmit()" />
-                <label class="check-label" for="c-pdpa">I consent to ContractorHub collecting my personal data per the <a href="#">PDPA</a><span class="req-star">*</span></label>
-              </div>
-              <div class="check-row">
-                <input type="checkbox" id="c-mkt" />
-                <label class="check-label" for="c-mkt">Receive offers &amp; updates <span class="opt-tag">(optional)</span></label>
-              </div>
+              <div class="check-row"><input type="checkbox" id="c-terms" onchange="checkClientSubmit()" /><label class="check-label" for="c-terms">I agree to <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a><span class="req-star">*</span></label></div>
+              <div class="check-row"><input type="checkbox" id="c-pdpa" onchange="checkClientSubmit()" /><label class="check-label" for="c-pdpa">I consent to data collection per the <a href="#">PDPA</a><span class="req-star">*</span></label></div>
+              <div class="check-row"><input type="checkbox" id="c-mkt" /><label class="check-label" for="c-mkt">Receive offers &amp; updates <span class="opt-tag">(optional)</span></label></div>
             </div>
             <button class="btn-submit" id="clientSubmitBtn" disabled onclick="window.location.href='marketplace.html'">Create account &#8594;</button>
             <div class="divider"><div class="divider-line"></div><span class="divider-text">or</span><div class="divider-line"></div></div>
-            <button class="btn-google">
-              <svg class="g-icon" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
-              Continue with Google
-            </button>
+            <button class="btn-google"><svg class="g-icon" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>Continue with Google</button>
           </div>
 
-          <!-- CONTRACTOR CTA (shown when contractor selected) -->
+          <!-- CONTRACTOR CTA -->
           <div id="contractor-cta" style="display:none;">
-            <div style="background:#E1F5EE;border:0.5px solid rgba(15,110,86,0.25);border-radius:var(--radius-lg);padding:14px;margin-bottom:1rem;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <i class="ti ti-shield-check" style="font-size:18px;color:var(--green);"></i>
-                <div style="font-size:13px;font-weight:500;color:var(--green);">Verified Contractor Registration</div>
-              </div>
-              <div style="font-size:12px;color:#0a5540;line-height:1.6;margin-bottom:10px;">To join as a contractor, you'll complete a full verification process including SSM, CIDB, identity and portfolio verification. This builds trust with clients and increases your bookings.</div>
+            <div style="background:var(--green-bg);border:0.5px solid rgba(15,110,86,0.25);border-radius:var(--radius-lg);padding:14px;margin-bottom:1rem;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><i class="ti ti-shield-check" style="font-size:18px;color:var(--green);"></i><div style="font-size:13px;font-weight:500;color:var(--green);">Verified Contractor Registration</div></div>
+              <div style="font-size:12px;color:#0a5540;line-height:1.6;margin-bottom:10px;">Complete a full verification process including SSM, CIDB, identity and portfolio. This builds trust with clients and increases your bookings.</div>
               <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;">
                 <div style="font-size:11px;color:#0a5540;display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:12px;"></i>SSM &amp; CIDB verification</div>
                 <div style="font-size:11px;color:#0a5540;display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:12px;"></i>Identity verification</div>
                 <div style="font-size:11px;color:#0a5540;display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:12px;"></i>Portfolio &amp; project showcase</div>
                 <div style="font-size:11px;color:#0a5540;display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:12px;"></i>Manually reviewed by our team</div>
               </div>
-              <button class="btn-submit" onclick="showContractorSignup()" style="margin:0;">
-                <i class="ti ti-arrow-right" style="font-size:15px;"></i>Start Contractor Verification
-              </button>
+              <button class="btn-submit" style="margin:0;" onclick="showContractorSignup()"><i class="ti ti-arrow-right" style="font-size:15px;"></i>Start Contractor Verification</button>
             </div>
-            <div class="switch-text">Already have an account? <span class="switch-link" onclick="showPanel('signin')">Sign in</span></div>
           </div>
-
-          <div class="switch-text" id="signin-link-client">Already have an account? <span class="switch-link" onclick="showPanel('signin')">Sign in</span></div>
+          <div class="switch-text" id="signin-link">Already have an account? <span class="switch-link" onclick="showPanel('signin')">Sign in</span></div>
         </div>
 
-        <!-- CONTRACTOR FULL SIGNUP FORM -->
-        <div id="contractor-signup-view" style="display:none;">
-          <div class="back-to-simple" onclick="hideContractorSignup()">
-            <i class="ti ti-arrow-left" style="font-size:14px;"></i>Back
+        <!-- CONTRACTOR FULL FORM -->
+        <div id="contractor-form" style="display:none;">
+          <button class="back-btn" onclick="hideContractorSignup()"><i class="ti ti-arrow-left" style="font-size:14px;"></i>Back</button>
+          <div style="margin-bottom:1rem;"><div class="auth-title" style="font-size:20px;">Contractor Verification</div><div class="auth-sub">All data saved securely to our platform</div></div>
+
+          <!-- Progress -->
+          <div class="progress-steps">
+            <div class="ps-step done"><div class="ps-circle"><i class="ti ti-check" style="font-size:9px;"></i></div><div class="ps-label">Account</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step active"><div class="ps-circle" style="font-size:9px;">2</div><div class="ps-label">Company</div></div>
+            <div class="ps-line"></div>
+            <div class="ps-step"><div class="ps-circle" style="font-size:9px;">3</div><div class="ps-label">CIDB</div></div>
+            <div class="ps-line"></div>
+            <div class="ps-step"><div class="ps-circle" style="font-size:9px;">4</div><div class="ps-label">Identity</div></div>
+            <div class="ps-line"></div>
+            <div class="ps-step"><div class="ps-circle" style="font-size:9px;">5</div><div class="ps-label">Portfolio</div></div>
+            <div class="ps-line"></div>
+            <div class="ps-step"><div class="ps-circle" style="font-size:9px;">6</div><div class="ps-label">Submit</div></div>
           </div>
 
-          <div style="margin-bottom:1rem;">
-            <div class="auth-title" style="font-size:20px;">Contractor Verification</div>
-            <div class="auth-sub">Complete all sections to get verified and listed on the marketplace</div>
-          </div>
-
-          <!-- PROGRESS -->
-          <div class="progress-wrap">
-            <div class="progress-steps">
-              <div class="step done"><div class="step-circle"><i class="ti ti-check" style="font-size:10px;"></i></div><div class="step-label">Account</div></div>
-              <div class="vt-line done"></div>
-              <div class="step active"><div class="step-circle" style="font-size:9px;">2</div><div class="step-label">Company</div></div>
-              <div class="vt-line"></div>
-              <div class="step"><div class="step-circle" style="font-size:9px;">3</div><div class="step-label">CIDB</div></div>
-              <div class="vt-line"></div>
-              <div class="step"><div class="step-circle" style="font-size:9px;">4</div><div class="step-label">Identity</div></div>
-              <div class="vt-line"></div>
-              <div class="step"><div class="step-circle" style="font-size:9px;">5</div><div class="step-label">Portfolio</div></div>
-              <div class="vt-line"></div>
-              <div class="step"><div class="step-circle" style="font-size:9px;">6</div><div class="step-label">Submit</div></div>
-            </div>
-          </div>
-          <div style="height:12px;"></div>
-
-          <!-- SECTION A: COMPANY INFO -->
+          <!-- A: Account -->
           <div class="section-card">
-            <div class="section-header">
-              <div class="section-icon icon-blue"><i class="ti ti-building"></i></div>
-              <div><div class="section-title">Company Information</div><div class="section-sub">Registered business details</div></div>
+            <div class="section-header"><div class="section-icon icon-blue"><i class="ti ti-user"></i></div><div><div class="section-title">Your Account</div><div class="section-sub">Personal login details</div></div></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">First Name <span class="cs-req">*</span></label><input class="cs-input" id="ct-fname" placeholder="Ahmad" /></div>
+              <div class="cs-group"><label class="cs-label">Last Name <span class="cs-req">*</span></label><input class="cs-input" id="ct-lname" placeholder="Razali" /></div>
             </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Company Name <span class="cs-req">*</span></label><input class="cs-input" placeholder="Razali Civil Engineering Sdn Bhd" /></div>
-              <div class="cs-form-group"><label class="cs-form-label">SSM Registration No. <span class="cs-req">*</span></label><input class="cs-input" placeholder="1234567-A" /></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Email <span class="cs-req">*</span></label><input class="cs-input" id="ct-email" type="email" placeholder="you@company.com" /></div>
+              <div class="cs-group"><label class="cs-label">Phone <span class="cs-req">*</span></label><input class="cs-input" id="ct-phone" placeholder="+60 12-345 6789" /></div>
             </div>
-            <div class="cs-form-group"><label class="cs-form-label">Business Address <span class="cs-req">*</span></label><input class="cs-input" placeholder="No. 12, Jalan Ampang, 50450 Kuala Lumpur" /></div>
-            <div class="cs-form-row col3">
-              <div class="cs-form-group"><label class="cs-form-label">State <span class="cs-req">*</span></label>
-                <select class="cs-select"><option value="">State</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Penang</option><option>Perak</option><option>Sabah</option><option>Sarawak</option><option>Negeri Sembilan</option><option>Melaka</option><option>Kedah</option><option>Kelantan</option><option>Terengganu</option><option>Pahang</option><option>Perlis</option></select>
+            <div class="cs-group"><label class="cs-label">Password <span class="cs-req">*</span></label><input class="cs-input" id="ct-pass" type="password" placeholder="Min. 8 characters" /></div>
+          </div>
+
+          <!-- B: Company -->
+          <div class="section-card">
+            <div class="section-header"><div class="section-icon icon-blue"><i class="ti ti-building"></i></div><div><div class="section-title">Company Information</div><div class="section-sub">Registered business details</div></div></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Company Name <span class="cs-req">*</span></label><input class="cs-input" id="ct-company" placeholder="Razali Civil Engineering Sdn Bhd" /></div>
+              <div class="cs-group"><label class="cs-label">SSM No. <span class="cs-req">*</span></label><input class="cs-input" id="ct-ssm" placeholder="1234567-A" /></div>
+            </div>
+            <div class="cs-group"><label class="cs-label">Business Address <span class="cs-req">*</span></label><input class="cs-input" id="ct-address" placeholder="No. 12, Jalan Ampang, 50450 KL" /></div>
+            <div class="cs-row col3">
+              <div class="cs-group"><label class="cs-label">State <span class="cs-req">*</span></label>
+                <select class="cs-select" id="ct-state"><option value="">State</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Penang</option><option>Perak</option><option>Sabah</option><option>Sarawak</option><option>Negeri Sembilan</option><option>Melaka</option><option>Kedah</option><option>Kelantan</option><option>Terengganu</option><option>Pahang</option><option>Perlis</option></select>
               </div>
-              <div class="cs-form-group"><label class="cs-form-label">Company Phone <span class="cs-req">*</span></label><input class="cs-input" placeholder="+60 3-XXXX XXXX" /></div>
-              <div class="cs-form-group"><label class="cs-form-label">Company Email <span class="cs-req">*</span></label><input class="cs-input" type="email" placeholder="info@company.com.my" /></div>
+              <div class="cs-group"><label class="cs-label">Company Phone <span class="cs-req">*</span></label><input class="cs-input" id="ct-cphone" placeholder="+60 3-XXXX XXXX" /></div>
+              <div class="cs-group"><label class="cs-label">Company Email <span class="cs-req">*</span></label><input class="cs-input" id="ct-cemail" type="email" placeholder="info@company.com.my" /></div>
             </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Website <span class="cs-opt">(optional)</span></label><input class="cs-input" placeholder="https://www.company.com.my" /></div>
-              <div class="cs-form-group"><label class="cs-form-label">Facebook / Instagram <span class="cs-opt">(optional)</span></label><input class="cs-input" placeholder="https://facebook.com/page" /></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Website <span class="cs-opt">(optional)</span></label><input class="cs-input" id="ct-website" placeholder="https://www.company.com.my" /></div>
+              <div class="cs-group"><label class="cs-label">Facebook / Instagram <span class="cs-opt">(optional)</span></label><input class="cs-input" id="ct-social" placeholder="https://facebook.com/page" /></div>
             </div>
           </div>
 
-          <!-- SECTION B: CIDB -->
+          <!-- C: CIDB -->
           <div class="section-card">
-            <div class="section-header">
-              <div class="section-icon icon-green"><i class="ti ti-certificate"></i></div>
-              <div><div class="section-title">CIDB Verification</div><div class="section-sub">Construction Industry Development Board Malaysia</div></div>
-            </div>
-            <div class="info-box">
-              <i class="ti ti-info-circle"></i>
-              <div class="info-box-text"><strong>CIDB verification improves customer trust and contractor visibility.</strong> Verified contractors are prioritised in search results.</div>
-            </div>
-            <div class="cs-form-group">
-              <label class="cs-form-label">Do you have CIDB certification? <span class="cs-req">*</span></label>
+            <div class="section-header"><div class="section-icon icon-green"><i class="ti ti-certificate"></i></div><div><div class="section-title">CIDB Verification</div><div class="section-sub">Construction Industry Development Board Malaysia</div></div></div>
+            <div class="info-box"><i class="ti ti-info-circle"></i><div class="info-box-text"><strong>CIDB verification improves trust and visibility.</strong> Verified contractors appear higher in search results.</div></div>
+            <div class="cs-group">
+              <label class="cs-label">Do you have CIDB certification? <span class="cs-req">*</span></label>
               <div class="yn-toggle">
-                <button type="button" class="yn-btn yes" onclick="cToggleYN(this,'cidb-fields',true)">Yes, I am CIDB registered</button>
-                <button type="button" class="yn-btn no" onclick="cToggleYN(this,'cidb-fields',false)">No, not yet</button>
+                <button type="button" class="yn-btn yes" id="cidb-yes" onclick="toggleCIDB(true)">Yes, I am CIDB registered</button>
+                <button type="button" class="yn-btn no" id="cidb-no" onclick="toggleCIDB(false)">No, not yet</button>
               </div>
             </div>
             <div id="cidb-fields" style="display:none;">
               <hr class="section-divider" />
-              <div class="cs-form-row">
-                <div class="cs-form-group"><label class="cs-form-label">CIDB Registration Number <span class="cs-req">*</span></label><input class="cs-input" placeholder="CIDB-MY-XXXXXXXX" /></div>
-                <div class="cs-form-group"><label class="cs-form-label">CIDB Grade <span class="cs-req">*</span></label>
-                  <select class="cs-select"><option value="">Select grade</option><option>G1 — Up to RM 200,000</option><option>G2 — Up to RM 500,000</option><option>G3 — Up to RM 1 million</option><option>G4 — Up to RM 3 million</option><option>G5 — Up to RM 5 million</option><option>G6 — Up to RM 10 million</option><option>G7 — Unlimited</option></select>
+              <div class="cs-row">
+                <div class="cs-group"><label class="cs-label">CIDB Number <span class="cs-req">*</span></label><input class="cs-input" id="ct-cidb-num" placeholder="CIDB-MY-XXXXXXXX" /></div>
+                <div class="cs-group"><label class="cs-label">CIDB Grade <span class="cs-req">*</span></label>
+                  <select class="cs-select" id="ct-cidb-grade"><option value="">Select grade</option><option>G1 — Up to RM 200,000</option><option>G2 — Up to RM 500,000</option><option>G3 — Up to RM 1 million</option><option>G4 — Up to RM 3 million</option><option>G5 — Up to RM 5 million</option><option>G6 — Up to RM 10 million</option><option>G7 — Unlimited</option></select>
                 </div>
               </div>
-              <div class="cs-form-row">
-                <div class="cs-form-group"><label class="cs-form-label">CIDB Expiry Date <span class="cs-req">*</span></label><input class="cs-input" type="date" /></div>
-                <div class="cs-form-group"><label class="cs-form-label">Upload CIDB Certificate <span class="cs-req">*</span></label>
-                  <div class="upload-zone" id="cidb-cert-zone"><input type="file" accept=".pdf,.jpg,.png" onchange="cMarkUploaded(this,'cidb-cert-zone')" /><div class="upload-icon"><i class="ti ti-file-certificate"></i></div><div class="upload-label">Upload certificate</div><div class="upload-sub">PDF, JPG, PNG · Max 5MB</div></div>
+              <div class="cs-row">
+                <div class="cs-group"><label class="cs-label">CIDB Expiry Date <span class="cs-req">*</span></label><input class="cs-input" id="ct-cidb-expiry" type="date" /></div>
+                <div class="cs-group"><label class="cs-label">Upload CIDB Certificate <span class="cs-req">*</span></label>
+                  <div class="upload-zone" id="z-cidb"><input type="file" id="f-cidb" accept=".pdf,.jpg,.png" onchange="handleFile(this,'z-cidb','cidb')" /><div class="upload-icon"><i class="ti ti-file-certificate"></i></div><div class="upload-label">Upload certificate</div><div class="upload-sub">PDF, JPG, PNG · Max 5MB</div></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- SECTION C: IDENTITY -->
+          <!-- D: Identity -->
           <div class="section-card">
-            <div class="section-header">
-              <div class="section-icon icon-warm"><i class="ti ti-id-badge"></i></div>
-              <div><div class="section-title">Identity Verification</div><div class="section-sub">Secure — documents never shared publicly</div></div>
-            </div>
-            <div class="info-box" style="background:var(--warm-pale);border-color:rgba(196,135,58,0.25);">
-              <i class="ti ti-lock" style="color:var(--warm);"></i>
-              <div class="info-box-text" style="color:#7a4e1a;"><strong>All documents are stored securely and only used for internal verification.</strong></div>
-            </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">IC Front <span class="cs-req">*</span></label>
-                <div class="upload-zone" id="ic-front-zone"><input type="file" accept=".jpg,.png,.pdf" onchange="cMarkUploaded(this,'ic-front-zone')" /><div class="upload-icon"><i class="ti ti-id-badge-2"></i></div><div class="upload-label">Upload IC front</div><div class="upload-sub">JPG, PNG · Max 5MB</div></div>
+            <div class="section-header"><div class="section-icon icon-warm"><i class="ti ti-id-badge"></i></div><div><div class="section-title">Identity Verification</div><div class="section-sub">Documents stored securely — never shared publicly</div></div></div>
+            <div class="info-box" style="background:var(--warm-pale);border-color:rgba(196,135,58,0.25);"><i class="ti ti-lock" style="color:var(--warm);"></i><div class="info-box-text" style="color:#7a4e1a;"><strong>All documents are encrypted and only used for internal verification.</strong></div></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">IC Front <span class="cs-req">*</span></label>
+                <div class="upload-zone" id="z-ic-front"><input type="file" id="f-ic-front" accept=".jpg,.png,.pdf" onchange="handleFile(this,'z-ic-front','ic_front')" /><div class="upload-icon"><i class="ti ti-id-badge-2"></i></div><div class="upload-label">Upload IC front</div><div class="upload-sub">JPG, PNG · Max 5MB</div></div>
               </div>
-              <div class="cs-form-group"><label class="cs-form-label">IC Back <span class="cs-req">*</span></label>
-                <div class="upload-zone" id="ic-back-zone"><input type="file" accept=".jpg,.png,.pdf" onchange="cMarkUploaded(this,'ic-back-zone')" /><div class="upload-icon"><i class="ti ti-id-badge-2"></i></div><div class="upload-label">Upload IC back</div><div class="upload-sub">JPG, PNG · Max 5MB</div></div>
+              <div class="cs-group"><label class="cs-label">IC Back <span class="cs-req">*</span></label>
+                <div class="upload-zone" id="z-ic-back"><input type="file" id="f-ic-back" accept=".jpg,.png,.pdf" onchange="handleFile(this,'z-ic-back','ic_back')" /><div class="upload-icon"><i class="ti ti-id-badge-2"></i></div><div class="upload-label">Upload IC back</div><div class="upload-sub">JPG, PNG · Max 5MB</div></div>
               </div>
             </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Selfie with IC <span class="cs-req">*</span></label>
-                <div class="upload-zone" id="selfie-zone"><input type="file" accept=".jpg,.png" onchange="cMarkUploaded(this,'selfie-zone')" /><div class="upload-icon"><i class="ti ti-camera-selfie"></i></div><div class="upload-label">Selfie holding your IC</div><div class="upload-sub">Clear face + IC visible</div></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Selfie with IC <span class="cs-req">*</span></label>
+                <div class="upload-zone" id="z-selfie"><input type="file" id="f-selfie" accept=".jpg,.png" onchange="handleFile(this,'z-selfie','selfie')" /><div class="upload-icon"><i class="ti ti-camera-selfie"></i></div><div class="upload-label">Selfie holding your IC</div><div class="upload-sub">Clear face + IC visible</div></div>
               </div>
-              <div class="cs-form-group"><label class="cs-form-label">Company Logo <span class="cs-opt">(optional)</span></label>
-                <div class="upload-zone" id="logo-zone"><input type="file" accept=".jpg,.png,.svg" onchange="cMarkUploaded(this,'logo-zone')" /><div class="upload-icon"><i class="ti ti-photo"></i></div><div class="upload-label">Upload company logo</div><div class="upload-sub">PNG, SVG · Max 2MB</div></div>
+              <div class="cs-group"><label class="cs-label">Company Logo <span class="cs-opt">(optional)</span></label>
+                <div class="upload-zone" id="z-logo"><input type="file" id="f-logo" accept=".jpg,.png,.svg" onchange="handleFile(this,'z-logo','logo')" /><div class="upload-icon"><i class="ti ti-photo"></i></div><div class="upload-label">Upload company logo</div><div class="upload-sub">PNG, SVG · Max 2MB</div></div>
               </div>
             </div>
           </div>
 
-          <!-- SECTION D: PORTFOLIO -->
+          <!-- E: Portfolio -->
           <div class="section-card">
-            <div class="section-header">
-              <div class="section-icon icon-purple"><i class="ti ti-photo-star"></i></div>
-              <div><div class="section-title">Portfolio &amp; Experience</div><div class="section-sub">Showcase your work to attract clients</div></div>
-            </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Years of Experience <span class="cs-req">*</span></label>
-                <select class="cs-select"><option value="">Select</option><option>Less than 1 year</option><option>1–3 years</option><option>3–5 years</option><option>5–10 years</option><option>10–15 years</option><option>15+ years</option></select>
+            <div class="section-header"><div class="section-icon icon-purple"><i class="ti ti-photo-star"></i></div><div><div class="section-title">Portfolio &amp; Experience</div><div class="section-sub">Showcase your work to attract clients</div></div></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Years of Experience <span class="cs-req">*</span></label>
+                <select class="cs-select" id="ct-exp"><option value="">Select</option><option>Less than 1 year</option><option>1–3 years</option><option>3–5 years</option><option>5–10 years</option><option>10–15 years</option><option>15+ years</option></select>
               </div>
-              <div class="cs-form-group"><label class="cs-form-label">Completed Projects <span class="cs-opt">(optional)</span></label>
-                <select class="cs-select"><option value="">Select range</option><option>1–10 projects</option><option>10–50 projects</option><option>50–100 projects</option><option>100–500 projects</option><option>500+ projects</option></select>
+              <div class="cs-group"><label class="cs-label">Completed Projects <span class="cs-opt">(optional)</span></label>
+                <select class="cs-select" id="ct-projects"><option value="">Select</option><option>1–10 projects</option><option>10–50 projects</option><option>50–100 projects</option><option>100–500 projects</option><option>500+ projects</option></select>
               </div>
             </div>
-            <div class="cs-form-group">
-              <label class="cs-form-label">Service Categories <span class="cs-req">*</span></label>
-              <div class="cat-grid" style="margin-top:5px;">
+            <div class="cs-group">
+              <label class="cs-label">Service Categories <span class="cs-req">*</span></label>
+              <div class="cat-grid" style="margin-top:5px;" id="cat-grid">
                 <div class="cat-opt" onclick="this.classList.toggle('selected')"><i class="ti ti-building-arch"></i>Construction</div>
                 <div class="cat-opt" onclick="this.classList.toggle('selected')"><i class="ti ti-tools"></i>Renovation</div>
                 <div class="cat-opt" onclick="this.classList.toggle('selected')"><i class="ti ti-bolt"></i>Electrical</div>
@@ -453,70 +404,216 @@
                 <div class="cat-opt" onclick="this.classList.toggle('selected')"><i class="ti ti-solar-panel"></i>Solar</div>
               </div>
             </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Project Photos <span class="cs-opt">(optional)</span></label>
-                <div class="upload-zone" id="proj-zone"><input type="file" accept=".jpg,.png" multiple onchange="cMultiUpload(this,'proj-zone','proj-grid')" /><div class="upload-icon"><i class="ti ti-photo-plus"></i></div><div class="upload-label">Upload project photos</div><div class="upload-sub">JPG, PNG · Max 5MB each</div></div>
-                <div class="multi-upload-grid" id="proj-grid"></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Project Photos <span class="cs-opt">(optional)</span></label>
+                <div class="upload-zone" id="z-proj"><input type="file" id="f-proj" accept=".jpg,.png" multiple onchange="handleMultiFile(this,'z-proj','proj-grid','projects')" /><div class="upload-icon"><i class="ti ti-photo-plus"></i></div><div class="upload-label">Upload project photos</div><div class="upload-sub">JPG, PNG · Max 5MB each</div></div>
+                <div class="multi-grid" id="proj-grid"></div>
               </div>
-              <div class="cs-form-group"><label class="cs-form-label">Before / After Photos <span class="cs-opt">(optional)</span></label>
-                <div class="upload-zone" id="ba-zone"><input type="file" accept=".jpg,.png" multiple onchange="cMultiUpload(this,'ba-zone','ba-grid')" /><div class="upload-icon"><i class="ti ti-arrows-exchange"></i></div><div class="upload-label">Before &amp; after photos</div><div class="upload-sub">Showcase your quality</div></div>
-                <div class="multi-upload-grid" id="ba-grid"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SECTION E: WARRANTY -->
-          <div class="section-card">
-            <div class="section-header">
-              <div class="section-icon icon-teal"><i class="ti ti-shield-check"></i></div>
-              <div><div class="section-title">Warranty &amp; Professionalism</div><div class="section-sub">Build trust with guarantees and insurance</div></div>
-            </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Workmanship Warranty? <span class="cs-req">*</span></label>
-                <div class="yn-toggle"><button type="button" class="yn-btn yes" onclick="cToggleYN(this,'warranty-dur',true)">Yes</button><button type="button" class="yn-btn no" onclick="cToggleYN(this,'warranty-dur',false)">No</button></div>
-              </div>
-              <div class="cs-form-group" id="warranty-dur" style="display:none;"><label class="cs-form-label">Warranty Duration</label>
-                <select class="cs-select"><option>3 months</option><option>6 months</option><option>1 year</option><option>2 years</option><option>5 years</option></select>
-              </div>
-            </div>
-            <div class="cs-form-row">
-              <div class="cs-form-group"><label class="cs-form-label">Insurance Coverage? <span class="cs-req">*</span></label>
-                <div class="yn-toggle"><button type="button" class="yn-btn yes" onclick="cSelectYN(this)">Yes, insured</button><button type="button" class="yn-btn no" onclick="cSelectYN(this)">No</button></div>
-              </div>
-              <div class="cs-form-group"><label class="cs-form-label">Emergency Support? <span class="cs-req">*</span></label>
-                <div class="yn-toggle"><button type="button" class="yn-btn yes" onclick="cSelectYN(this)">Yes, 24/7</button><button type="button" class="yn-btn no" onclick="cSelectYN(this)">No</button></div>
+              <div class="cs-group"><label class="cs-label">Before / After Photos <span class="cs-opt">(optional)</span></label>
+                <div class="upload-zone" id="z-ba"><input type="file" id="f-ba" accept=".jpg,.png" multiple onchange="handleMultiFile(this,'z-ba','ba-grid','before_after')" /><div class="upload-icon"><i class="ti ti-arrows-exchange"></i></div><div class="upload-label">Before &amp; after photos</div><div class="upload-sub">Showcase your quality</div></div>
+                <div class="multi-grid" id="ba-grid"></div>
               </div>
             </div>
           </div>
 
-          <!-- SUBMIT -->
+          <!-- F: Warranty -->
           <div class="section-card">
-            <div class="section-header">
-              <div class="section-icon icon-green"><i class="ti ti-send"></i></div>
-              <div><div class="section-title">Submit for Verification</div><div class="section-sub">Reviewed within 1–3 business days</div></div>
+            <div class="section-header"><div class="section-icon icon-teal"><i class="ti ti-shield-check"></i></div><div><div class="section-title">Warranty &amp; Professionalism</div><div class="section-sub">Build trust with guarantees and insurance</div></div></div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Workmanship Warranty? <span class="cs-req">*</span></label>
+                <div class="yn-toggle"><button type="button" class="yn-btn yes" id="w-yes" onclick="toggleWarranty(true)">Yes</button><button type="button" class="yn-btn no" id="w-no" onclick="toggleWarranty(false)">No</button></div>
+              </div>
+              <div class="cs-group" id="warranty-dur" style="display:none;"><label class="cs-label">Warranty Duration</label>
+                <select class="cs-select" id="ct-warranty-dur"><option>3 months</option><option>6 months</option><option>1 year</option><option>2 years</option><option>5 years</option></select>
+              </div>
             </div>
-            <div class="info-box">
-              <i class="ti ti-clock"></i>
-              <div class="info-box-text"><strong>What happens next?</strong> Our team will review your submission. Approved contractors are listed on the marketplace immediately.</div>
+            <div class="cs-row">
+              <div class="cs-group"><label class="cs-label">Insurance Coverage? <span class="cs-req">*</span></label>
+                <div class="yn-toggle"><button type="button" class="yn-btn yes" id="ins-yes" onclick="selYN('ins',true)">Yes, insured</button><button type="button" class="yn-btn no" id="ins-no" onclick="selYN('ins',false)">No</button></div>
+              </div>
+              <div class="cs-group"><label class="cs-label">Emergency Support? <span class="cs-req">*</span></label>
+                <div class="yn-toggle"><button type="button" class="yn-btn yes" id="emer-yes" onclick="selYN('emer',true)">Yes, 24/7</button><button type="button" class="yn-btn no" id="emer-no" onclick="selYN('emer',false)">No</button></div>
+              </div>
             </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="section-card">
+            <div class="section-header"><div class="section-icon icon-green"><i class="ti ti-send"></i></div><div><div class="section-title">Submit for Verification</div><div class="section-sub">Reviewed within 1–3 business days</div></div></div>
+            <div class="info-box"><i class="ti ti-clock"></i><div class="info-box-text"><strong>What happens next?</strong> Our team will review your submission. Approved contractors are listed on the marketplace immediately.</div></div>
             <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;">
-              <div class="check-row"><input type="checkbox" id="cs-terms" onchange="checkContractorSubmit()" /><label class="check-label" for="cs-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Contractor Agreement</a> <span class="req-star">*</span></label></div>
-              <div class="check-row"><input type="checkbox" id="cs-pdpa" onchange="checkContractorSubmit()" /><label class="check-label" for="cs-pdpa">I consent to document verification per the <a href="#">PDPA Malaysia</a> <span class="req-star">*</span></label></div>
-              <div class="check-row"><input type="checkbox" id="cs-acc" onchange="checkContractorSubmit()" /><label class="check-label" for="cs-acc">All information submitted is accurate and belongs to my company <span class="req-star">*</span></label></div>
+              <div class="check-row"><input type="checkbox" id="ct-terms" onchange="checkContractorSubmit()" /><label class="check-label" for="ct-terms">I agree to <a href="#">Terms of Service</a> and <a href="#">Contractor Agreement</a><span class="req-star">*</span></label></div>
+              <div class="check-row"><input type="checkbox" id="ct-pdpa" onchange="checkContractorSubmit()" /><label class="check-label" for="ct-pdpa">I consent to document verification per the <a href="#">PDPA Malaysia</a><span class="req-star">*</span></label></div>
+              <div class="check-row"><input type="checkbox" id="ct-acc" onchange="checkContractorSubmit()" /><label class="check-label" for="ct-acc">All information submitted is accurate and belongs to my company<span class="req-star">*</span></label></div>
             </div>
-            <button class="btn-submit" id="contractorSubmitBtn" disabled onclick="window.location.href='marketplace.html'">
+            <div id="submit-error" style="display:none;background:var(--red-bg);color:var(--red);font-size:12px;padding:10px 12px;border-radius:var(--radius);margin-bottom:10px;"></div>
+            <button class="btn-submit" id="contractorSubmitBtn" disabled onclick="submitContractor()">
               <i class="ti ti-send" style="font-size:15px;"></i>Submit for Verification
             </button>
           </div>
 
-        </div><!-- end contractor-signup-view -->
+          <!-- SUCCESS -->
+          <div class="success-screen" id="success-screen">
+            <div class="success-icon">&#9989;</div>
+            <div class="success-title">Application Submitted!</div>
+            <div class="success-sub">Your contractor registration has been received. Our team will review your documents and get back to you within <strong>1–3 business days</strong>.</div>
+            <div class="success-id">Application ID: <strong id="success-id-val">—</strong></div>
+            <button class="btn-submit" onclick="window.location.href='marketplace.html'">&#8594; Browse the Marketplace</button>
+          </div>
 
+        </div><!-- end contractor-form -->
       </div><!-- end signup-panel -->
     </div>
   </div>
 </div>
 
 <script>
+// ── SUPABASE ──
+var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── STATE ──
+var uploadedFiles = {};
+var hasCIDB = false, hasWarranty = false, hasInsurance = false, hasEmergency = false;
+
+// ── FILE UPLOAD ──
+function handleFile(input, zoneId, key) {
+  var file = input.files[0];
+  if (!file) return;
+  var zone = document.getElementById(zoneId);
+  zone.classList.add('has-file');
+  zone.querySelector('.upload-label').textContent = file.name;
+  zone.querySelector('.upload-sub').textContent = 'Ready to upload ✓';
+  uploadedFiles[key] = file;
+}
+
+function handleMultiFile(input, zoneId, gridId, key) {
+  var files = input.files;
+  if (!files || !files.length) return;
+  var zone = document.getElementById(zoneId);
+  zone.classList.add('has-file');
+  zone.querySelector('.upload-label').textContent = files.length + ' file(s) selected';
+  var grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+  uploadedFiles[key] = Array.from(files);
+  Array.from(files).slice(0, 6).forEach(function(f) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var d = document.createElement('div');
+      d.className = 'upload-thumb';
+      d.innerHTML = '<img src="' + e.target.result + '" />';
+      grid.appendChild(d);
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+async function uploadFile(file, folder) {
+  var ext = file.name.split('.').pop();
+  var path = folder + '/' + Date.now() + '_' + Math.random().toString(36).substr(2,8) + '.' + ext;
+  var res = await sb.storage.from('contractor-docs').upload(path, file, { upsert: true });
+  if (res.error) throw res.error;
+  return path;
+}
+
+// ── SUBMIT ──
+async function submitContractor() {
+  var btn = document.getElementById('contractorSubmitBtn');
+  var errEl = document.getElementById('submit-error');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Uploading documents...';
+
+  try {
+    // Upload all files
+    var paths = {};
+    var fileKeys = ['cidb', 'ic_front', 'ic_back', 'selfie', 'logo'];
+    for (var i = 0; i < fileKeys.length; i++) {
+      var k = fileKeys[i];
+      if (uploadedFiles[k]) {
+        btn.innerHTML = '<div class="spinner"></div> Uploading ' + k.replace('_',' ') + '...';
+        paths[k] = await uploadFile(uploadedFiles[k], k);
+      }
+    }
+    // Multi-file uploads
+    var projPaths = [];
+    if (uploadedFiles['projects']) {
+      btn.innerHTML = '<div class="spinner"></div> Uploading project photos...';
+      for (var j = 0; j < uploadedFiles['projects'].length; j++) {
+        var p = await uploadFile(uploadedFiles['projects'][j], 'projects');
+        projPaths.push(p);
+      }
+    }
+    var baPaths = [];
+    if (uploadedFiles['before_after']) {
+      btn.innerHTML = '<div class="spinner"></div> Uploading before/after photos...';
+      for (var k2 = 0; k2 < uploadedFiles['before_after'].length; k2++) {
+        var pa = await uploadFile(uploadedFiles['before_after'][k2], 'before_after');
+        baPaths.push(pa);
+      }
+    }
+
+    // Get selected categories
+    var cats = [];
+    document.querySelectorAll('#cat-grid .cat-opt.selected').forEach(function(el) { cats.push(el.textContent.trim()); });
+
+    btn.innerHTML = '<div class="spinner"></div> Saving your application...';
+
+    // Save to database
+    var data = {
+      first_name:       document.getElementById('ct-fname').value,
+      last_name:        document.getElementById('ct-lname').value,
+      email:            document.getElementById('ct-email').value,
+      phone:            document.getElementById('ct-phone').value,
+      company_name:     document.getElementById('ct-company').value,
+      ssm_number:       document.getElementById('ct-ssm').value,
+      business_address: document.getElementById('ct-address').value,
+      state:            document.getElementById('ct-state').value,
+      company_phone:    document.getElementById('ct-cphone').value,
+      company_email:    document.getElementById('ct-cemail').value,
+      website:          document.getElementById('ct-website').value,
+      social_media:     document.getElementById('ct-social').value,
+      has_cidb:         hasCIDB,
+      cidb_number:      hasCIDB ? document.getElementById('ct-cidb-num').value : null,
+      cidb_grade:       hasCIDB ? document.getElementById('ct-cidb-grade').value : null,
+      cidb_expiry:      hasCIDB ? (document.getElementById('ct-cidb-expiry').value || null) : null,
+      years_experience: document.getElementById('ct-exp').value,
+      completed_projects: document.getElementById('ct-projects').value,
+      categories:       cats,
+      has_warranty:     hasWarranty,
+      warranty_duration: hasWarranty ? document.getElementById('ct-warranty-dur').value : null,
+      has_insurance:    hasInsurance,
+      has_emergency:    hasEmergency,
+      doc_cidb_cert:    paths['cidb'] || null,
+      doc_ic_front:     paths['ic_front'] || null,
+      doc_ic_back:      paths['ic_back'] || null,
+      doc_selfie:       paths['selfie'] || null,
+      doc_logo:         paths['logo'] || null,
+      doc_projects:     projPaths.length ? projPaths : null,
+      doc_before_after: baPaths.length ? baPaths : null,
+      status:           'pending'
+    };
+
+    var res = await sb.from('contractor_registrations').insert([data]).select();
+    if (res.error) throw res.error;
+
+    // Show success
+    var appId = res.data[0].id.substr(0, 8).toUpperCase();
+    document.getElementById('success-id-val').textContent = 'CH-' + appId;
+    document.getElementById('contractor-form').querySelector('.section-card:last-child').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+    document.getElementById('success-screen').scrollIntoView({ behavior: 'smooth' });
+
+  } catch(err) {
+    errEl.textContent = 'Error: ' + (err.message || 'Something went wrong. Please try again.');
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-send" style="font-size:15px;"></i>Submit for Verification';
+  }
+}
+
+// ── UI HELPERS ──
 function showPanel(p) {
   document.getElementById('signin-panel').style.display = p === 'signin' ? 'block' : 'none';
   document.getElementById('signup-panel').style.display = p === 'signup' ? 'block' : 'none';
@@ -524,7 +621,7 @@ function showPanel(p) {
     t.classList.toggle('active', (p === 'signin' && i === 0) || (p === 'signup' && i === 1));
   });
 }
-// Role selection
+
 var currentRole = 'client';
 function selectRole(role) {
   currentRole = role;
@@ -532,74 +629,53 @@ function selectRole(role) {
   document.getElementById('role-contractor').classList.toggle('selected', role === 'contractor');
   document.getElementById('client-form').style.display = role === 'client' ? 'block' : 'none';
   document.getElementById('contractor-cta').style.display = role === 'contractor' ? 'block' : 'none';
-  document.getElementById('signin-link-client').style.display = role === 'client' ? 'block' : 'none';
-}
-function selRole(el) {
-  document.querySelectorAll('.role-btn').forEach(function(b) { b.classList.remove('selected'); });
-  el.classList.add('selected');
-}
-function showContractorSignup() {
-  document.getElementById('role-select-view').style.display = 'none';
-  document.getElementById('contractor-signup-view').style.display = 'block';
-}
-function hideContractorSignup() {
-  document.getElementById('contractor-signup-view').style.display = 'none';
-  document.getElementById('role-select-view').style.display = 'block';
+  document.getElementById('signin-link').style.display = role === 'client' ? 'block' : 'none';
 }
 
-// Contractor form helpers
-function cToggleYN(btn, showId, show) {
-  var parent = btn.closest('.yn-toggle');
-  parent.querySelectorAll('.yn-btn').forEach(function(b) { b.classList.remove('selected'); });
-  btn.classList.add('selected');
-  var el = document.getElementById(showId);
-  if (el) el.style.display = show && btn.classList.contains('yes') ? 'block' : 'none';
+function showContractorSignup() {
+  document.getElementById('role-view').style.display = 'none';
+  document.getElementById('contractor-form').style.display = 'block';
 }
-function cSelectYN(btn) {
-  var parent = btn.closest('.yn-toggle');
-  parent.querySelectorAll('.yn-btn').forEach(function(b) { b.classList.remove('selected'); });
-  btn.classList.add('selected');
+
+function hideContractorSignup() {
+  document.getElementById('contractor-form').style.display = 'none';
+  document.getElementById('role-view').style.display = 'block';
 }
-function cMarkUploaded(input, zoneId) {
-  var zone = document.getElementById(zoneId);
-  if (!zone || !input.files || !input.files.length) return;
-  zone.classList.add('has-file');
-  zone.querySelector('.upload-label').textContent = input.files[0].name;
-  zone.querySelector('.upload-sub').textContent = 'Uploaded ✓';
+
+function toggleCIDB(val) {
+  hasCIDB = val;
+  document.getElementById('cidb-yes').classList.toggle('selected', val);
+  document.getElementById('cidb-no').classList.toggle('selected', !val);
+  document.getElementById('cidb-fields').style.display = val ? 'block' : 'none';
 }
-function cMultiUpload(input, zoneId, gridId) {
-  var zone = document.getElementById(zoneId);
-  var grid = document.getElementById(gridId);
-  if (!input.files || !input.files.length) return;
-  zone.classList.add('has-file');
-  zone.querySelector('.upload-label').textContent = input.files.length + ' file(s) selected';
-  grid.innerHTML = '';
-  Array.from(input.files).slice(0, 6).forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var div = document.createElement('div');
-      div.className = 'upload-thumb';
-      div.innerHTML = '<img src="' + e.target.result + '" alt="preview" />';
-      grid.appendChild(div);
-    };
-    reader.readAsDataURL(file);
-  });
+
+function toggleWarranty(val) {
+  hasWarranty = val;
+  document.getElementById('w-yes').classList.toggle('selected', val);
+  document.getElementById('w-no').classList.toggle('selected', !val);
+  document.getElementById('warranty-dur').style.display = val ? 'block' : 'none';
 }
+
+function selYN(prefix, val) {
+  if (prefix === 'ins') hasInsurance = val;
+  if (prefix === 'emer') hasEmergency = val;
+  document.getElementById(prefix + '-yes').classList.toggle('selected', val);
+  document.getElementById(prefix + '-no').classList.toggle('selected', !val);
+}
+
 function checkClientSubmit() {
   var t = document.getElementById('c-terms').checked;
   var p = document.getElementById('c-pdpa').checked;
   var btn = document.getElementById('clientSubmitBtn');
   if (btn) btn.disabled = !(t && p);
 }
+
 function checkContractorSubmit() {
-  var t = document.getElementById('cs-terms').checked;
-  var p = document.getElementById('cs-pdpa').checked;
-  var a = document.getElementById('cs-acc').checked;
+  var t = document.getElementById('ct-terms').checked;
+  var p = document.getElementById('ct-pdpa').checked;
+  var a = document.getElementById('ct-acc').checked;
   var btn = document.getElementById('contractorSubmitBtn');
   if (btn) btn.disabled = !(t && p && a);
-}
-function checkSubmit() {
-  checkClientSubmit();
 }
 </script>
 </body>

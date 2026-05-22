@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -262,8 +263,8 @@
       <!-- ── DASHBOARD ── -->
       <div id="tab-dashboard">
         <div class="metrics">
-          <div class="metric"><div class="metric-label">Total Contractors <i class="ti ti-users"></i></div><div class="metric-val">284</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+12 this month</div></div>
-          <div class="metric"><div class="metric-label">Pending Review <i class="ti ti-clock"></i></div><div class="metric-val" style="color:var(--orange);">5</div><div class="metric-change down">Needs attention</div></div>
+          <div class="metric"><div class="metric-label">Total Contractors <i class="ti ti-users"></i></div><div class="metric-val" id="dash-total">—</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+12 this month</div></div>
+          <div class="metric"><div class="metric-label">Pending Review <i class="ti ti-clock"></i></div><div class="metric-val" style="color:var(--orange);" id="dash-pending">—</div><div class="metric-change down">Needs attention</div></div>
           <div class="metric"><div class="metric-label">Total Users <i class="ti ti-user"></i></div><div class="metric-val">1,842</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+84 this week</div></div>
           <div class="metric"><div class="metric-label">Revenue (May) <i class="ti ti-coin"></i></div><div class="metric-val">RM 4,280</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+22% vs Apr</div></div>
         </div>
@@ -346,6 +347,7 @@
           </div>
           <table class="data-table">
             <tr><th>Contractor</th><th>Category</th><th>Docs Submitted</th><th>Submitted</th><th>Actions</th></tr>
+            <tbody id="pending-tbody"></tbody>
             <tr>
               <td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">SSM: 1234567-A</div></div></div></td>
               <td>Construction</td>
@@ -395,7 +397,8 @@
             <select><option>All categories</option><option>Construction</option><option>Electrical</option><option>Design</option><option>Plumbing</option><option>Renovation</option></select>
           </div>
           <table class="data-table">
-            <tr><th>Contractor</th><th>Category</th><th>Status</th><th>Rating</th><th>Joined</th><th>Actions</th></tr>
+            <tr><th>Contractor</th><th>Category</th><th>Status</th><th>State</th><th>Joined</th><th>Actions</th></tr>
+            <tbody id="all-tbody"></tbody>
             <tr><td><div class="contractor-info"><div class="contractor-av av-teal">AR</div><div><div class="contractor-name">Ahmad Razali</div><div class="contractor-sub">SSM · CIDB G5</div></div></div></td><td>Construction</td><td><span class="pill pill-premium">Premium</span></td><td>4.9 ★</td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Ahmad Razali')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Status updated')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
             <tr><td><div class="contractor-info"><div class="contractor-av av-amber">RP</div><div><div class="contractor-name">Rajan Pillai</div><div class="contractor-sub">SSM · CIDB G3</div></div></div></td><td>Electrical</td><td><span class="pill pill-verified">Verified</span></td><td>4.7 ★</td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Rajan Pillai')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Upgraded to Premium')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
             <tr><td><div class="contractor-info"><div class="contractor-av av-purple">AH</div><div><div class="contractor-name">Azrul Hakim</div><div class="contractor-sub">SSM verified</div></div></div></td><td>Renovation</td><td><span class="pill pill-verified">Verified</span></td><td>4.4 ★</td><td style="font-size:11px;color:var(--muted);">Mar 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Azrul Hakim')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Upgraded to Premium')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
@@ -511,6 +514,7 @@
           <div class="card-header"><div class="card-title"><i class="ti ti-shield-check"></i>Verification Queue — Documents to Review (3)</div></div>
           <table class="data-table">
             <tr><th>Contractor</th><th>Pending Document</th><th>Submitted</th><th>Actions</th></tr>
+          <tbody id="verify-tbody"></tbody>
             <tr><td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">Construction</div></div></div></td><td><span class="vbsm vbsm-cidb" style="font-size:11px;padding:3px 8px;">CIDB Certificate</span></td><td style="font-size:11px;color:var(--muted);">2 hrs ago</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
             <tr><td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">Electrical</div></div></div></td><td><span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">Selfie Verification</span></td><td style="font-size:11px;color:var(--muted);">Yesterday</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
             <tr><td><div class="contractor-info"><div class="contractor-av av-blue">VK</div><div><div class="contractor-name">Vinod Krishnan</div><div class="contractor-sub">Construction</div></div></div></td><td><span class="vbsm vbsm-ssm" style="font-size:11px;padding:3px 8px;">SSM Certificate</span></td><td style="font-size:11px;color:var(--muted);">2 days ago</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
@@ -571,6 +575,11 @@
       <div class="detail-row"><div class="detail-label">Category</div><div class="detail-val" id="md-cat">—</div></div>
       <div class="detail-row"><div class="detail-label">State</div><div class="detail-val" id="md-state">—</div></div>
       <div class="detail-row"><div class="detail-label">CIDB</div><div class="detail-val" id="md-cidb">—</div></div>
+      <div class="detail-row"><div class="detail-label">Email</div><div class="detail-val" id="md-email">—</div></div>
+      <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-val" id="md-phone">—</div></div>
+      <div class="detail-row"><div class="detail-label">Experience</div><div class="detail-val" id="md-exp">—</div></div>
+      <div class="detail-row"><div class="detail-label">Warranty</div><div class="detail-val" id="md-warranty">—</div></div>
+      <div class="detail-row"><div class="detail-label">Insurance</div><div class="detail-val" id="md-insurance">—</div></div>
       <div class="detail-row"><div class="detail-label">Verification Status</div>
         <div class="detail-val">
           <select class="status-select" id="md-status">
@@ -603,12 +612,19 @@
 var ADMIN_USER = 'admin';
 var ADMIN_PASS = 'admin123';
 
+// ── SUPABASE ──
+var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── LOGIN ──
 function doLogin() {
   var u = document.getElementById('loginUser').value;
   var p = document.getElementById('loginPass').value;
   if (u === ADMIN_USER && p === ADMIN_PASS) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminWrap').style.display = 'grid';
+    loadAllData();
   } else {
     document.getElementById('loginErr').style.display = 'block';
   }
@@ -621,6 +637,235 @@ function doLogout() {
   document.getElementById('loginPass').value = '';
   document.getElementById('loginErr').style.display = 'none';
 }
+
+// ── LOAD ALL DATA FROM SUPABASE ──
+var allContractors = [];
+
+async function loadAllData() {
+  try {
+    var res = await sb.from('contractor_registrations').select('*').order('created_at', { ascending: false });
+    if (res.error) throw res.error;
+    allContractors = res.data || [];
+    renderDashboard();
+    renderPending();
+    renderAllContractors();
+    renderVerificationQueue();
+  } catch(e) {
+    console.error('Load error:', e);
+  }
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  var total    = allContractors.length;
+  var pending  = allContractors.filter(function(c){ return c.status === 'pending'; }).length;
+  var verified = allContractors.filter(function(c){ return c.status === 'verified' || c.status === 'premium_verified'; }).length;
+
+  var el = document.getElementById('dash-total');    if(el) el.textContent = total;
+  var el2 = document.getElementById('dash-pending'); if(el2) el2.textContent = pending;
+  var nb = document.querySelector('.nav-badge.badge-red');
+  if(nb) nb.textContent = pending;
+}
+
+// ── PENDING TABLE ──
+function renderPending() {
+  var pending = allContractors.filter(function(c){ return c.status === 'pending'; });
+  var tbody = document.getElementById('pending-tbody');
+  if (!tbody) return;
+  if (pending.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);">No pending applications ✓</td></tr>';
+    return;
+  }
+  tbody.innerHTML = pending.map(function(c) {
+    var initials = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+    var docs = '';
+    if(c.ssm_number) docs += '<span class="vbsm vbsm-ssm">SSM</span>';
+    if(c.has_cidb)   docs += '<span class="vbsm vbsm-cidb">CIDB ' + (c.cidb_grade||'') + '</span>';
+    if(c.doc_ic_front) docs += '<span class="vbsm vbsm-id">IC</span>';
+    if(c.doc_selfie)   docs += '<span class="vbsm vbsm-id">Selfie</span>';
+    if(c.doc_projects && c.doc_projects.length) docs += '<span class="vbsm vbsm-id">Portfolio</span>';
+    var when = timeAgo(c.created_at);
+    return '<tr>' +
+      '<td><div class="contractor-info"><div class="contractor-av av-teal">' + initials + '</div>' +
+      '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>' +
+      '<div class="contractor-sub">' + (c.company_name||'') + ' · ' + (c.state||'') + '</div></div></div></td>' +
+      '<td>' + (c.categories ? c.categories[0] : '—') + '</td>' +
+      '<td><div class="verify-badges-sm">' + docs + '</div></td>' +
+      '<td style="font-size:11px;color:var(--muted);">' + when + '</td>' +
+      '<td><div class="action-btns">' +
+        '<button class="btn-view" onclick="openDetail('' + c.id + '')"><i class="ti ti-eye"></i>Review</button>' +
+        '<button class="btn-approve" onclick="updateStatus('' + c.id + '','verified')"><i class="ti ti-check"></i>Approve</button>' +
+        '<button class="btn-reject" onclick="updateStatus('' + c.id + '','rejected')"><i class="ti ti-x"></i>Reject</button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ── ALL CONTRACTORS TABLE ──
+function renderAllContractors() {
+  var tbody = document.getElementById('all-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = allContractors.map(function(c) {
+    var initials = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+    var pillClass = { pending:'pill-pending', partially_verified:'pill-partial', verified:'pill-verified', premium_verified:'pill-premium', rejected:'pill-rejected' }[c.status] || 'pill-pending';
+    var pillText  = { pending:'Pending', partially_verified:'Partial', verified:'Verified', premium_verified:'Premium', rejected:'Rejected' }[c.status] || 'Pending';
+    return '<tr>' +
+      '<td><div class="contractor-info"><div class="contractor-av av-teal">' + initials + '</div>' +
+      '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>' +
+      '<div class="contractor-sub">' + (c.ssm_number||'') + '</div></div></div></td>' +
+      '<td>' + (c.categories ? c.categories[0] : '—') + '</td>' +
+      '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>' +
+      '<td>' + (c.state||'—') + '</td>' +
+      '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>' +
+      '<td><div class="action-btns">' +
+        '<button class="btn-view" onclick="openDetail('' + c.id + '')"><i class="ti ti-eye"></i>View</button>' +
+        '<button class="btn-premium" onclick="updateStatus('' + c.id + '','premium_verified')"><i class="ti ti-star"></i></button>' +
+        '<button class="btn-icon" onclick="updateStatus('' + c.id + '','rejected')"><i class="ti ti-ban"></i></button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No contractors yet</td></tr>';
+}
+
+// ── VERIFICATION QUEUE ──
+function renderVerificationQueue() {
+  var queue = allContractors.filter(function(c) {
+    return c.status === 'pending' && (c.doc_cidb_cert || c.doc_ic_front || c.doc_selfie);
+  });
+  var tbody = document.getElementById('verify-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = queue.map(function(c) {
+    var initials = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+    var pending_docs = [];
+    if(c.doc_cidb_cert && !c.has_cidb) pending_docs.push('CIDB Certificate');
+    if(c.doc_ic_front) pending_docs.push('IC Documents');
+    if(c.doc_selfie)   pending_docs.push('Selfie Verification');
+    return '<tr>' +
+      '<td><div class="contractor-info"><div class="contractor-av av-teal">' + initials + '</div>' +
+      '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>' +
+      '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + '</div></div></div></td>' +
+      '<td>' + pending_docs.map(function(d){ return '<span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">' + d + '</span>'; }).join(' ') + '</td>' +
+      '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>' +
+      '<td><div class="action-btns">' +
+        '<button class="btn-approve" onclick="updateStatus('' + c.id + '','verified')"><i class="ti ti-check"></i>Approve</button>' +
+        '<button class="btn-reject"  onclick="updateStatus('' + c.id + '','rejected')"><i class="ti ti-x"></i>Reject</button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted);">No documents pending review ✓</td></tr>';
+}
+
+// ── UPDATE STATUS ──
+async function updateStatus(id, newStatus) {
+  try {
+    var res = await sb.from('contractor_registrations').update({
+      status: newStatus,
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: 'admin'
+    }).eq('id', id);
+    if (res.error) throw res.error;
+    var msg = { verified:'✓ Contractor approved & verified', premium_verified:'★ Upgraded to Premium Verified', rejected:'✗ Application rejected', partially_verified:'◑ Set to Partially Verified' }[newStatus] || 'Status updated';
+    showToast(msg);
+    await loadAllData();
+    closeModal();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+}
+
+// ── OPEN DETAIL MODAL ──
+async function openDetail(id) {
+  var c = allContractors.find(function(x){ return x.id === id; });
+  if (!c) return;
+  var name = (c.first_name||'') + ' ' + (c.last_name||'');
+  document.getElementById('modalName').textContent = name;
+  document.getElementById('md-company').textContent = c.company_name || '—';
+  document.getElementById('md-ssm').textContent = c.ssm_number || '—';
+  document.getElementById('md-cat').textContent = c.categories ? c.categories.join(', ') : '—';
+  document.getElementById('md-state').textContent = c.state || '—';
+  document.getElementById('md-cidb').textContent = c.has_cidb ? (c.cidb_grade || '') + (c.cidb_number ? ' · ' + c.cidb_number : '') : 'Not registered';
+  document.getElementById('md-email').textContent = c.email || '—';
+  document.getElementById('md-phone').textContent = c.company_phone || c.phone || '—';
+  document.getElementById('md-exp').textContent = c.years_experience || '—';
+  document.getElementById('md-warranty').textContent = c.has_warranty ? ('Yes · ' + (c.warranty_duration||'')) : 'No';
+  document.getElementById('md-insurance').textContent = c.has_insurance ? 'Yes' : 'No';
+
+  var sel = document.getElementById('md-status');
+  var statusMap = { pending:'Pending Verification', partially_verified:'Partially Verified', verified:'Verified', premium_verified:'Premium Verified', rejected:'Rejected' };
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].text === (statusMap[c.status] || 'Pending Verification')) sel.selectedIndex = i;
+  }
+
+  // Documents with clickable links
+  var docDefs = [
+    { key:'doc_ic_front',  label:'IC Front',           folder:'ic_front' },
+    { key:'doc_ic_back',   label:'IC Back',            folder:'ic_back' },
+    { key:'doc_selfie',    label:'Selfie + IC',        folder:'selfie' },
+    { key:'doc_cidb_cert', label:'CIDB Certificate',   folder:'cidb' },
+    { key:'doc_logo',      label:'Company Logo',       folder:'logo' },
+  ];
+  var docsHtml = '';
+  docDefs.forEach(function(d) {
+    var path = c[d.key];
+    if (path) {
+      var url = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + path;
+      var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
+      docsHtml += '<div class="doc-item" style="flex-direction:column;align-items:flex-start;gap:6px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;width:100%;">' +
+        '<div class="doc-icon">&#9989;</div>' +
+        '<div style="flex:1;"><div class="doc-label">' + d.label + '</div><div class="doc-status doc-ok">Submitted</div></div>' +
+        '<a href="' + url + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:3px;">' +
+        '<i class="ti ti-external-link" style="font-size:13px;"></i>View</a></div>' +
+        (isImg ? '<img src="' + url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;border:0.5px solid var(--border);" />' : '') +
+        '</div>';
+    } else {
+      docsHtml += '<div class="doc-item"><div class="doc-icon">&#128196;</div><div><div class="doc-label">' + d.label + '</div><div class="doc-status doc-missing">Not submitted</div></div></div>';
+    }
+  });
+
+  // Project photos
+  if (c.doc_projects && c.doc_projects.length) {
+    docsHtml += '<div class="doc-item" style="flex-direction:column;align-items:flex-start;grid-column:1/-1;">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="doc-icon">&#9989;</div><div class="doc-label">Project Photos (' + c.doc_projects.length + ')</div></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;width:100%;">';
+    c.doc_projects.forEach(function(path) {
+      var url = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + path;
+      docsHtml += '<a href="' + url + '" target="_blank"><img src="' + url + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:5px;border:0.5px solid var(--border);" /></a>';
+    });
+    docsHtml += '</div></div>';
+  }
+
+  document.getElementById('md-docs').innerHTML = docsHtml;
+
+  // Store current id for approve button
+  document.getElementById('detailModal').dataset.contractorId = id;
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
+
+function approveFromModal() {
+  var id = document.getElementById('detailModal').dataset.contractorId;
+  var sel = document.getElementById('md-status');
+  var statusMap = { 'Pending Verification':'pending', 'Partially Verified':'partially_verified', 'Verified':'verified', 'Premium Verified':'premium_verified', 'Rejected':'rejected' };
+  var newStatus = statusMap[sel.options[sel.selectedIndex].text] || 'verified';
+  updateStatus(id, newStatus);
+}
+
+// ── HELPERS ──
+function timeAgo(ts) {
+  if (!ts) return '—';
+  var d = new Date(ts);
+  var now = new Date();
+  var diff = Math.floor((now - d) / 1000);
+  if (diff < 3600)   return Math.floor(diff/60) + ' mins ago';
+  if (diff < 86400)  return Math.floor(diff/3600) + ' hrs ago';
+  if (diff < 604800) return Math.floor(diff/86400) + ' days ago';
+  return d.toLocaleDateString('en-MY');
+}
+
+
+var ADMIN_PASS = 'admin123';
+
+
 
 var tabs = ['dashboard','pending','contractors','verification','sponsored','credits','users','reports','settings'];
 var titles = { dashboard:'Dashboard', pending:'Pending Review', contractors:'All Contractors', verification:'Verification Queue', sponsored:'Sponsored Ads', credits:'Credits & Billing', users:'Users', reports:'Reports & Analytics', settings:'Settings' };
@@ -673,8 +918,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (m) m.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 });
 
-function approveContractor(name) { showToast('✓ ' + (name||'Contractor') + ' approved & verified'); }
-function rejectContractor(name)  { showToast('✗ ' + (name||'Contractor') + ' application rejected'); }
+function approveContractor(name) { showToast('✓ Use the Review button to approve'); }
+function rejectContractor(name)  { showToast('✗ Use the Review button to reject'); }
 function approveFromModal() { var n = document.getElementById('modalName').textContent; closeModal(); approveContractor(n); }
 
 function showToast(msg) {
