@@ -611,13 +611,12 @@
 <script>
 var ADMIN_USER = 'admin';
 var ADMIN_PASS = 'admin123';
-
-// ── SUPABASE ──
 var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
 var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var allContractors = [];
 
-// ── LOGIN ──
+/* ── LOGIN ── */
 function doLogin() {
   var u = document.getElementById('loginUser').value;
   var p = document.getElementById('loginPass').value;
@@ -635,12 +634,9 @@ function doLogout() {
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('loginUser').value = '';
   document.getElementById('loginPass').value = '';
-  document.getElementById('loginErr').style.display = 'none';
 }
 
-// ── LOAD ALL DATA FROM SUPABASE ──
-var allContractors = [];
-
+/* ── LOAD DATA ── */
 async function loadAllData() {
   try {
     var res = await sb.from('contractor_registrations').select('*').order('created_at', { ascending: false });
@@ -655,105 +651,124 @@ async function loadAllData() {
   }
 }
 
-// ── DASHBOARD ──
+/* ── DASHBOARD ── */
 function renderDashboard() {
-  var total    = allContractors.length;
-  var pending  = allContractors.filter(function(c){ return c.status === 'pending'; }).length;
-  var verified = allContractors.filter(function(c){ return c.status === 'verified' || c.status === 'premium_verified'; }).length;
-
-  var el = document.getElementById('dash-total');    if(el) el.textContent = total;
-  var el2 = document.getElementById('dash-pending'); if(el2) el2.textContent = pending;
+  var total   = allContractors.length;
+  var pending = allContractors.filter(function(c){ return c.status === 'pending'; }).length;
+  var el1 = document.getElementById('dash-total');
+  var el2 = document.getElementById('dash-pending');
+  if (el1) el1.textContent = total;
+  if (el2) el2.textContent = pending;
   var nb = document.querySelector('.nav-badge.badge-red');
-  if(nb) nb.textContent = pending;
+  if (nb) nb.textContent = pending;
 }
 
-// ── PENDING TABLE ──
+/* ── PENDING TABLE ── */
 function renderPending() {
   var pending = allContractors.filter(function(c){ return c.status === 'pending'; });
   var tbody = document.getElementById('pending-tbody');
   if (!tbody) return;
-  if (pending.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);">No pending applications ✓</td></tr>';
+  if (!pending.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#8A8178;">No pending applications</td></tr>';
     return;
   }
-  tbody.innerHTML = pending.map(function(c) {
-    var initials = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+  var html = '';
+  for (var i = 0; i < pending.length; i++) {
+    var c = pending[i];
+    var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
     var docs = '';
-    if(c.ssm_number) docs += '<span class="vbsm vbsm-ssm">SSM</span>';
-    if(c.has_cidb)   docs += '<span class="vbsm vbsm-cidb">CIDB ' + (c.cidb_grade||'') + '</span>';
-    if(c.doc_ic_front) docs += '<span class="vbsm vbsm-id">IC</span>';
-    if(c.doc_selfie)   docs += '<span class="vbsm vbsm-id">Selfie</span>';
-    if(c.doc_projects && c.doc_projects.length) docs += '<span class="vbsm vbsm-id">Portfolio</span>';
-    var when = timeAgo(c.created_at);
-    return '<tr>' +
-      '<td><div class="contractor-info"><div class="contractor-av av-teal">' + initials + '</div>' +
-      '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>' +
-      '<div class="contractor-sub">' + (c.company_name||'') + ' · ' + (c.state||'') + '</div></div></div></td>' +
-      '<td>' + (c.categories ? c.categories[0] : '—') + '</td>' +
-      '<td><div class="verify-badges-sm">' + docs + '</div></td>' +
-      '<td style="font-size:11px;color:var(--muted);">' + when + '</td>' +
-      '<td><div class="action-btns">' +
-        '<button class="btn-view" onclick="openDetail('' + c.id + '')"><i class="ti ti-eye"></i>Review</button>' +
-        '<button class="btn-approve" onclick="updateStatus('' + c.id + '','verified')"><i class="ti ti-check"></i>Approve</button>' +
-        '<button class="btn-reject" onclick="updateStatus('' + c.id + '','rejected')"><i class="ti ti-x"></i>Reject</button>' +
-      '</div></td>' +
-    '</tr>';
-  }).join('');
+    if (c.ssm_number)   docs += '<span class="vbsm vbsm-ssm">SSM</span> ';
+    if (c.has_cidb)     docs += '<span class="vbsm vbsm-cidb">CIDB</span> ';
+    if (c.doc_ic_front) docs += '<span class="vbsm vbsm-id">IC</span> ';
+    if (c.doc_selfie)   docs += '<span class="vbsm vbsm-id">Selfie</span> ';
+    if (c.doc_projects && c.doc_projects.length) docs += '<span class="vbsm vbsm-id">Portfolio</span>';
+    html += '<tr>';
+    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
+    html += '<div class="contractor-sub">' + (c.company_name||'') + '</div></div></div></td>';
+    html += '<td>' + (c.categories ? c.categories[0] : '-') + '</td>';
+    html += '<td><div class="verify-badges-sm">' + docs + '</div></td>';
+    html += '<td style="font-size:11px;color:#8A8178;">' + timeAgo(c.created_at) + '</td>';
+    html += '<td><div class="action-btns">';
+    html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i>Review</button>';
+    html += '<button class="btn-approve" data-id="' + c.id + '" data-action="verified"><i class="ti ti-check"></i>Approve</button>';
+    html += '<button class="btn-reject" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-x"></i>Reject</button>';
+    html += '</div></td></tr>';
+  }
+  tbody.innerHTML = html;
 }
 
-// ── ALL CONTRACTORS TABLE ──
+/* ── ALL CONTRACTORS ── */
 function renderAllContractors() {
   var tbody = document.getElementById('all-tbody');
   if (!tbody) return;
-  tbody.innerHTML = allContractors.map(function(c) {
-    var initials = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
-    var pillClass = { pending:'pill-pending', partially_verified:'pill-partial', verified:'pill-verified', premium_verified:'pill-premium', rejected:'pill-rejected' }[c.status] || 'pill-pending';
-    var pillText  = { pending:'Pending', partially_verified:'Partial', verified:'Verified', premium_verified:'Premium', rejected:'Rejected' }[c.status] || 'Pending';
-    return '<tr>' +
-      '<td><div class="contractor-info"><div class="contractor-av av-teal">' + initials + '</div>' +
-      '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>' +
-      '<div class="contractor-sub">' + (c.ssm_number||'') + '</div></div></div></td>' +
-      '<td>' + (c.categories ? c.categories[0] : '—') + '</td>' +
-      '<td><span class="pill ' + pillClass + '">' + pillText + '</span></td>' +
-      '<td>' + (c.state||'—') + '</td>' +
-      '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>' +
-      '<td><div class="action-btns">' +
-        '<button class="btn-view" onclick="openDetail('' + c.id + '')"><i class="ti ti-eye"></i>View</button>' +
-        '<button class="btn-premium" onclick="updateStatus('' + c.id + '','premium_verified')"><i class="ti ti-star"></i></button>' +
-        '<button class="btn-icon" onclick="updateStatus('' + c.id + '','rejected')"><i class="ti ti-ban"></i></button>' +
-      '</div></td>' +
-    '</tr>';
-  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No contractors yet</td></tr>';
+  if (!allContractors.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#8A8178;">No contractors yet</td></tr>';
+    return;
+  }
+  var statusClass = { pending:'pill-pending', partially_verified:'pill-partial', verified:'pill-verified', premium_verified:'pill-premium', rejected:'pill-rejected' };
+  var statusText  = { pending:'Pending', partially_verified:'Partial', verified:'Verified', premium_verified:'Premium', rejected:'Rejected' };
+  var html = '';
+  for (var i = 0; i < allContractors.length; i++) {
+    var c = allContractors[i];
+    var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+    var pc = statusClass[c.status] || 'pill-pending';
+    var pt = statusText[c.status]  || 'Pending';
+    html += '<tr>';
+    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
+    html += '<div class="contractor-sub">' + (c.ssm_number||'') + '</div></div></div></td>';
+    html += '<td>' + (c.categories ? c.categories[0] : '-') + '</td>';
+    html += '<td><span class="pill ' + pc + '">' + pt + '</span></td>';
+    html += '<td>' + (c.state||'-') + '</td>';
+    html += '<td style="font-size:11px;color:#8A8178;">' + timeAgo(c.created_at) + '</td>';
+    html += '<td><div class="action-btns">';
+    html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i>View</button>';
+    html += '<button class="btn-premium" data-id="' + c.id + '" data-action="premium_verified"><i class="ti ti-star"></i></button>';
+    html += '<button class="btn-icon" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-ban"></i></button>';
+    html += '</div></td></tr>';
+  }
+  tbody.innerHTML = html;
 }
 
-// ── VERIFICATION QUEUE ──
+/* ── VERIFICATION QUEUE ── */
 function renderVerificationQueue() {
   var queue = allContractors.filter(function(c) {
     return c.status === 'pending' && (c.doc_cidb_cert || c.doc_ic_front || c.doc_selfie);
   });
   var tbody = document.getElementById('verify-tbody');
   if (!tbody) return;
-  tbody.innerHTML = queue.map(function(c) {
-    var initials = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
-    var pending_docs = [];
-    if(c.doc_cidb_cert && !c.has_cidb) pending_docs.push('CIDB Certificate');
-    if(c.doc_ic_front) pending_docs.push('IC Documents');
-    if(c.doc_selfie)   pending_docs.push('Selfie Verification');
-    return '<tr>' +
-      '<td><div class="contractor-info"><div class="contractor-av av-teal">' + initials + '</div>' +
-      '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>' +
-      '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + '</div></div></div></td>' +
-      '<td>' + pending_docs.map(function(d){ return '<span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">' + d + '</span>'; }).join(' ') + '</td>' +
-      '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>' +
-      '<td><div class="action-btns">' +
-        '<button class="btn-approve" onclick="updateStatus('' + c.id + '','verified')"><i class="ti ti-check"></i>Approve</button>' +
-        '<button class="btn-reject"  onclick="updateStatus('' + c.id + '','rejected')"><i class="ti ti-x"></i>Reject</button>' +
-      '</div></td>' +
-    '</tr>';
-  }).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted);">No documents pending review ✓</td></tr>';
+  if (!queue.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:#8A8178;">No documents pending</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < queue.length; i++) {
+    var c = queue[i];
+    var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+    var docs = [];
+    if (c.doc_cidb_cert) docs.push('CIDB Certificate');
+    if (c.doc_ic_front)  docs.push('IC Documents');
+    if (c.doc_selfie)    docs.push('Selfie Verification');
+    var docsHtml = '';
+    for (var d = 0; d < docs.length; d++) {
+      docsHtml += '<span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">' + docs[d] + '</span> ';
+    }
+    html += '<tr>';
+    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
+    html += '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + '</div></div></div></td>';
+    html += '<td>' + docsHtml + '</td>';
+    html += '<td style="font-size:11px;color:#8A8178;">' + timeAgo(c.created_at) + '</td>';
+    html += '<td><div class="action-btns">';
+    html += '<button class="btn-approve" data-id="' + c.id + '" data-action="verified"><i class="ti ti-check"></i>Approve</button>';
+    html += '<button class="btn-reject" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-x"></i>Reject</button>';
+    html += '</div></td></tr>';
+  }
+  tbody.innerHTML = html;
 }
 
-// ── UPDATE STATUS ──
+/* ── UPDATE STATUS ── */
 async function updateStatus(id, newStatus) {
   try {
     var res = await sb.from('contractor_registrations').update({
@@ -762,8 +777,13 @@ async function updateStatus(id, newStatus) {
       reviewed_by: 'admin'
     }).eq('id', id);
     if (res.error) throw res.error;
-    var msg = { verified:'✓ Contractor approved & verified', premium_verified:'★ Upgraded to Premium Verified', rejected:'✗ Application rejected', partially_verified:'◑ Set to Partially Verified' }[newStatus] || 'Status updated';
-    showToast(msg);
+    var msgs = {
+      verified: '✓ Contractor verified',
+      premium_verified: '★ Upgraded to Premium',
+      rejected: '✗ Application rejected',
+      partially_verified: 'Set to Partially Verified'
+    };
+    showToast(msgs[newStatus] || 'Status updated');
     await loadAllData();
     closeModal();
   } catch(e) {
@@ -771,163 +791,145 @@ async function updateStatus(id, newStatus) {
   }
 }
 
-// ── OPEN DETAIL MODAL ──
+/* ── OPEN DETAIL MODAL ── */
 async function openDetail(id) {
-  var c = allContractors.find(function(x){ return x.id === id; });
+  var c = null;
+  for (var i = 0; i < allContractors.length; i++) {
+    if (allContractors[i].id === id) { c = allContractors[i]; break; }
+  }
   if (!c) return;
-  var name = (c.first_name||'') + ' ' + (c.last_name||'');
-  document.getElementById('modalName').textContent = name;
-  document.getElementById('md-company').textContent = c.company_name || '—';
-  document.getElementById('md-ssm').textContent = c.ssm_number || '—';
-  document.getElementById('md-cat').textContent = c.categories ? c.categories.join(', ') : '—';
-  document.getElementById('md-state').textContent = c.state || '—';
-  document.getElementById('md-cidb').textContent = c.has_cidb ? (c.cidb_grade || '') + (c.cidb_number ? ' · ' + c.cidb_number : '') : 'Not registered';
-  document.getElementById('md-email').textContent = c.email || '—';
-  document.getElementById('md-phone').textContent = c.company_phone || c.phone || '—';
-  document.getElementById('md-exp').textContent = c.years_experience || '—';
+
+  document.getElementById('modalName').textContent = (c.first_name||'') + ' ' + (c.last_name||'');
+  document.getElementById('md-company').textContent  = c.company_name || '-';
+  document.getElementById('md-ssm').textContent      = c.ssm_number   || '-';
+  document.getElementById('md-cat').textContent      = c.categories ? c.categories.join(', ') : '-';
+  document.getElementById('md-state').textContent    = c.state        || '-';
+  document.getElementById('md-cidb').textContent     = c.has_cidb ? ((c.cidb_grade||'') + (c.cidb_number ? ' · ' + c.cidb_number : '')) : 'Not registered';
+  document.getElementById('md-email').textContent    = c.email        || '-';
+  document.getElementById('md-phone').textContent    = c.company_phone || c.phone || '-';
+  document.getElementById('md-exp').textContent      = c.years_experience || '-';
   document.getElementById('md-warranty').textContent = c.has_warranty ? ('Yes · ' + (c.warranty_duration||'')) : 'No';
   document.getElementById('md-insurance').textContent = c.has_insurance ? 'Yes' : 'No';
 
   var sel = document.getElementById('md-status');
   var statusMap = { pending:'Pending Verification', partially_verified:'Partially Verified', verified:'Verified', premium_verified:'Premium Verified', rejected:'Rejected' };
-  for (var i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].text === (statusMap[c.status] || 'Pending Verification')) sel.selectedIndex = i;
+  var targetText = statusMap[c.status] || 'Pending Verification';
+  for (var s = 0; s < sel.options.length; s++) {
+    if (sel.options[s].text === targetText) { sel.selectedIndex = s; break; }
   }
 
-  // Documents with clickable links
   var docDefs = [
-    { key:'doc_ic_front',  label:'IC Front',           folder:'ic_front' },
-    { key:'doc_ic_back',   label:'IC Back',            folder:'ic_back' },
-    { key:'doc_selfie',    label:'Selfie + IC',        folder:'selfie' },
-    { key:'doc_cidb_cert', label:'CIDB Certificate',   folder:'cidb' },
-    { key:'doc_logo',      label:'Company Logo',       folder:'logo' },
+    { key:'doc_ic_front',  label:'IC Front' },
+    { key:'doc_ic_back',   label:'IC Back' },
+    { key:'doc_selfie',    label:'Selfie + IC' },
+    { key:'doc_cidb_cert', label:'CIDB Certificate' },
+    { key:'doc_logo',      label:'Company Logo' }
   ];
   var docsHtml = '';
-  docDefs.forEach(function(d) {
-    var path = c[d.key];
+  for (var dd = 0; dd < docDefs.length; dd++) {
+    var def = docDefs[dd];
+    var path = c[def.key];
     if (path) {
       var url = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + path;
       var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
-      docsHtml += '<div class="doc-item" style="flex-direction:column;align-items:flex-start;gap:6px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;width:100%;">' +
-        '<div class="doc-icon">&#9989;</div>' +
-        '<div style="flex:1;"><div class="doc-label">' + d.label + '</div><div class="doc-status doc-ok">Submitted</div></div>' +
-        '<a href="' + url + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:3px;">' +
-        '<i class="ti ti-external-link" style="font-size:13px;"></i>View</a></div>' +
-        (isImg ? '<img src="' + url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;border:0.5px solid var(--border);" />' : '') +
-        '</div>';
+      docsHtml += '<div class="doc-item" style="flex-direction:column;align-items:flex-start;gap:6px;">';
+      docsHtml += '<div style="display:flex;align-items:center;gap:8px;width:100%;">';
+      docsHtml += '<div class="doc-icon">✅</div>';
+      docsHtml += '<div style="flex:1;"><div class="doc-label">' + def.label + '</div><div class="doc-status doc-ok">Submitted</div></div>';
+      docsHtml += '<a href="' + url + '" target="_blank" style="font-size:11px;color:#185FA5;text-decoration:none;"><i class="ti ti-external-link"></i> View</a>';
+      docsHtml += '</div>';
+      if (isImg) docsHtml += '<img src="' + url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;" />';
+      docsHtml += '</div>';
     } else {
-      docsHtml += '<div class="doc-item"><div class="doc-icon">&#128196;</div><div><div class="doc-label">' + d.label + '</div><div class="doc-status doc-missing">Not submitted</div></div></div>';
+      docsHtml += '<div class="doc-item"><div class="doc-icon">📄</div>';
+      docsHtml += '<div><div class="doc-label">' + def.label + '</div><div class="doc-status doc-missing">Not submitted</div></div></div>';
     }
-  });
-
-  // Project photos
+  }
   if (c.doc_projects && c.doc_projects.length) {
-    docsHtml += '<div class="doc-item" style="flex-direction:column;align-items:flex-start;grid-column:1/-1;">' +
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="doc-icon">&#9989;</div><div class="doc-label">Project Photos (' + c.doc_projects.length + ')</div></div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;width:100%;">';
-    c.doc_projects.forEach(function(path) {
-      var url = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + path;
-      docsHtml += '<a href="' + url + '" target="_blank"><img src="' + url + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:5px;border:0.5px solid var(--border);" /></a>';
-    });
+    docsHtml += '<div class="doc-item" style="flex-direction:column;grid-column:1/-1;">';
+    docsHtml += '<div style="font-size:12px;font-weight:500;margin-bottom:6px;">Project Photos (' + c.doc_projects.length + ')</div>';
+    docsHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;">';
+    for (var pp = 0; pp < c.doc_projects.length; pp++) {
+      var purl = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + c.doc_projects[pp];
+      docsHtml += '<a href="' + purl + '" target="_blank"><img src="' + purl + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:5px;" /></a>';
+    }
     docsHtml += '</div></div>';
   }
-
   document.getElementById('md-docs').innerHTML = docsHtml;
-
-  // Store current id for approve button
   document.getElementById('detailModal').dataset.contractorId = id;
   document.getElementById('detailModal').classList.add('show');
 }
 
-function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
+function closeModal() {
+  document.getElementById('detailModal').classList.remove('show');
+}
 
 function approveFromModal() {
   var id = document.getElementById('detailModal').dataset.contractorId;
   var sel = document.getElementById('md-status');
-  var statusMap = { 'Pending Verification':'pending', 'Partially Verified':'partially_verified', 'Verified':'verified', 'Premium Verified':'premium_verified', 'Rejected':'rejected' };
-  var newStatus = statusMap[sel.options[sel.selectedIndex].text] || 'verified';
+  var revMap = { 'Pending Verification':'pending', 'Partially Verified':'partially_verified', 'Verified':'verified', 'Premium Verified':'premium_verified', 'Rejected':'rejected' };
+  var newStatus = revMap[sel.options[sel.selectedIndex].text] || 'verified';
   updateStatus(id, newStatus);
 }
 
-// ── HELPERS ──
-function timeAgo(ts) {
-  if (!ts) return '—';
-  var d = new Date(ts);
-  var now = new Date();
-  var diff = Math.floor((now - d) / 1000);
-  if (diff < 3600)   return Math.floor(diff/60) + ' mins ago';
-  if (diff < 86400)  return Math.floor(diff/3600) + ' hrs ago';
-  if (diff < 604800) return Math.floor(diff/86400) + ' days ago';
-  return d.toLocaleDateString('en-MY');
-}
-
-
-var ADMIN_PASS = 'admin123';
-
-
-
+/* ── NAVIGATION ── */
 var tabs = ['dashboard','pending','contractors','verification','sponsored','credits','users','reports','settings'];
 var titles = { dashboard:'Dashboard', pending:'Pending Review', contractors:'All Contractors', verification:'Verification Queue', sponsored:'Sponsored Ads', credits:'Credits & Billing', users:'Users', reports:'Reports & Analytics', settings:'Settings' };
 
 function show(tab, navEl) {
-  tabs.forEach(function(t) {
-    var el = document.getElementById('tab-' + t);
-    if (el) el.style.display = t === tab ? 'block' : 'none';
-  });
+  for (var t = 0; t < tabs.length; t++) {
+    var el = document.getElementById('tab-' + tabs[t]);
+    if (el) el.style.display = (tabs[t] === tab) ? 'block' : 'none';
+  }
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
-  document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
+  var navItems = document.querySelectorAll('.nav-item');
+  for (var n = 0; n < navItems.length; n++) navItems[n].classList.remove('active');
   if (navEl) navEl.classList.add('active');
 }
 
-var contractorData = {
-  'Ahmad Razali':   { company:'Razali Civil Engineering Sdn Bhd', ssm:'1234567-A', cat:'Construction', state:'Kuala Lumpur', cidb:'G5 — Up to RM 5M', status:'Premium Verified', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)','Selfie Verification','Portfolio Photos'] },
-  'Zulkifli Ahmad': { company:'ZA Construction Works', ssm:'2345678-B', cat:'Construction', state:'Selangor', cidb:'G4 — Up to RM 3M', status:'Pending Verification', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)'] },
-  'Marina Shafie':  { company:'Marina Design Studio', ssm:'9876543-B', cat:'Interior Design', state:'Kuala Lumpur', cidb:'Not submitted', status:'Pending Verification', docs:['SSM Certificate','IC (Front & Back)','Portfolio Photos'] },
-  'Kumar Rajendran':{ company:'KR Electrical Services', ssm:'5555432-C', cat:'Electrical', state:'Johor', cidb:'G3 — Up to RM 1M', status:'Pending Verification', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)','Portfolio Photos'] },
-  'Lee Wei Ming':   { company:'LW Plumbing Solutions', ssm:'7654321-D', cat:'Plumbing', state:'Penang', cidb:'Not submitted', status:'Pending Verification', docs:['SSM Certificate','IC (Front & Back)'] },
-  'Norizan Nawi':   { company:'NN Renovation Works', ssm:'3322110-E', cat:'Renovation', state:'Selangor', cidb:'Not submitted', status:'Pending Verification', docs:['SSM Certificate','IC (Front & Back)','Portfolio Photos'] },
-  'Rajan Pillai':   { company:'Pillai Electrical Sdn Bhd', ssm:'4433221-F', cat:'Electrical', state:'Johor', cidb:'G3 — Up to RM 1M', status:'Verified', docs:['SSM Certificate','CIDB Certificate','IC (Front & Back)','Portfolio Photos'] },
-  'Azrul Hakim':    { company:'Hakim Renovation & Builders', ssm:'6677889-G', cat:'Renovation', state:'Selangor', cidb:'Not submitted', status:'Verified', docs:['SSM Certificate','IC (Front & Back)','Portfolio Photos'] },
-  'Vinod Krishnan': { company:'Vinod Structural Engineering', ssm:'8899001-H', cat:'Construction', state:'Kuala Lumpur', cidb:'G4 — Up to RM 3M', status:'Partially Verified', docs:['CIDB Certificate','IC (Front & Back)'] },
-};
-
-function openDetail(name) {
-  var d = contractorData[name] || { company:'—', ssm:'—', cat:'—', state:'—', cidb:'—', status:'Pending Verification', docs:[] };
-  document.getElementById('modalName').textContent = name;
-  document.getElementById('md-company').textContent = d.company;
-  document.getElementById('md-ssm').textContent = d.ssm;
-  document.getElementById('md-cat').textContent = d.cat;
-  document.getElementById('md-state').textContent = d.state;
-  document.getElementById('md-cidb').textContent = d.cidb;
-  var sel = document.getElementById('md-status');
-  for (var i = 0; i < sel.options.length; i++) { if (sel.options[i].text === d.status) sel.selectedIndex = i; }
-  var allDocs = ['SSM Certificate','CIDB Certificate','IC (Front & Back)','Selfie Verification','Portfolio Photos','Company Logo'];
-  var docsHtml = '';
-  allDocs.forEach(function(doc) {
-    var has = d.docs.indexOf(doc) > -1;
-    docsHtml += '<div class="doc-item"><div class="doc-icon">' + (has ? '✅' : '📄') + '</div><div><div class="doc-label">' + doc + '</div><div class="doc-status ' + (has ? 'doc-ok' : 'doc-missing') + '">' + (has ? 'Submitted' : 'Not submitted') + '</div></div></div>';
-  });
-  document.getElementById('md-docs').innerHTML = docsHtml;
-  document.getElementById('detailModal').classList.add('show');
+/* ── HELPERS ── */
+function timeAgo(ts) {
+  if (!ts) return '-';
+  var diff = Math.floor((new Date() - new Date(ts)) / 1000);
+  if (diff < 3600)   return Math.floor(diff/60)    + ' mins ago';
+  if (diff < 86400)  return Math.floor(diff/3600)  + ' hrs ago';
+  if (diff < 604800) return Math.floor(diff/86400) + ' days ago';
+  return new Date(ts).toLocaleDateString('en-MY');
 }
-
-function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
-document.addEventListener('DOMContentLoaded', function() {
-  var m = document.getElementById('detailModal');
-  if (m) m.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-});
-
-function approveContractor(name) { showToast('✓ Use the Review button to approve'); }
-function rejectContractor(name)  { showToast('✗ Use the Review button to reject'); }
-function approveFromModal() { var n = document.getElementById('modalName').textContent; closeModal(); approveContractor(n); }
 
 function showToast(msg) {
   var t = document.getElementById('toast');
+  if (!t) return;
   t.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
   t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
+
+function approveContractor(name) { showToast('Use Review button to approve'); }
+function rejectContractor(name)  { showToast('Use Review button to reject'); }
+
+document.addEventListener('DOMContentLoaded', function() {
+  var modal = document.getElementById('detailModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+  }
+
+  // Event delegation for dynamically rendered table buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('button[data-id]');
+    if (!btn) return;
+    var id     = btn.getAttribute('data-id');
+    var action = btn.getAttribute('data-action');
+    if (!id || !action) return;
+    if (action === 'detail') {
+      openDetail(id);
+    } else {
+      updateStatus(id, action);
+    }
+  });
+});
 </script>
 </body>
 </html>
