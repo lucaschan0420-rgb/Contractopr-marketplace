@@ -274,22 +274,7 @@
             <div class="card-header"><div class="card-title"><i class="ti ti-clock"></i>Awaiting approval</div><div class="card-action" onclick="show('pending',null)">View all →</div></div>
             <table class="data-table">
               <tr><th>Contractor</th><th>Submitted</th><th>Action</th></tr>
-              <tr>
-                <td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">Construction · Selangor</div></div></div></td>
-                <td style="color:var(--muted);font-size:11px;">2 hrs ago</td>
-                <td><div class="action-btns"><button class="btn-approve" onclick="approveContractor('Zulkifli Ahmad')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Zulkifli Ahmad')"><i class="ti ti-x"></i></button><button class="btn-view" onclick="openDetail('Zulkifli Ahmad')"><i class="ti ti-eye"></i></button></div></td>
-              </tr>
-              <tr>
-                <td><div class="contractor-info"><div class="contractor-av av-pink">MS</div><div><div class="contractor-name">Marina Shafie</div><div class="contractor-sub">Interior Design · KL</div></div></div></td>
-                <td style="color:var(--muted);font-size:11px;">5 hrs ago</td>
-                <td><div class="action-btns"><button class="btn-approve" onclick="approveContractor('Marina Shafie')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Marina Shafie')"><i class="ti ti-x"></i></button><button class="btn-view" onclick="openDetail('Marina Shafie')"><i class="ti ti-eye"></i></button></div></td>
-              </tr>
-              <tr>
-                <td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">Electrical · Johor</div></div></div></td>
-                <td style="color:var(--muted);font-size:11px;">Yesterday</td>
-                <td><div class="action-btns"><button class="btn-approve" onclick="approveContractor('Kumar Rajendran')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Kumar Rajendran')"><i class="ti ti-x"></i></button><button class="btn-view" onclick="openDetail('Kumar Rajendran')"><i class="ti ti-eye"></i></button></div></td>
-              </tr>
-            </table>
+              <tbody id="dash-pending-tbody"></tbody></table>
           </div>
 
           <div class="card card-last">
@@ -347,43 +332,7 @@
           </div>
           <table class="data-table">
             <tr><th>Contractor</th><th>Category</th><th>Docs Submitted</th><th>Submitted</th><th>Actions</th></tr>
-            <tbody id="pending-tbody"></tbody>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">SSM: 1234567-A</div></div></div></td>
-              <td>Construction</td>
-              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-cidb">CIDB G4</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-missing">No portfolio</span></div></td>
-              <td style="font-size:11px;color:var(--muted);">2 hrs ago</td>
-              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Zulkifli Ahmad')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Zulkifli Ahmad')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Zulkifli Ahmad')"><i class="ti ti-x"></i>Reject</button></div></td>
-            </tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-pink">MS</div><div><div class="contractor-name">Marina Shafie</div><div class="contractor-sub">SSM: 9876543-B</div></div></div></td>
-              <td>Interior Design</td>
-              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-id">Portfolio</span></div></td>
-              <td style="font-size:11px;color:var(--muted);">5 hrs ago</td>
-              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Marina Shafie')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Marina Shafie')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Marina Shafie')"><i class="ti ti-x"></i>Reject</button></div></td>
-            </tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">SSM: 5555432-C</div></div></div></td>
-              <td>Electrical</td>
-              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-cidb">CIDB G3</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-id">Portfolio</span></div></td>
-              <td style="font-size:11px;color:var(--muted);">Yesterday</td>
-              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Kumar Rajendran')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Kumar Rajendran')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Kumar Rajendran')"><i class="ti ti-x"></i>Reject</button></div></td>
-            </tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-blue">LW</div><div><div class="contractor-name">Lee Wei Ming</div><div class="contractor-sub">SSM: 7654321-D</div></div></div></td>
-              <td>Plumbing</td>
-              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-missing">No CIDB</span><span class="vbsm vbsm-id">IC</span></div></td>
-              <td style="font-size:11px;color:var(--muted);">2 days ago</td>
-              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Lee Wei Ming')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Lee Wei Ming')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Lee Wei Ming')"><i class="ti ti-x"></i>Reject</button></div></td>
-            </tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-purple">NN</div><div><div class="contractor-name">Norizan Nawi</div><div class="contractor-sub">SSM: 3322110-E</div></div></div></td>
-              <td>Renovation</td>
-              <td><div class="verify-badges-sm"><span class="vbsm vbsm-ssm">SSM</span><span class="vbsm vbsm-id">IC</span><span class="vbsm vbsm-id">Portfolio</span></div></td>
-              <td style="font-size:11px;color:var(--muted);">2 days ago</td>
-              <td><div class="action-btns"><button class="btn-view" onclick="openDetail('Norizan Nawi')"><i class="ti ti-eye"></i>Review</button><button class="btn-approve" onclick="approveContractor('Norizan Nawi')"><i class="ti ti-check"></i>Approve</button><button class="btn-reject" onclick="rejectContractor('Norizan Nawi')"><i class="ti ti-x"></i>Reject</button></div></td>
-            </tr>
-          </table>
+            <tbody id="pending-tbody"></tbody></table>
         </div>
       </div>
 
@@ -398,12 +347,7 @@
           </div>
           <table class="data-table">
             <tr><th>Contractor</th><th>Category</th><th>Status</th><th>State</th><th>Joined</th><th>Actions</th></tr>
-            <tbody id="all-tbody"></tbody>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-teal">AR</div><div><div class="contractor-name">Ahmad Razali</div><div class="contractor-sub">SSM · CIDB G5</div></div></div></td><td>Construction</td><td><span class="pill pill-premium">Premium</span></td><td>4.9 ★</td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Ahmad Razali')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Status updated')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-amber">RP</div><div><div class="contractor-name">Rajan Pillai</div><div class="contractor-sub">SSM · CIDB G3</div></div></div></td><td>Electrical</td><td><span class="pill pill-verified">Verified</span></td><td>4.7 ★</td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Rajan Pillai')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Upgraded to Premium')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-purple">AH</div><div><div class="contractor-name">Azrul Hakim</div><div class="contractor-sub">SSM verified</div></div></div></td><td>Renovation</td><td><span class="pill pill-verified">Verified</span></td><td>4.4 ★</td><td style="font-size:11px;color:var(--muted);">Mar 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Azrul Hakim')"><i class="ti ti-eye"></i>View</button><button class="btn-premium" onclick="showToast('Upgraded to Premium')"><i class="ti ti-star"></i></button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-blue">VK</div><div><div class="contractor-name">Vinod Krishnan</div><div class="contractor-sub">SSM · CIDB G4</div></div></div></td><td>Construction</td><td><span class="pill pill-partial">Partial</span></td><td>4.8 ★</td><td style="font-size:11px;color:var(--muted);">May 2025</td><td><div class="action-btns"><button class="btn-view" onclick="openDetail('Vinod Krishnan')"><i class="ti ti-eye"></i>View</button><button class="btn-approve" onclick="approveContractor('Vinod Krishnan')"><i class="ti ti-check"></i>Verify</button><button class="btn-icon" onclick="showToast('Contractor suspended')"><i class="ti ti-ban"></i></button></div></td></tr>
-          </table>
+            <tbody id="all-tbody"></tbody></table>
         </div>
       </div>
 
@@ -514,11 +458,7 @@
           <div class="card-header"><div class="card-title"><i class="ti ti-shield-check"></i>Verification Queue — Documents to Review (3)</div></div>
           <table class="data-table">
             <tr><th>Contractor</th><th>Pending Document</th><th>Submitted</th><th>Actions</th></tr>
-          <tbody id="verify-tbody"></tbody>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-teal">ZA</div><div><div class="contractor-name">Zulkifli Ahmad</div><div class="contractor-sub">Construction</div></div></div></td><td><span class="vbsm vbsm-cidb" style="font-size:11px;padding:3px 8px;">CIDB Certificate</span></td><td style="font-size:11px;color:var(--muted);">2 hrs ago</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-amber">KR</div><div><div class="contractor-name">Kumar Rajendran</div><div class="contractor-sub">Electrical</div></div></div></td><td><span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">Selfie Verification</span></td><td style="font-size:11px;color:var(--muted);">Yesterday</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
-            <tr><td><div class="contractor-info"><div class="contractor-av av-blue">VK</div><div><div class="contractor-name">Vinod Krishnan</div><div class="contractor-sub">Construction</div></div></div></td><td><span class="vbsm vbsm-ssm" style="font-size:11px;padding:3px 8px;">SSM Certificate</span></td><td style="font-size:11px;color:var(--muted);">2 days ago</td><td><div class="action-btns"><button class="btn-approve" onclick="showToast('Document approved ✓')"><i class="ti ti-check"></i>Approve Doc</button><button class="btn-reject" onclick="showToast('Document rejected')"><i class="ti ti-x"></i>Reject</button></div></td></tr>
-          </table>
+          <tbody id="verify-tbody"></tbody></table>
         </div>
       </div>
 
@@ -661,6 +601,31 @@ function renderDashboard() {
   if (el2) el2.textContent = pending;
   var nb = document.querySelector('.nav-badge.badge-red');
   if (nb) nb.textContent = pending;
+
+  // Fill dashboard pending table (show latest 3)
+  var tbody = document.getElementById('dash-pending-tbody');
+  if (!tbody) return;
+  var pendingList = allContractors.filter(function(c){ return c.status === 'pending'; }).slice(0, 3);
+  if (!pendingList.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:1rem;color:#8A8178;">No pending applications ✓</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < pendingList.length; i++) {
+    var c = pendingList[i];
+    var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+    html += '<tr>';
+    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
+    html += '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + ' · ' + (c.state||'') + '</div></div></div></td>';
+    html += '<td style="color:#8A8178;font-size:11px;">' + timeAgo(c.created_at) + '</td>';
+    html += '<td><div class="action-btns">';
+    html += '<button class="btn-approve" data-id="' + c.id + '" data-action="verified"><i class="ti ti-check"></i>Approve</button>';
+    html += '<button class="btn-reject" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-x"></i></button>';
+    html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i></button>';
+    html += '</div></td></tr>';
+  }
+  tbody.innerHTML = html;
 }
 
 /* ── PENDING TABLE ── */
