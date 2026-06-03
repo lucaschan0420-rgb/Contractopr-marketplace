@@ -600,10 +600,25 @@ async function submitContractor() {
 
     // Show success
     var appId = res.data[0].id.substr(0, 8).toUpperCase();
-    document.getElementById('success-id-val').textContent = 'CH-' + appId;
-    document.getElementById('contractor-form').querySelector('.section-card:last-child').style.display = 'none';
-    document.getElementById('success-screen').style.display = 'block';
-    document.getElementById('success-screen').scrollIntoView({ behavior: 'smooth' });
+    var successIdEl = document.getElementById('success-id-val');
+    if (successIdEl) successIdEl.textContent = 'CH-' + appId;
+
+    // Hide all section cards inside contractor-form
+    var form = document.getElementById('contractor-form');
+    if (form) {
+      var cards = form.querySelectorAll('.section-card');
+      cards.forEach(function(card) { card.style.display = 'none'; });
+      var backBtn = form.querySelector('.back-btn');
+      if (backBtn) backBtn.style.display = 'none';
+      var progressEl = form.querySelector('.progress-steps-wrap');
+      if (progressEl) progressEl.style.display = 'none';
+    }
+
+    var successScreen = document.getElementById('success-screen');
+    if (successScreen) {
+      successScreen.style.display = 'block';
+      successScreen.scrollIntoView({ behavior: 'smooth' });
+    }
 
   } catch(err) {
     errEl.textContent = 'Error: ' + (err.message || 'Something went wrong. Please try again.');
