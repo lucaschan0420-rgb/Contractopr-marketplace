@@ -22,6 +22,48 @@
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); line-height: 1.6; }
 
+
+    /* ── VIEW SWITCH TOGGLE ── */
+    .view-switch { display: flex; align-items: center; gap: 8px; }
+    .view-switch-label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+    .switch-track {
+      width: 52px; height: 26px;
+      background: var(--border);
+      border-radius: 100px;
+      position: relative;
+      cursor: pointer;
+      transition: background .25s;
+      flex-shrink: 0;
+      border: 0.5px solid var(--border2);
+    }
+    .switch-track.contractor-mode { background: #0f1117; border-color: #0f1117; }
+    .switch-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .25s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .switch-track.contractor-mode .switch-thumb { transform: translateX(26px); }
+    .switch-icons { display: flex; align-items: center; gap: 6px; }
+    .switch-icon { font-size: 12px; color: var(--text3); transition: color .2s; }
+    .switch-icon.active { color: var(--text); font-weight: 500; }
+    .contractor-badge {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      background: var(--warm-pale);
+      color: var(--warm);
+      border-radius: 100px;
+      border: 0.5px solid rgba(196,135,58,0.3);
+    }
+    .contractor-badge.show { display: flex; }
+
     /* NAV */
     .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2.5rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; }
     .logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
@@ -210,7 +252,27 @@
   <div class="nav-links">
     <a href="#">Browse</a>
     <a href="#">How it works</a>
-    <a href="signin.html" class="btn-outline">Sign in</a>
+
+    <!-- VIEW SWITCH -->
+    <div class="view-switch" id="viewSwitch" style="display:none;">
+      <span class="switch-icon active" id="switchIconClient">&#127970; Client</span>
+      <div class="switch-track" id="switchTrack" onclick="toggleView()">
+        <div class="switch-thumb"></div>
+      </div>
+      <span class="switch-icon" id="switchIconContractor">&#128296; Contractor</span>
+    </div>
+
+    <div class="contractor-badge" id="contractorBadge">
+      <i class="ti ti-shield-check"></i>
+      <span id="contractorBadgeName">My Portal</span>
+    </div>
+
+    <a href="signin.html" class="btn-outline" id="navSignIn">Sign in</a>
+    <div id="navUserChip" style="display:none;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:20px;border:0.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;cursor:pointer;" onclick="doSignOut()">
+      <div style="width:24px;height:24px;border-radius:50%;background:var(--warm-pale);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--warm);" id="navUserAv">?</div>
+      <span id="navUserName">User</span>
+      <i class="ti ti-logout" style="font-size:13px;color:#aaa;" title="Sign out"></i>
+    </div>
     <a href="#" class="btn-primary-nav">Post a job</a>
   </div>
 </nav>
@@ -396,12 +458,124 @@ function toggleFav(id, e) {
   e.preventDefault(); e.stopPropagation();
   if (favourites.has(id)) { favourites.delete(id); } else { favourites.add(id); }
   saveFavs(); applyFilters();
+
+// ── SESSION & VIEW SWITCH ──
+function initSession() {
+  var role   = localStorage.getItem('ch_user_role');
+  var name   = localStorage.getItem('ch_user_name') || 'User';
+  var email  = localStorage.getItem('ch_user_email') || '';
+
+  if (role === 'client' || role === 'contractor') {
+    // Show user chip, hide sign in button
+    document.getElementById('navSignIn').style.display = 'none';
+    var chip = document.getElementById('navUserChip');
+    chip.style.display = 'flex';
+    var displayName = name.trim() || email.split('@')[0] || 'User';
+    document.getElementById('navUserName').textContent = displayName;
+    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
+  }
+
+  if (role === 'contractor') {
+    // Show view switch
+    document.getElementById('viewSwitch').style.display = 'flex';
+    document.getElementById('contractorBadge').classList.add('show');
+    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
+    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
+  }
+}
+
+function toggleView() {
+  var track = document.getElementById('switchTrack');
+  var isContractor = track.classList.contains('contractor-mode');
+  if (isContractor) {
+    // Switch to client view
+    track.classList.remove('contractor-mode');
+    document.getElementById('switchIconClient').classList.add('active');
+    document.getElementById('switchIconContractor').classList.remove('active');
+  } else {
+    // Switch to contractor view
+    track.classList.add('contractor-mode');
+    document.getElementById('switchIconClient').classList.remove('active');
+    document.getElementById('switchIconContractor').classList.add('active');
+    // Redirect to contractor portal
+    setTimeout(function() {
+      window.location.href = 'contractor.html';
+    }, 300);
+  }
+}
+
+function doSignOut() {
+  localStorage.removeItem('ch_user_role');
+  localStorage.removeItem('ch_user_name');
+  localStorage.removeItem('ch_user_email');
+  localStorage.removeItem('ch_contractor_status');
+  window.location.href = 'signin.html';
+}
+
+initSession();
+
 }
 
 function toggleFavView() {
   showFavOnly = !showFavOnly;
   document.getElementById('favToggle').className = 'mp-fav-btn' + (showFavOnly ? ' active' : '');
   applyFilters();
+
+// ── SESSION & VIEW SWITCH ──
+function initSession() {
+  var role   = localStorage.getItem('ch_user_role');
+  var name   = localStorage.getItem('ch_user_name') || 'User';
+  var email  = localStorage.getItem('ch_user_email') || '';
+
+  if (role === 'client' || role === 'contractor') {
+    // Show user chip, hide sign in button
+    document.getElementById('navSignIn').style.display = 'none';
+    var chip = document.getElementById('navUserChip');
+    chip.style.display = 'flex';
+    var displayName = name.trim() || email.split('@')[0] || 'User';
+    document.getElementById('navUserName').textContent = displayName;
+    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
+  }
+
+  if (role === 'contractor') {
+    // Show view switch
+    document.getElementById('viewSwitch').style.display = 'flex';
+    document.getElementById('contractorBadge').classList.add('show');
+    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
+    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
+  }
+}
+
+function toggleView() {
+  var track = document.getElementById('switchTrack');
+  var isContractor = track.classList.contains('contractor-mode');
+  if (isContractor) {
+    // Switch to client view
+    track.classList.remove('contractor-mode');
+    document.getElementById('switchIconClient').classList.add('active');
+    document.getElementById('switchIconContractor').classList.remove('active');
+  } else {
+    // Switch to contractor view
+    track.classList.add('contractor-mode');
+    document.getElementById('switchIconClient').classList.remove('active');
+    document.getElementById('switchIconContractor').classList.add('active');
+    // Redirect to contractor portal
+    setTimeout(function() {
+      window.location.href = 'contractor.html';
+    }, 300);
+  }
+}
+
+function doSignOut() {
+  localStorage.removeItem('ch_user_role');
+  localStorage.removeItem('ch_user_name');
+  localStorage.removeItem('ch_user_email');
+  localStorage.removeItem('ch_contractor_status');
+  window.location.href = 'signin.html';
+}
+
+initSession();
+
 }
 
 function setAvail(v) {
@@ -413,6 +587,62 @@ function setAvail(v) {
   else if (v === 'available') document.getElementById('avNow').classList.add('active');
   else document.getElementById('avBusy').classList.add('active');
   applyFilters();
+
+// ── SESSION & VIEW SWITCH ──
+function initSession() {
+  var role   = localStorage.getItem('ch_user_role');
+  var name   = localStorage.getItem('ch_user_name') || 'User';
+  var email  = localStorage.getItem('ch_user_email') || '';
+
+  if (role === 'client' || role === 'contractor') {
+    // Show user chip, hide sign in button
+    document.getElementById('navSignIn').style.display = 'none';
+    var chip = document.getElementById('navUserChip');
+    chip.style.display = 'flex';
+    var displayName = name.trim() || email.split('@')[0] || 'User';
+    document.getElementById('navUserName').textContent = displayName;
+    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
+  }
+
+  if (role === 'contractor') {
+    // Show view switch
+    document.getElementById('viewSwitch').style.display = 'flex';
+    document.getElementById('contractorBadge').classList.add('show');
+    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
+    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
+  }
+}
+
+function toggleView() {
+  var track = document.getElementById('switchTrack');
+  var isContractor = track.classList.contains('contractor-mode');
+  if (isContractor) {
+    // Switch to client view
+    track.classList.remove('contractor-mode');
+    document.getElementById('switchIconClient').classList.add('active');
+    document.getElementById('switchIconContractor').classList.remove('active');
+  } else {
+    // Switch to contractor view
+    track.classList.add('contractor-mode');
+    document.getElementById('switchIconClient').classList.remove('active');
+    document.getElementById('switchIconContractor').classList.add('active');
+    // Redirect to contractor portal
+    setTimeout(function() {
+      window.location.href = 'contractor.html';
+    }, 300);
+  }
+}
+
+function doSignOut() {
+  localStorage.removeItem('ch_user_role');
+  localStorage.removeItem('ch_user_name');
+  localStorage.removeItem('ch_user_email');
+  localStorage.removeItem('ch_contractor_status');
+  window.location.href = 'signin.html';
+}
+
+initSession();
+
 }
 
 function updateRate(v) { document.getElementById('rateVal').textContent = (v >= 300) ? 'RM 300+' : 'RM ' + v; }
@@ -438,10 +668,11 @@ function renderSponsoredCard(c) {
   var skills = '';
   for (var i = 0; i < c.skills.length; i++) skills += '<span class="skill-tag">' + c.skills[i] + '</span>';
   var badges = badgesFor(c);
+  var imgTag = '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
   return '<a href="profile.html?id=' + c.id + '" class="mp-card pinned">' +
     '<div class="pinned-ribbon"><i class="ti ti-pin"></i>Sponsored</div>' +
     '<div class="card-photo">' +
-      '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" onerror="this.parentElement.style.background='#f0ede8'">' +
+      imgTag +
       '<span class="card-cat-badge">' + c.cat + '</span>' +
       '<button class="fav-btn' + (isFav ? ' faved' : '') + '" onclick="toggleFav(' + c.id + ',event)">' + (isFav ? '&#10084;&#65039;' : '&#129293;') + '</button>' +
     '</div>' +
@@ -462,9 +693,10 @@ function renderCard(c) {
   var skills = '';
   for (var i = 0; i < c.skills.length; i++) skills += '<span class="skill-tag">' + c.skills[i] + '</span>';
   var badges = badgesFor(c);
+  var imgTag = '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
   return '<a href="profile.html?id=' + c.id + '" class="mp-card">' +
     '<div class="card-photo">' +
-      '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" onerror="this.parentElement.style.background=\'#f0ede8\'">' +
+      imgTag +
       '<span class="card-cat-badge">' + c.cat + '</span>' +
       '<button class="fav-btn' + (isFav ? ' faved' : '') + '" onclick="toggleFav(' + c.id + ',event)">' + (isFav ? '&#10084;&#65039;' : '&#129293;') + '</button>' +
     '</div>' +
@@ -566,6 +798,62 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 applyFilters();
+
+// ── SESSION & VIEW SWITCH ──
+function initSession() {
+  var role   = localStorage.getItem('ch_user_role');
+  var name   = localStorage.getItem('ch_user_name') || 'User';
+  var email  = localStorage.getItem('ch_user_email') || '';
+
+  if (role === 'client' || role === 'contractor') {
+    // Show user chip, hide sign in button
+    document.getElementById('navSignIn').style.display = 'none';
+    var chip = document.getElementById('navUserChip');
+    chip.style.display = 'flex';
+    var displayName = name.trim() || email.split('@')[0] || 'User';
+    document.getElementById('navUserName').textContent = displayName;
+    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
+  }
+
+  if (role === 'contractor') {
+    // Show view switch
+    document.getElementById('viewSwitch').style.display = 'flex';
+    document.getElementById('contractorBadge').classList.add('show');
+    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
+    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
+  }
+}
+
+function toggleView() {
+  var track = document.getElementById('switchTrack');
+  var isContractor = track.classList.contains('contractor-mode');
+  if (isContractor) {
+    // Switch to client view
+    track.classList.remove('contractor-mode');
+    document.getElementById('switchIconClient').classList.add('active');
+    document.getElementById('switchIconContractor').classList.remove('active');
+  } else {
+    // Switch to contractor view
+    track.classList.add('contractor-mode');
+    document.getElementById('switchIconClient').classList.remove('active');
+    document.getElementById('switchIconContractor').classList.add('active');
+    // Redirect to contractor portal
+    setTimeout(function() {
+      window.location.href = 'contractor.html';
+    }, 300);
+  }
+}
+
+function doSignOut() {
+  localStorage.removeItem('ch_user_role');
+  localStorage.removeItem('ch_user_name');
+  localStorage.removeItem('ch_user_email');
+  localStorage.removeItem('ch_contractor_status');
+  window.location.href = 'signin.html';
+}
+
+initSession();
+
 </script>
 </body>
 </html>
