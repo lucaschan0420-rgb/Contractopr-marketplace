@@ -24,7 +24,7 @@
     }
     html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: #0f1117; color: var(--ink); -webkit-font-smoothing: antialiased; }
 
-    /* LOGIN SCREEN */
+    /* LOGIN */
     .login-screen { position: fixed; inset: 0; background: #0f1117; display: flex; align-items: center; justify-content: center; z-index: 999; }
     .login-box { background: #fff; border-radius: var(--radius-lg); padding: 2.5rem; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
     .login-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); margin-bottom: 4px; }
@@ -34,13 +34,11 @@
     .login-label { font-size: 12px; font-weight: 500; display: block; margin-bottom: 5px; }
     .login-input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; outline: none; }
     .login-input:focus { border-color: var(--muted); }
-    .login-btn { width: 100%; padding: 12px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-family: inherit; font-weight: 500; cursor: pointer; margin-top: 0.5rem; }
+    .login-btn { width: 100%; padding: 12px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-family: inherit; font-weight: 500; cursor: pointer; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .login-err { font-size: 12px; color: var(--red); margin-top: 8px; display: none; text-align: center; }
 
     /* LAYOUT */
     .admin-wrap { display: grid; grid-template-columns: 220px 1fr; height: 100vh; overflow: hidden; }
-
-    /* SIDEBAR */
     .sidebar { background: #0f1117; display: flex; flex-direction: column; border-right: 0.5px solid rgba(255,255,255,0.07); }
     .sidebar-header { padding: 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
     .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 16px; color: #fff; }
@@ -53,49 +51,44 @@
     .nav-item.active { background: rgba(196,135,58,0.15); color: var(--warm); }
     .nav-item i { font-size: 16px; width: 20px; flex-shrink: 0; }
     .nav-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 500; }
-    .badge-red    { background: var(--red); color: #fff; }
-    .badge-warm   { background: var(--warm); color: #fff; }
-    .badge-green  { background: var(--green); color: #fff; }
+    .badge-red   { background: var(--red); color: #fff; }
+    .badge-warm  { background: var(--warm); color: #fff; }
+    .badge-green { background: var(--green); color: #fff; }
     .sidebar-footer { padding: 1rem; border-top: 0.5px solid rgba(255,255,255,0.07); }
     .logout-btn { width: 100%; padding: 8px; background: rgba(192,57,43,0.15); border: 0.5px solid rgba(192,57,43,0.3); border-radius: 6px; font-size: 12px; font-family: inherit; color: #e87c6e; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .logout-btn:hover { background: rgba(192,57,43,0.25); }
 
     /* MAIN */
     .main { display: flex; flex-direction: column; overflow: hidden; background: #f0ede8; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #fff; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
     .topbar-title { font-size: 15px; font-weight: 500; }
-    .topbar-right { display: flex; align-items: center; gap: 8px; }
     .admin-chip { display: flex; align-items: center; gap: 7px; padding: 5px 12px 5px 6px; border-radius: 20px; border: 0.5px solid var(--border); background: #fff; font-size: 12px; font-weight: 500; }
     .admin-av { width: 24px; height: 24px; border-radius: 50%; background: var(--red-bg); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--red); }
-
     .content { flex: 1; overflow-y: auto; padding: 1.25rem; }
 
     /* METRICS */
     .metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
     .metric { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
-    .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
     .metric-val { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 4px; }
-    .metric-change { font-size: 11px; display: flex; align-items: center; gap: 3px; }
+    .metric-change { font-size: 11px; }
     .up { color: var(--green); } .down { color: var(--red); } .neutral { color: var(--muted); }
 
     /* CARDS */
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; }
-    .card-last { margin-bottom: 0; }
+    .card:last-child { margin-bottom: 0; }
     .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .card-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
     .card-title i { font-size: 15px; color: var(--muted); }
     .card-action { font-size: 12px; color: var(--blue); cursor: pointer; }
 
-    /* STATUS PILLS */
+    /* PILLS */
     .pill { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
     .pill-pending  { background: var(--orange-bg); color: var(--orange); }
     .pill-partial  { background: var(--blue-bg); color: var(--blue); }
     .pill-verified { background: var(--green-bg); color: var(--green); }
     .pill-premium  { background: #1A1714; color: var(--warm); }
     .pill-rejected { background: var(--red-bg); color: var(--red); }
-    .pill-active   { background: var(--green-bg); color: var(--green); }
-    .pill-paused   { background: #f0ede8; color: var(--muted); }
 
     /* TABLE */
     .data-table { width: 100%; border-collapse: collapse; }
@@ -112,23 +105,22 @@
     .av-purple { background: #eeedfe; color: #534ab7; }
     .contractor-name { font-size: 12px; font-weight: 500; }
     .contractor-sub  { font-size: 10px; color: var(--muted); margin-top: 1px; }
-    .verify-badges-sm { display: flex; flex-wrap: wrap; gap: 3px; }
-    .vbsm { font-size: 9px; font-weight: 500; padding: 1px 5px; border-radius: 3px; }
+    .vbsm { font-size: 9px; font-weight: 500; padding: 1px 5px; border-radius: 3px; margin-right: 2px; }
     .vbsm-ssm     { background: var(--blue-bg); color: var(--blue); }
     .vbsm-cidb    { background: var(--purple-bg); color: var(--purple); }
     .vbsm-id      { background: var(--green-bg); color: var(--green); }
     .vbsm-missing { background: #f0ede8; color: var(--muted); }
 
     /* ACTION BUTTONS */
-    .action-btns { display: flex; gap: 5px; }
-    .btn-approve { padding: 4px 10px; background: var(--green-bg); color: var(--green); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
-    .btn-reject  { padding: 4px 10px; background: var(--red-bg); color: var(--red); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
-    .btn-view    { padding: 4px 10px; background: var(--blue-bg); color: var(--blue); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
-    .btn-premium { padding: 4px 10px; background: #1A1714; color: var(--warm); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 3px; }
-    .btn-icon    { width: 28px; height: 28px; border-radius: 6px; border: 0.5px solid var(--border); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
-    .btn-icon:hover { border-color: var(--border2); color: var(--ink); }
+    .action-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+    .btn-approve { padding: 4px 10px; background: var(--green-bg); color: var(--green); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-reject  { padding: 4px 10px; background: var(--red-bg); color: var(--red); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-view    { padding: 4px 10px; background: var(--blue-bg); color: var(--blue); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-premium { padding: 4px 10px; background: #1A1714; color: var(--warm); border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-credit  { padding: 4px 10px; background: var(--warm-pale); color: var(--warm); border: 0.5px solid rgba(196,135,58,0.3); border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-icon    { width: 28px; height: 28px; border-radius: 6px; border: 0.5px solid var(--border); background: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
 
-    /* TX ROW */
+    /* TX */
     .tx-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
     .tx-row:last-child { border-bottom: none; }
     .tx-type { font-size: 12px; font-weight: 500; }
@@ -136,30 +128,44 @@
     .tx-plus  { font-size: 13px; font-weight: 500; color: var(--green); }
     .tx-minus { font-size: 13px; font-weight: 500; color: var(--red); }
 
-    /* PROGRESS BAR */
+    /* PROGRESS */
     .progress-bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-    .progress-label { font-size: 12px; color: var(--muted2); width: 120px; flex-shrink: 0; }
+    .progress-label { font-size: 12px; color: var(--muted2); width: 130px; flex-shrink: 0; }
     .progress-track { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
     .progress-fill { height: 100%; border-radius: 3px; }
     .fill-green  { background: var(--green); }
     .fill-warm   { background: var(--warm); }
     .fill-blue   { background: var(--blue); }
-    .fill-purple { background: var(--purple); }
     .progress-count { font-size: 11px; color: var(--muted); width: 30px; text-align: right; }
 
-    /* SPONSORED MGMT */
+    /* SPONSORED */
     .sponsored-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
     .sponsored-row:last-child { border-bottom: none; }
     .sponsored-thumb { width: 48px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--bg); }
     .sponsored-info { flex: 1; min-width: 0; }
     .sponsored-name { font-size: 12px; font-weight: 500; }
     .sponsored-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .sponsored-days { font-size: 12px; font-weight: 500; color: var(--warm); white-space: nowrap; }
+
+    /* FORM */
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-label { font-size: 12px; font-weight: 500; }
+    .form-input { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; }
+    .form-input:focus { border-color: var(--muted); }
+    .form-select { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; }
+    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-primary { padding: 10px 20px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-secondary { padding: 10px 20px; background: none; border: 0.5px solid var(--border2); border-radius: 100px; font-size: 13px; cursor: pointer; font-family: inherit; }
+
+    /* TABLE SEARCH */
+    .table-search { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .table-search input, .table-search select { padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: inherit; outline: none; background: #fff; }
+    .table-search input { flex: 1; }
 
     /* MODAL */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
     .modal-overlay.show { display: flex; }
     .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-sm { max-width: 420px; }
     .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: #fff; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
     .modal-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .modal-close { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border); background: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
@@ -167,7 +173,6 @@
     .modal-footer { padding: 14px 20px; border-top: 0.5px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
     .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
     .doc-item { background: var(--bg); border-radius: var(--radius); padding: 12px; display: flex; align-items: center; gap: 8px; }
-    .doc-icon { font-size: 20px; flex-shrink: 0; }
     .doc-label { font-size: 12px; font-weight: 500; }
     .doc-status { font-size: 10px; }
     .doc-ok { color: var(--green); }
@@ -178,23 +183,21 @@
     .detail-val { font-size: 12px; flex: 1; }
     .status-select { padding: 6px 10px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: inherit; background: #fff; outline: none; }
 
+    /* CREDIT QUICK AMOUNTS */
+    .credit-quick { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .credit-quick-btn { padding: 6px 14px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: inherit; cursor: pointer; background: #fff; transition: all .15s; }
+    .credit-quick-btn:hover { border-color: var(--warm); background: var(--warm-pale); color: var(--warm); }
+    .credit-highlight { background: var(--warm-pale); border: 0.5px solid rgba(196,135,58,0.3); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
     /* TOAST */
-    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: all .3s; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* SEARCH INPUT */
-    .table-search { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-    .table-search input { flex: 1; padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; outline: none; background: #fff; }
-    .table-search select { padding: 8px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-family: inherit; outline: none; background: #fff; }
-
-    @media (max-width: 900px) {
-      .metrics { grid-template-columns: repeat(2,1fr); }
-      .grid2 { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .admin-wrap { grid-template-columns: 1fr; }
       .sidebar { display: none; }
-      .metrics { grid-template-columns: 1fr 1fr; }
+      .metrics { grid-template-columns: repeat(2,1fr); }
+      .grid2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -206,19 +209,19 @@
     <div class="login-logo">ContractorHub</div>
     <div class="login-sub"><i class="ti ti-shield-lock"></i>Admin Portal — Restricted Access</div>
     <div class="login-field">
-      <label class="login-label">Admin Username</label>
+      <label class="login-label">Username</label>
       <input class="login-input" id="loginUser" placeholder="admin" type="text" />
     </div>
     <div class="login-field">
       <label class="login-label">Password</label>
       <input class="login-input" id="loginPass" placeholder="••••••••" type="password" onkeydown="if(event.key==='Enter')doLogin()" />
     </div>
-    <button class="login-btn" onclick="doLogin()"><i class="ti ti-login" style="font-size:15px;"></i> Sign in to Admin</button>
+    <button class="login-btn" onclick="doLogin()"><i class="ti ti-login" style="font-size:15px;"></i>Sign in to Admin</button>
     <div class="login-err" id="loginErr">Invalid username or password</div>
   </div>
 </div>
 
-<!-- ADMIN WRAP -->
+<!-- ADMIN -->
 <div class="admin-wrap" id="adminWrap" style="display:none;">
 
   <!-- SIDEBAR -->
@@ -229,19 +232,18 @@
     </div>
     <div class="nav">
       <div class="nav-item active" onclick="show('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-
       <div class="nav-section">Contractors</div>
-      <div class="nav-item" onclick="show('pending',this)"><i class="ti ti-clock"></i>Pending Review<span class="nav-badge badge-red">5</span></div>
+      <div class="nav-item" onclick="show('pending',this)"><i class="ti ti-clock"></i>Pending Review<span class="nav-badge badge-red" id="navPendingBadge">0</span></div>
       <div class="nav-item" onclick="show('contractors',this)"><i class="ti ti-users"></i>All Contractors</div>
-      <div class="nav-item" onclick="show('verification',this)"><i class="ti ti-shield-check"></i>Verification Queue<span class="nav-badge badge-warm">3</span></div>
-
+      <div class="nav-item" onclick="show('verification',this)"><i class="ti ti-shield-check"></i>Verification Queue</div>
       <div class="nav-section">Marketplace</div>
       <div class="nav-item" onclick="show('sponsored',this)"><i class="ti ti-pin"></i>Sponsored Ads</div>
-      <div class="nav-item" onclick="show('credits',this)"><i class="ti ti-credit-card"></i>Credits & Billing</div>
-
+      <div class="nav-section">Finance</div>
+      <div class="nav-item" onclick="show('credits',this)"><i class="ti ti-credit-card"></i>Credits &amp; Billing</div>
+      <div class="nav-item" onclick="show('manual-credit',this)"><i class="ti ti-plus"></i>Add Manual Credit<span class="nav-badge badge-green">NEW</span></div>
       <div class="nav-section">Platform</div>
       <div class="nav-item" onclick="show('users',this)"><i class="ti ti-user"></i>Users</div>
-      <div class="nav-item" onclick="show('reports',this)"><i class="ti ti-chart-bar"></i>Reports & Analytics</div>
+      <div class="nav-item" onclick="show('reports',this)"><i class="ti ti-chart-bar"></i>Reports</div>
       <div class="nav-item" onclick="show('settings',this)"><i class="ti ti-settings"></i>Settings</div>
     </div>
     <div class="sidebar-footer">
@@ -253,248 +255,196 @@
   <div class="main">
     <div class="topbar">
       <div class="topbar-title" id="pageTitle">Dashboard</div>
-      <div class="topbar-right">
-        <div class="admin-chip"><div class="admin-av">AD</div>Admin</div>
-      </div>
+      <div class="admin-chip"><div class="admin-av">AD</div>Admin</div>
     </div>
 
     <div class="content">
 
-      <!-- ── DASHBOARD ── -->
+      <!-- DASHBOARD -->
       <div id="tab-dashboard">
         <div class="metrics">
-          <div class="metric"><div class="metric-label">Total Contractors <i class="ti ti-users"></i></div><div class="metric-val" id="dash-total">—</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+12 this month</div></div>
-          <div class="metric"><div class="metric-label">Pending Review <i class="ti ti-clock"></i></div><div class="metric-val" style="color:var(--orange);" id="dash-pending">—</div><div class="metric-change down">Needs attention</div></div>
-          <div class="metric"><div class="metric-label">Total Users <i class="ti ti-user"></i></div><div class="metric-val">1,842</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+84 this week</div></div>
-          <div class="metric"><div class="metric-label">Revenue (May) <i class="ti ti-coin"></i></div><div class="metric-val">RM 4,280</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i>+22% vs Apr</div></div>
+          <div class="metric"><div class="metric-label">Total Contractors</div><div class="metric-val" id="dash-total">—</div><div class="metric-change neutral">Registered</div></div>
+          <div class="metric"><div class="metric-label">Pending Review</div><div class="metric-val" style="color:var(--orange);" id="dash-pending">—</div><div class="metric-change down">Needs attention</div></div>
+          <div class="metric"><div class="metric-label">Verified</div><div class="metric-val" style="color:var(--green);" id="dash-verified">—</div><div class="metric-change up">Approved</div></div>
+          <div class="metric"><div class="metric-label">Total Credits Issued</div><div class="metric-val" style="color:var(--warm);" id="dash-credits">RM 0</div><div class="metric-change neutral">All time</div></div>
         </div>
-
         <div class="grid2">
-          <div class="card card-last">
+          <div class="card">
             <div class="card-header"><div class="card-title"><i class="ti ti-clock"></i>Awaiting approval</div><div class="card-action" onclick="show('pending',null)">View all →</div></div>
-            <table class="data-table">
-              <tr><th>Contractor</th><th>Submitted</th><th>Action</th></tr>
-              <tbody id="dash-pending-tbody"></tbody></table>
+            <table class="data-table"><thead><tr><th>Contractor</th><th>Submitted</th><th>Actions</th></tr></thead>
+            <tbody id="dash-pending-tbody"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--muted);">Loading...</td></tr></tbody></table>
           </div>
-
-          <div class="card card-last">
-            <div class="card-header"><div class="card-title"><i class="ti ti-chart-pie"></i>Contractor status breakdown</div></div>
-            <div class="progress-bar-wrap"><div class="progress-label">Verified</div><div class="progress-track"><div class="progress-fill fill-green" style="width:52%;"></div></div><div class="progress-count">148</div></div>
-            <div class="progress-bar-wrap"><div class="progress-label">Premium Verified</div><div class="progress-track"><div class="progress-fill fill-warm" style="width:18%;"></div></div><div class="progress-count">52</div></div>
-            <div class="progress-bar-wrap"><div class="progress-label">Partially Verified</div><div class="progress-track"><div class="progress-fill fill-blue" style="width:15%;"></div></div><div class="progress-count">42</div></div>
-            <div class="progress-bar-wrap"><div class="progress-label">Pending</div><div class="progress-track"><div class="progress-fill" style="width:10%;background:var(--orange);"></div></div><div class="progress-count">29</div></div>
-            <div class="progress-bar-wrap"><div class="progress-label">Rejected</div><div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--red);"></div></div><div class="progress-count">13</div></div>
-            <div style="margin-top:1rem;">
-              <div class="card-header" style="margin-bottom:8px;"><div class="card-title"><i class="ti ti-pin"></i>Active sponsored ads</div><div class="card-action" onclick="show('sponsored',null)">Manage →</div></div>
-              <div class="sponsored-row">
-                <img class="sponsored-thumb" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=100&q=60" />
-                <div class="sponsored-info"><div class="sponsored-name">TechBuild Construction</div><div class="sponsored-meta">Construction · G7</div></div>
-                <div class="sponsored-days">12 days left</div>
-              </div>
-              <div class="sponsored-row">
-                <img class="sponsored-thumb" src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=100&q=60" />
-                <div class="sponsored-info"><div class="sponsored-name">EcoReno Malaysia</div><div class="sponsored-meta">Renovation</div></div>
-                <div class="sponsored-days">7 days left</div>
-              </div>
-              <div class="sponsored-row">
-                <img class="sponsored-thumb" src="https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=100&q=60" />
-                <div class="sponsored-info"><div class="sponsored-name">PowerGrid Electrical</div><div class="sponsored-meta">Electrical · Solar</div></div>
-                <div class="sponsored-days">3 days left</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-credit-card"></i>Recent transactions</div><div class="card-action" onclick="show('credits',null)">Full history →</div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div>
-              <div class="tx-row"><div><div class="tx-type">Sponsored Ad — TechBuild</div><div class="tx-date">21 May 2025</div></div><div class="tx-plus">+RM 300</div></div>
-              <div class="tx-row"><div><div class="tx-type">Credit Top Up — EcoReno</div><div class="tx-date">20 May 2025</div></div><div class="tx-plus">+RM 150</div></div>
-              <div class="tx-row" style="border:none;"><div><div class="tx-type">Sponsored Ad — PowerGrid</div><div class="tx-date">19 May 2025</div></div><div class="tx-plus">+RM 200</div></div>
-            </div>
-            <div>
-              <div class="tx-row"><div><div class="tx-type">Credit Top Up — Azrul Hakim</div><div class="tx-date">18 May 2025</div></div><div class="tx-plus">+RM 50</div></div>
-              <div class="tx-row"><div><div class="tx-type">Credit Top Up — Vinod K.</div><div class="tx-date">17 May 2025</div></div><div class="tx-plus">+RM 150</div></div>
-              <div class="tx-row" style="border:none;"><div><div class="tx-type">Refund — Cancelled Ad</div><div class="tx-date">15 May 2025</div></div><div class="tx-minus">-RM 30</div></div>
-            </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="ti ti-coin"></i>Recent credit top-ups</div><div class="card-action" onclick="show('credits',null)">Full history →</div></div>
+            <div id="dash-credits-list"><div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:12px;">No transactions yet</div></div>
           </div>
         </div>
       </div>
 
-      <!-- ── PENDING REVIEW ── -->
+      <!-- PENDING -->
       <div id="tab-pending" style="display:none;">
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-clock"></i>Pending Verification (5)</div></div>
-          <div class="table-search">
-            <input placeholder="Search contractor..." />
-            <select><option>All states</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Penang</option></select>
-          </div>
-          <table class="data-table">
-            <tr><th>Contractor</th><th>Category</th><th>Docs Submitted</th><th>Submitted</th><th>Actions</th></tr>
-            <tbody id="pending-tbody"></tbody></table>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-clock"></i>Pending Verification</div></div>
+          <div class="table-search"><input id="pendingSearch" placeholder="Search contractor..." oninput="renderPending()" /><select onchange="renderPending()"><option>All states</option><option>Kuala Lumpur</option><option>Selangor</option><option>Johor</option><option>Penang</option></select></div>
+          <table class="data-table"><thead><tr><th>Contractor</th><th>Category</th><th>Docs</th><th>Submitted</th><th>Actions</th></tr></thead>
+          <tbody id="pending-tbody"></tbody></table>
         </div>
       </div>
 
-      <!-- ── ALL CONTRACTORS ── -->
+      <!-- ALL CONTRACTORS -->
       <div id="tab-contractors" style="display:none;">
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-users"></i>All Contractors (284)</div></div>
-          <div class="table-search">
-            <input placeholder="Search by name, SSM, category..." />
-            <select><option>All statuses</option><option>Verified</option><option>Premium</option><option>Pending</option><option>Rejected</option></select>
-            <select><option>All categories</option><option>Construction</option><option>Electrical</option><option>Design</option><option>Plumbing</option><option>Renovation</option></select>
-          </div>
-          <table class="data-table">
-            <tr><th>Contractor</th><th>Category</th><th>Status</th><th>State</th><th>Joined</th><th>Actions</th></tr>
-            <tbody id="all-tbody"></tbody></table>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-users"></i>All Contractors</div></div>
+          <div class="table-search"><input placeholder="Search..." /><select><option>All statuses</option><option>Verified</option><option>Premium</option><option>Pending</option><option>Rejected</option></select></div>
+          <table class="data-table"><thead><tr><th>Contractor</th><th>Category</th><th>Status</th><th>State</th><th>Credits</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="all-tbody"></tbody></table>
         </div>
       </div>
 
-      <!-- ── SPONSORED ADS ── -->
-      <div id="tab-sponsored" style="display:none;">
-        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-          <div class="metric"><div class="metric-label">Active Sponsored Ads</div><div class="metric-val">3</div><div class="metric-change neutral">2 expiring soon</div></div>
-          <div class="metric"><div class="metric-label">Revenue This Month</div><div class="metric-val" style="color:var(--warm);">RM 700</div><div class="metric-change up">+RM 200 vs last month</div></div>
-          <div class="metric"><div class="metric-label">Avg. Ad Duration</div><div class="metric-val">18 days</div><div class="metric-change neutral">RM 300 avg spend</div></div>
-        </div>
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-pin"></i>Active Sponsored Placements</div></div>
-          <table class="data-table">
-            <tr><th>Contractor</th><th>Category</th><th>Ad Message</th><th>Start</th><th>Expires</th><th>Paid</th><th>Actions</th></tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-teal">TC</div><div><div class="contractor-name">TechBuild Construction</div><div class="contractor-sub">CIDB G7</div></div></div></td>
-              <td>Construction</td>
-              <td style="font-size:11px;color:var(--muted);max-width:160px;">🏗️ Now accepting projects across Klang Valley</td>
-              <td style="font-size:11px;color:var(--muted);">9 May</td>
-              <td><span class="pill pill-active">2 Jun</span></td>
-              <td style="font-size:12px;font-weight:500;color:var(--green);">RM 300</td>
-              <td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td>
-            </tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-teal">ER</div><div><div class="contractor-name">EcoReno Malaysia</div><div class="contractor-sub">Renovation</div></div></div></td>
-              <td>Renovation</td>
-              <td style="font-size:11px;color:var(--muted);max-width:160px;">✨ Special promo: Free consultation this month</td>
-              <td style="font-size:11px;color:var(--muted);">14 May</td>
-              <td><span class="pill pill-active">28 May</span></td>
-              <td style="font-size:12px;font-weight:500;color:var(--green);">RM 200</td>
-              <td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td>
-            </tr>
-            <tr>
-              <td><div class="contractor-info"><div class="contractor-av av-amber">PG</div><div><div class="contractor-name">PowerGrid Electrical</div><div class="contractor-sub">CIDB G4</div></div></div></td>
-              <td>Electrical</td>
-              <td style="font-size:11px;color:var(--muted);max-width:160px;">⚡ Solar panel installation specialists</td>
-              <td style="font-size:11px;color:var(--muted);">18 May</td>
-              <td><span class="pill" style="background:var(--orange-bg);color:var(--orange);">24 May</span></td>
-              <td style="font-size:12px;font-weight:500;color:var(--green);">RM 200</td>
-              <td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td>
-            </tr>
-          </table>
-          <div style="margin-top:1.25rem;padding-top:1rem;border-top:0.5px solid var(--border);">
-            <div class="card-title" style="margin-bottom:10px;font-size:13px;"><i class="ti ti-package" style="font-size:15px;color:var(--muted);"></i>Sponsored Ad Pricing</div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-              <div style="background:var(--bg);border-radius:var(--radius);padding:12px;text-align:center;border:0.5px solid var(--border);">
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">7 days</div>
-                <div style="font-size:22px;font-weight:500;color:var(--warm);">RM 100</div>
-                <div style="font-size:10px;color:var(--muted);margin-top:2px;">~RM 14/day</div>
-              </div>
-              <div style="background:var(--warm-pale);border-radius:var(--radius);padding:12px;text-align:center;border:1.5px solid var(--warm);">
-                <div style="font-size:10px;font-weight:500;color:var(--warm);margin-bottom:3px;">POPULAR</div>
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">14 days</div>
-                <div style="font-size:22px;font-weight:500;color:var(--warm);">RM 180</div>
-                <div style="font-size:10px;color:var(--muted);margin-top:2px;">~RM 13/day</div>
-              </div>
-              <div style="background:var(--bg);border-radius:var(--radius);padding:12px;text-align:center;border:0.5px solid var(--border);">
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">30 days</div>
-                <div style="font-size:22px;font-weight:500;color:var(--warm);">RM 300</div>
-                <div style="font-size:10px;color:var(--muted);margin-top:2px;">~RM 10/day</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── CREDITS ── -->
-      <div id="tab-credits" style="display:none;">
-        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-          <div class="metric"><div class="metric-label">Total Revenue</div><div class="metric-val" style="color:var(--green);">RM 18,420</div><div class="metric-change up">All time</div></div>
-          <div class="metric"><div class="metric-label">This Month</div><div class="metric-val">RM 4,280</div><div class="metric-change up">+22% vs April</div></div>
-          <div class="metric"><div class="metric-label">Active Credits</div><div class="metric-val">RM 12,840</div><div class="metric-change neutral">Across all contractors</div></div>
-        </div>
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>All Transactions</div></div>
-          <table class="data-table">
-            <tr><th>Contractor</th><th>Type</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr>
-            <tr><td>TechBuild Construction</td><td>Sponsored Ad (30d)</td><td class="tx-plus">+RM 300</td><td style="font-size:11px;">FPX</td><td style="font-size:11px;color:var(--muted);">21 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
-            <tr><td>EcoReno Malaysia</td><td>Credit Top Up</td><td class="tx-plus">+RM 150</td><td style="font-size:11px;">Visa</td><td style="font-size:11px;color:var(--muted);">20 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
-            <tr><td>PowerGrid Electrical</td><td>Sponsored Ad (14d)</td><td class="tx-plus">+RM 200</td><td style="font-size:11px;">FPX</td><td style="font-size:11px;color:var(--muted);">19 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
-            <tr><td>Azrul Hakim</td><td>Credit Top Up</td><td class="tx-plus">+RM 50</td><td style="font-size:11px;">TNG</td><td style="font-size:11px;color:var(--muted);">18 May 2025</td><td><span class="pill pill-verified">Paid</span></td></tr>
-            <tr><td>Ahmad Razali</td><td>Refund — Cancelled Ad</td><td class="tx-minus">-RM 30</td><td style="font-size:11px;">Refund</td><td style="font-size:11px;color:var(--muted);">15 May 2025</td><td><span class="pill pill-rejected">Refunded</span></td></tr>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── REPORTS ── -->
-      <div id="tab-reports" style="display:none;">
-        <div class="metrics">
-          <div class="metric"><div class="metric-label">Total Page Views</div><div class="metric-val">84,291</div><div class="metric-change up">+18% this month</div></div>
-          <div class="metric"><div class="metric-label">Marketplace Searches</div><div class="metric-val">12,840</div><div class="metric-change up">+9% this month</div></div>
-          <div class="metric"><div class="metric-label">Contractor Enquiries</div><div class="metric-val">1,284</div><div class="metric-change up">+24% this month</div></div>
-          <div class="metric"><div class="metric-label">Avg. Session</div><div class="metric-val">4m 32s</div><div class="metric-change up">+12s vs last month</div></div>
-        </div>
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Top categories by enquiry</div></div>
-          <div class="progress-bar-wrap"><div class="progress-label">Construction</div><div class="progress-track"><div class="progress-fill fill-green" style="width:68%;"></div></div><div class="progress-count">874</div></div>
-          <div class="progress-bar-wrap"><div class="progress-label">Renovation</div><div class="progress-track"><div class="progress-fill fill-warm" style="width:52%;"></div></div><div class="progress-count">668</div></div>
-          <div class="progress-bar-wrap"><div class="progress-label">Electrical</div><div class="progress-track"><div class="progress-fill fill-blue" style="width:38%;"></div></div><div class="progress-count">487</div></div>
-          <div class="progress-bar-wrap"><div class="progress-label">Interior Design</div><div class="progress-track"><div class="progress-fill fill-purple" style="width:28%;"></div></div><div class="progress-count">360</div></div>
-          <div class="progress-bar-wrap"><div class="progress-label">Plumbing</div><div class="progress-track"><div class="progress-fill" style="width:18%;background:var(--muted);"></div></div><div class="progress-count">230</div></div>
-        </div>
-      </div>
-
-      <!-- ── VERIFICATION QUEUE ── -->
+      <!-- VERIFICATION QUEUE -->
       <div id="tab-verification" style="display:none;">
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-shield-check"></i>Verification Queue — Documents to Review (3)</div></div>
-          <table class="data-table">
-            <tr><th>Contractor</th><th>Pending Document</th><th>Submitted</th><th>Actions</th></tr>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-shield-check"></i>Verification Queue</div></div>
+          <table class="data-table"><thead><tr><th>Contractor</th><th>Pending Docs</th><th>Submitted</th><th>Actions</th></tr></thead>
           <tbody id="verify-tbody"></tbody></table>
         </div>
       </div>
 
-      <!-- ── USERS ── -->
-      <div id="tab-users" style="display:none;">
+      <!-- SPONSORED ADS -->
+      <div id="tab-sponsored" style="display:none;">
         <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-          <div class="metric"><div class="metric-label">Total Users</div><div class="metric-val">1,842</div><div class="metric-change up">+84 this week</div></div>
-          <div class="metric"><div class="metric-label">New This Month</div><div class="metric-val">284</div><div class="metric-change up">+18%</div></div>
-          <div class="metric"><div class="metric-label">Active Today</div><div class="metric-val">142</div><div class="metric-change neutral">7.7% DAU</div></div>
+          <div class="metric"><div class="metric-label">Active Ads</div><div class="metric-val">3</div></div>
+          <div class="metric"><div class="metric-label">Revenue This Month</div><div class="metric-val" style="color:var(--warm);">RM 700</div></div>
+          <div class="metric"><div class="metric-label">Avg Duration</div><div class="metric-val">18 days</div></div>
         </div>
-        <div class="card card-last">
-          <div class="card-header"><div class="card-title"><i class="ti ti-user"></i>Recent Users</div></div>
-          <table class="data-table">
-            <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th></tr>
-            <tr><td>Hazrul Mahmud</td><td style="font-size:11px;color:var(--muted);">hazrul@gmail.com</td><td><span class="pill pill-partial">Client</span></td><td style="font-size:11px;color:var(--muted);">Today</td><td><span class="pill pill-active">Active</span></td></tr>
-            <tr><td>Liyana Kamarudin</td><td style="font-size:11px;color:var(--muted);">liyana@email.com</td><td><span class="pill pill-partial">Client</span></td><td style="font-size:11px;color:var(--muted);">Yesterday</td><td><span class="pill pill-active">Active</span></td></tr>
-            <tr><td>Ahmad Razali</td><td style="font-size:11px;color:var(--muted);">ahmad@razalicivil.com</td><td><span class="pill pill-premium">Contractor</span></td><td style="font-size:11px;color:var(--muted);">Apr 2025</td><td><span class="pill pill-active">Active</span></td></tr>
-            <tr><td>TechBuild Sdn Bhd</td><td style="font-size:11px;color:var(--muted);">info@techbuild.com</td><td><span class="pill pill-premium">Contractor</span></td><td style="font-size:11px;color:var(--muted);">Mar 2025</td><td><span class="pill pill-active">Active</span></td></tr>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-pin"></i>Active Sponsored Placements</div></div>
+          <table class="data-table"><thead><tr><th>Contractor</th><th>Message</th><th>Expires</th><th>Paid</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>TechBuild Construction</td><td style="font-size:11px;color:var(--muted);">🏗️ Now accepting projects</td><td><span class="pill pill-verified">2 Jun</span></td><td class="tx-plus">RM 300</td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td></tr>
+            <tr><td>EcoReno Malaysia</td><td style="font-size:11px;color:var(--muted);">✨ Free consultation this month</td><td><span class="pill pill-verified">28 May</span></td><td class="tx-plus">RM 200</td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Ad paused')"><i class="ti ti-player-pause"></i></button><button class="btn-reject" onclick="showToast('Ad removed')"><i class="ti ti-trash"></i></button></div></td></tr>
+          </tbody>
           </table>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);">
+            <div style="font-size:12px;font-weight:500;margin-bottom:8px;">Sponsored Ad Pricing</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+              <div style="background:var(--bg);border-radius:var(--radius);padding:12px;text-align:center;border:0.5px solid var(--border);"><div style="font-size:11px;color:var(--muted);">7 days</div><div style="font-size:20px;font-weight:500;color:var(--warm);">RM 100</div></div>
+              <div style="background:var(--warm-pale);border-radius:var(--radius);padding:12px;text-align:center;border:1.5px solid var(--warm);"><div style="font-size:10px;color:var(--warm);font-weight:500;">POPULAR</div><div style="font-size:11px;color:var(--muted);">14 days</div><div style="font-size:20px;font-weight:500;color:var(--warm);">RM 180</div></div>
+              <div style="background:var(--bg);border-radius:var(--radius);padding:12px;text-align:center;border:0.5px solid var(--border);"><div style="font-size:11px;color:var(--muted);">30 days</div><div style="font-size:20px;font-weight:500;color:var(--warm);">RM 300</div></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- ── SETTINGS ── -->
+      <!-- CREDITS & BILLING -->
+      <div id="tab-credits" style="display:none;">
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+          <div class="metric"><div class="metric-label">Total Credits Issued</div><div class="metric-val" style="color:var(--green);" id="credits-total">RM 0</div></div>
+          <div class="metric"><div class="metric-label">Total Transactions</div><div class="metric-val" id="credits-count">0</div></div>
+          <div class="metric"><div class="metric-label">Manual Top-ups</div><div class="metric-val" id="credits-manual">0</div></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+          <button class="btn-primary" onclick="show('manual-credit',null)"><i class="ti ti-plus"></i>Add Manual Credit</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>All Credit Transactions</div></div>
+          <table class="data-table"><thead><tr><th>Contractor</th><th>Email</th><th>Amount</th><th>Note</th><th>By</th><th>Date</th></tr></thead>
+          <tbody id="credits-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- MANUAL CREDIT -->
+      <div id="tab-manual-credit" style="display:none;">
+        <div class="card" style="max-width:560px;margin:0 auto;">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-coin"></i>Add Manual Credit to Contractor</div>
+          </div>
+
+          <div style="background:var(--warm-pale);border:0.5px solid rgba(196,135,58,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;">
+            <i class="ti ti-info-circle" style="font-size:16px;color:var(--warm);flex-shrink:0;margin-top:1px;"></i>
+            <div style="font-size:12px;color:#7a4e1a;line-height:1.6;">
+              This will <strong>immediately add credits</strong> to the contractor's account. Use this for testing, promotions, or manual payments. All transactions are logged.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contractor Email <span style="color:var(--red);">*</span></label>
+            <input class="form-input" id="mc-email" placeholder="contractor@email.com" type="email" />
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;">Must match the email used during registration</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Amount (RM) <span style="color:var(--red);">*</span></label>
+            <div class="credit-quick">
+              <button class="credit-quick-btn" onclick="setAmount(30)">RM 30</button>
+              <button class="credit-quick-btn" onclick="setAmount(50)">RM 50</button>
+              <button class="credit-quick-btn" onclick="setAmount(100)">RM 100</button>
+              <button class="credit-quick-btn" onclick="setAmount(150)">RM 150</button>
+              <button class="credit-quick-btn" onclick="setAmount(300)">RM 300</button>
+            </div>
+            <input class="form-input" id="mc-amount" type="number" placeholder="Enter amount e.g. 50" min="1" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Reason / Note</label>
+            <input class="form-input" id="mc-note" placeholder="e.g. Welcome bonus, Testing credits, Promo..." />
+          </div>
+
+          <div class="credit-highlight" id="mc-preview" style="display:none;">
+            <div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">Adding credits to</div>
+              <div style="font-size:13px;font-weight:500;" id="mc-preview-name">—</div>
+              <div style="font-size:11px;color:var(--muted);" id="mc-preview-bal">Current balance: —</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">New balance</div>
+              <div style="font-size:20px;font-weight:500;color:var(--warm);" id="mc-preview-new">RM —</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn-secondary" onclick="show('credits',null)">Cancel</button>
+            <button class="btn-primary" id="mc-preview-btn" onclick="previewCredit()" style="background:var(--blue);">
+              <i class="ti ti-search"></i>Preview
+            </button>
+            <button class="btn-primary" id="mc-confirm-btn" onclick="confirmCredit()" style="display:none;">
+              <i class="ti ti-check"></i>Confirm &amp; Add Credits
+            </button>
+          </div>
+          <div style="font-size:12px;color:var(--red);margin-top:10px;display:none;" id="mc-error"></div>
+        </div>
+
+        <!-- Recent manual credits -->
+        <div class="card" style="max-width:560px;margin:10px auto 0;">
+          <div class="card-header"><div class="card-title"><i class="ti ti-history"></i>Recent Manual Top-ups</div></div>
+          <table class="data-table"><thead><tr><th>Contractor</th><th>Amount</th><th>Note</th><th>Date</th></tr></thead>
+          <tbody id="manual-history-tbody"><tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--muted);">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div id="tab-reports" style="display:none;">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Total Page Views</div><div class="metric-val">—</div><div class="metric-change neutral">Analytics coming soon</div></div>
+          <div class="metric"><div class="metric-label">Searches</div><div class="metric-val">—</div></div>
+          <div class="metric"><div class="metric-label">Enquiries</div><div class="metric-val">—</div></div>
+          <div class="metric"><div class="metric-label">Avg Session</div><div class="metric-val">—</div></div>
+        </div>
+        <div class="card"><div style="text-align:center;padding:2rem;color:var(--muted);">Full analytics coming soon.</div></div>
+      </div>
+
+      <!-- USERS -->
+      <div id="tab-users" style="display:none;">
+        <div class="card"><div style="text-align:center;padding:2rem;color:var(--muted);">User management coming soon.</div></div>
+      </div>
+
+      <!-- SETTINGS -->
       <div id="tab-settings" style="display:none;">
-        <div class="card card-last">
+        <div class="card">
           <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i>Platform Settings</div></div>
           <div class="detail-row"><div class="detail-label">Platform name</div><div class="detail-val">ContractorHub</div></div>
           <div class="detail-row"><div class="detail-label">Admin email</div><div class="detail-val">admin@contractorhub.com.my</div></div>
-          <div class="detail-row"><div class="detail-label">Verification mode</div><div class="detail-val"><select class="status-select"><option>Manual review required</option><option>Auto-approve with documents</option></select></div></div>
-          <div class="detail-row"><div class="detail-label">New contractor</div><div class="detail-val"><select class="status-select"><option>Pending by default</option><option>Partial by default</option></select></div></div>
-          <div class="detail-row" style="border:none;"><div class="detail-label">Sponsored pricing</div>
-            <div class="detail-val">
-              7 days: <strong>RM 100</strong> &nbsp;·&nbsp; 14 days: <strong>RM 180</strong> &nbsp;·&nbsp; 30 days: <strong>RM 300</strong>
-              <div style="font-size:11px;color:var(--muted);margin-top:3px;">Edit in Credits & Billing section</div>
-            </div>
-          </div>
+          <div class="detail-row" style="border:none;"><div class="detail-label">Sponsored pricing</div><div class="detail-val">7d: RM100 · 14d: RM180 · 30d: RM300</div></div>
         </div>
       </div>
 
@@ -506,8 +456,8 @@
 <div class="modal-overlay" id="detailModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title"><i class="ti ti-user"></i><span id="modalName">Contractor Details</span></div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title"><i class="ti ti-user"></i><span id="modalName">Details</span></div>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
     </div>
     <div class="modal-body">
       <div class="detail-row"><div class="detail-label">Company</div><div class="detail-val" id="md-company">—</div></div>
@@ -518,34 +468,53 @@
       <div class="detail-row"><div class="detail-label">Email</div><div class="detail-val" id="md-email">—</div></div>
       <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-val" id="md-phone">—</div></div>
       <div class="detail-row"><div class="detail-label">Experience</div><div class="detail-val" id="md-exp">—</div></div>
-      <div class="detail-row"><div class="detail-label">Warranty</div><div class="detail-val" id="md-warranty">—</div></div>
-      <div class="detail-row"><div class="detail-label">Insurance</div><div class="detail-val" id="md-insurance">—</div></div>
-      <div class="detail-row"><div class="detail-label">Verification Status</div>
-        <div class="detail-val">
-          <select class="status-select" id="md-status">
-            <option>Pending Verification</option>
-            <option>Partially Verified</option>
-            <option>Verified</option>
-            <option>Premium Verified</option>
-            <option>Rejected</option>
-          </select>
-        </div>
+      <div class="detail-row"><div class="detail-label">Credit Balance</div><div class="detail-val" id="md-credits" style="color:var(--warm);font-weight:500;">—</div></div>
+      <div class="detail-row"><div class="detail-label">Status</div>
+        <div class="detail-val"><select class="status-select" id="md-status"><option>Pending Verification</option><option>Partially Verified</option><option>Verified</option><option>Premium Verified</option><option>Rejected</option></select></div>
       </div>
-      <div style="margin-top:12px;margin-bottom:8px;font-size:12px;font-weight:500;">Documents Submitted</div>
+      <div style="margin-top:12px;margin-bottom:8px;font-size:12px;font-weight:500;">Documents</div>
       <div class="doc-grid" id="md-docs"></div>
       <div style="margin-top:8px;">
         <div style="font-size:12px;font-weight:500;margin-bottom:6px;">Admin Notes</div>
-        <textarea style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;resize:none;outline:none;" rows="3" placeholder="Add internal notes here..."></textarea>
+        <textarea style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:12px;font-family:inherit;resize:none;outline:none;" rows="3" id="md-notes" placeholder="Internal notes..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
-      <button style="padding:9px 18px;background:var(--red-bg);color:var(--red);border:none;border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="rejectContractor('');closeModal()"><i class="ti ti-x"></i> Reject</button>
-      <button style="padding:9px 18px;background:var(--ink);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="approveFromModal()"><i class="ti ti-check"></i> Approve & Verify</button>
+      <button style="padding:9px 18px;background:var(--warm-pale);color:var(--warm);border:0.5px solid rgba(196,135,58,0.3);border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="openQuickCredit()"><i class="ti ti-coin"></i> Add Credit</button>
+      <button style="padding:9px 18px;background:var(--red-bg);color:var(--red);border:none;border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="updateStatus(document.getElementById('detailModal').dataset.id,'rejected');closeModal('detailModal')"><i class="ti ti-x"></i> Reject</button>
+      <button style="padding:9px 18px;background:var(--ink);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;" onclick="approveFromModal()"><i class="ti ti-check"></i> Approve</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
+<!-- QUICK CREDIT MODAL -->
+<div class="modal-overlay" id="quickCreditModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-coin"></i>Quick Credit Top-up</div>
+      <button class="modal-close" onclick="closeModal('quickCreditModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;font-weight:500;margin-bottom:12px;" id="qc-name">—</div>
+      <div class="form-group">
+        <label class="form-label">Amount (RM)</label>
+        <div class="credit-quick">
+          <button class="credit-quick-btn" onclick="setQCAmount(30)">RM 30</button>
+          <button class="credit-quick-btn" onclick="setQCAmount(50)">RM 50</button>
+          <button class="credit-quick-btn" onclick="setQCAmount(100)">RM 100</button>
+          <button class="credit-quick-btn" onclick="setQCAmount(150)">RM 150</button>
+        </div>
+        <input class="form-input" id="qc-amount" type="number" placeholder="Enter amount" />
+      </div>
+      <div class="form-group"><label class="form-label">Note</label><input class="form-input" id="qc-note" placeholder="e.g. Welcome bonus, Testing..." /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('quickCreditModal')">Cancel</button>
+      <button class="btn-primary" onclick="submitQuickCredit()"><i class="ti ti-check"></i>Add Credits</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -555,8 +524,8 @@ var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
 var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var allContractors = [];
+var currentDetailId = null;
 
-/* ── LOGIN ── */
 function doLogin() {
   var u = document.getElementById('loginUser').value;
   var p = document.getElementById('loginPass').value;
@@ -576,7 +545,6 @@ function doLogout() {
   document.getElementById('loginPass').value = '';
 }
 
-/* ── LOAD DATA ── */
 async function loadAllData() {
   try {
     var res = await sb.from('contractor_registrations').select('*').order('created_at', { ascending: false });
@@ -586,74 +554,74 @@ async function loadAllData() {
     renderPending();
     renderAllContractors();
     renderVerificationQueue();
+    loadCreditsTab();
+    loadManualHistory();
   } catch(e) {
     console.error('Load error:', e);
+    showToast('Error loading data: ' + e.message);
   }
 }
 
-/* ── DASHBOARD ── */
 function renderDashboard() {
-  var total   = allContractors.length;
-  var pending = allContractors.filter(function(c){ return c.status === 'pending'; }).length;
-  var el1 = document.getElementById('dash-total');
-  var el2 = document.getElementById('dash-pending');
-  if (el1) el1.textContent = total;
-  if (el2) el2.textContent = pending;
-  var nb = document.querySelector('.nav-badge.badge-red');
-  if (nb) nb.textContent = pending;
+  var total    = allContractors.length;
+  var pending  = allContractors.filter(function(c){ return c.status === 'pending'; }).length;
+  var verified = allContractors.filter(function(c){ return c.status === 'verified' || c.status === 'premium_verified'; }).length;
+  var totalCredits = allContractors.reduce(function(sum, c){ return sum + (c.credit_total_added || 0); }, 0);
 
-  // Fill dashboard pending table (show latest 3)
+  var el = document.getElementById('dash-total');    if (el) el.textContent = total;
+  var el2 = document.getElementById('dash-pending'); if (el2) el2.textContent = pending;
+  var el3 = document.getElementById('dash-verified'); if (el3) el3.textContent = verified;
+  var el4 = document.getElementById('dash-credits');  if (el4) el4.textContent = 'RM ' + totalCredits;
+  var nb = document.getElementById('navPendingBadge'); if (nb) nb.textContent = pending;
+
   var tbody = document.getElementById('dash-pending-tbody');
   if (!tbody) return;
   var pendingList = allContractors.filter(function(c){ return c.status === 'pending'; }).slice(0, 3);
   if (!pendingList.length) {
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:1rem;color:#8A8178;">No pending applications ✓</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:1rem;color:var(--muted);">No pending applications ✓</td></tr>';
     return;
   }
   var html = '';
   for (var i = 0; i < pendingList.length; i++) {
     var c = pendingList[i];
     var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
-    html += '<tr>';
-    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<tr><td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
     html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
-    html += '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + ' · ' + (c.state||'') + '</div></div></div></td>';
-    html += '<td style="color:#8A8178;font-size:11px;">' + timeAgo(c.created_at) + '</td>';
+    html += '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + '</div></div></div></td>';
+    html += '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>';
     html += '<td><div class="action-btns">';
     html += '<button class="btn-approve" data-id="' + c.id + '" data-action="verified"><i class="ti ti-check"></i>Approve</button>';
-    html += '<button class="btn-reject" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-x"></i></button>';
-    html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i></button>';
+    html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i>View</button>';
     html += '</div></td></tr>';
   }
   tbody.innerHTML = html;
 }
 
-/* ── PENDING TABLE ── */
 function renderPending() {
-  var pending = allContractors.filter(function(c){ return c.status === 'pending'; });
+  var q = (document.getElementById('pendingSearch') ? document.getElementById('pendingSearch').value : '').toLowerCase();
+  var list = allContractors.filter(function(c){ return c.status === 'pending' && (!q || (c.first_name+' '+c.last_name).toLowerCase().includes(q) || (c.company_name||'').toLowerCase().includes(q)); });
   var tbody = document.getElementById('pending-tbody');
   if (!tbody) return;
-  if (!pending.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#8A8178;">No pending applications</td></tr>';
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);">No pending applications ✓</td></tr>';
     return;
   }
   var html = '';
-  for (var i = 0; i < pending.length; i++) {
-    var c = pending[i];
+  for (var i = 0; i < list.length; i++) {
+    var c = list[i];
     var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
     var docs = '';
-    if (c.ssm_number)   docs += '<span class="vbsm vbsm-ssm">SSM</span> ';
-    if (c.has_cidb)     docs += '<span class="vbsm vbsm-cidb">CIDB</span> ';
-    if (c.doc_ic_front) docs += '<span class="vbsm vbsm-id">IC</span> ';
-    if (c.doc_selfie)   docs += '<span class="vbsm vbsm-id">Selfie</span> ';
+    if (c.ssm_number)    docs += '<span class="vbsm vbsm-ssm">SSM</span>';
+    if (c.has_cidb)      docs += '<span class="vbsm vbsm-cidb">CIDB</span>';
+    if (c.doc_ic_front)  docs += '<span class="vbsm vbsm-id">IC</span>';
+    if (c.doc_selfie)    docs += '<span class="vbsm vbsm-id">Selfie</span>';
     if (c.doc_projects && c.doc_projects.length) docs += '<span class="vbsm vbsm-id">Portfolio</span>';
-    html += '<tr>';
-    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<tr><td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
     html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
     html += '<div class="contractor-sub">' + (c.company_name||'') + '</div></div></div></td>';
-    html += '<td>' + (c.categories ? c.categories[0] : '-') + '</td>';
-    html += '<td><div class="verify-badges-sm">' + docs + '</div></td>';
-    html += '<td style="font-size:11px;color:#8A8178;">' + timeAgo(c.created_at) + '</td>';
+    html += '<td>' + (c.categories ? c.categories[0] : '—') + '</td>';
+    html += '<td>' + docs + '</td>';
+    html += '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>';
     html += '<td><div class="action-btns">';
     html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i>Review</button>';
     html += '<button class="btn-approve" data-id="' + c.id + '" data-action="verified"><i class="ti ti-check"></i>Approve</button>';
@@ -663,14 +631,9 @@ function renderPending() {
   tbody.innerHTML = html;
 }
 
-/* ── ALL CONTRACTORS ── */
 function renderAllContractors() {
   var tbody = document.getElementById('all-tbody');
   if (!tbody) return;
-  if (!allContractors.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#8A8178;">No contractors yet</td></tr>';
-    return;
-  }
   var statusClass = { pending:'pill-pending', partially_verified:'pill-partial', verified:'pill-verified', premium_verified:'pill-premium', rejected:'pill-rejected' };
   var statusText  = { pending:'Pending', partially_verified:'Partial', verified:'Verified', premium_verified:'Premium', rejected:'Rejected' };
   var html = '';
@@ -678,33 +641,30 @@ function renderAllContractors() {
     var c = allContractors[i];
     var ini = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
     var pc = statusClass[c.status] || 'pill-pending';
-    var pt = statusText[c.status]  || 'Pending';
-    html += '<tr>';
-    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    var pt = statusText[c.status] || 'Pending';
+    html += '<tr><td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
     html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
-    html += '<div class="contractor-sub">' + (c.ssm_number||'') + '</div></div></div></td>';
-    html += '<td>' + (c.categories ? c.categories[0] : '-') + '</td>';
+    html += '<div class="contractor-sub">' + (c.email||'') + '</div></div></div></td>';
+    html += '<td>' + (c.categories ? c.categories[0] : '—') + '</td>';
     html += '<td><span class="pill ' + pc + '">' + pt + '</span></td>';
-    html += '<td>' + (c.state||'-') + '</td>';
-    html += '<td style="font-size:11px;color:#8A8178;">' + timeAgo(c.created_at) + '</td>';
+    html += '<td>' + (c.state||'—') + '</td>';
+    html += '<td style="font-weight:500;color:var(--warm);">RM ' + (c.credit_balance||0) + '</td>';
+    html += '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>';
     html += '<td><div class="action-btns">';
     html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i>View</button>';
+    html += '<button class="btn-credit" data-id="' + c.id + '" data-action="quick-credit"><i class="ti ti-coin"></i>Credit</button>';
     html += '<button class="btn-premium" data-id="' + c.id + '" data-action="premium_verified"><i class="ti ti-star"></i></button>';
-    html += '<button class="btn-icon" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-ban"></i></button>';
     html += '</div></td></tr>';
   }
-  tbody.innerHTML = html;
+  tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted);">No contractors yet</td></tr>';
 }
 
-/* ── VERIFICATION QUEUE ── */
 function renderVerificationQueue() {
-  var queue = allContractors.filter(function(c) {
-    return c.status === 'pending' && (c.doc_cidb_cert || c.doc_ic_front || c.doc_selfie);
-  });
+  var queue = allContractors.filter(function(c){ return c.status === 'pending' && (c.doc_cidb_cert || c.doc_ic_front || c.doc_selfie); });
   var tbody = document.getElementById('verify-tbody');
   if (!tbody) return;
   if (!queue.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:#8A8178;">No documents pending</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted);">No documents pending ✓</td></tr>';
     return;
   }
   var html = '';
@@ -715,17 +675,12 @@ function renderVerificationQueue() {
     if (c.doc_cidb_cert) docs.push('CIDB Certificate');
     if (c.doc_ic_front)  docs.push('IC Documents');
     if (c.doc_selfie)    docs.push('Selfie Verification');
-    var docsHtml = '';
-    for (var d = 0; d < docs.length; d++) {
-      docsHtml += '<span class="vbsm vbsm-id" style="font-size:11px;padding:3px 8px;">' + docs[d] + '</span> ';
-    }
-    html += '<tr>';
-    html += '<td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
-    html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div>';
-    html += '<div class="contractor-sub">' + (c.categories ? c.categories[0] : '') + '</div></div></div></td>';
-    html += '<td>' + docsHtml + '</td>';
-    html += '<td style="font-size:11px;color:#8A8178;">' + timeAgo(c.created_at) + '</td>';
+    html += '<tr><td><div class="contractor-info"><div class="contractor-av av-teal">' + ini + '</div>';
+    html += '<div><div class="contractor-name">' + (c.first_name||'') + ' ' + (c.last_name||'') + '</div></div></div></td>';
+    html += '<td>' + docs.map(function(d){ return '<span class="vbsm vbsm-id">' + d + '</span>'; }).join(' ') + '</td>';
+    html += '<td style="font-size:11px;color:var(--muted);">' + timeAgo(c.created_at) + '</td>';
     html += '<td><div class="action-btns">';
+    html += '<button class="btn-view" data-id="' + c.id + '" data-action="detail"><i class="ti ti-eye"></i>Review</button>';
     html += '<button class="btn-approve" data-id="' + c.id + '" data-action="verified"><i class="ti ti-check"></i>Approve</button>';
     html += '<button class="btn-reject" data-id="' + c.id + '" data-action="rejected"><i class="ti ti-x"></i>Reject</button>';
     html += '</div></td></tr>';
@@ -733,55 +688,188 @@ function renderVerificationQueue() {
   tbody.innerHTML = html;
 }
 
-/* ── UPDATE STATUS ── */
-async function updateStatus(id, newStatus) {
+async function loadCreditsTab() {
   try {
-    var res = await sb.from('contractor_registrations').update({
-      status: newStatus,
-      reviewed_at: new Date().toISOString(),
-      reviewed_by: 'admin'
-    }).eq('id', id);
+    var res = await sb.from('credit_transactions').select('*').order('created_at', { ascending: false }).limit(50);
     if (res.error) throw res.error;
-    var msgs = {
-      verified: '✓ Contractor verified',
-      premium_verified: '★ Upgraded to Premium',
-      rejected: '✗ Application rejected',
-      partially_verified: 'Set to Partially Verified'
-    };
-    showToast(msgs[newStatus] || 'Status updated');
+    var txs = res.data || [];
+    var total = txs.reduce(function(s, t){ return s + (t.amount||0); }, 0);
+    var manualCount = txs.filter(function(t){ return t.type === 'manual'; }).length;
+    var el1 = document.getElementById('credits-total');   if (el1) el1.textContent = 'RM ' + total;
+    var el2 = document.getElementById('credits-count');   if (el2) el2.textContent = txs.length;
+    var el3 = document.getElementById('credits-manual');  if (el3) el3.textContent = manualCount;
+    var el4 = document.getElementById('dash-credits');    if (el4) el4.textContent = 'RM ' + total;
+
+    var tbody = document.getElementById('credits-tbody');
+    if (!tbody) return;
+    if (!txs.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No transactions yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = txs.map(function(tx) {
+      return '<tr>' +
+        '<td style="font-size:12px;font-weight:500;">' + (tx.contractor_email ? tx.contractor_email.split('@')[0] : '—') + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);">' + (tx.contractor_email||'—') + '</td>' +
+        '<td class="tx-plus">+RM ' + tx.amount + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);">' + (tx.note||'Manual top-up') + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);">' + (tx.added_by||'admin') + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);">' + timeAgo(tx.created_at) + '</td>' +
+      '</tr>';
+    }).join('');
+
+    // Dashboard credits list
+    var dashList = document.getElementById('dash-credits-list');
+    if (dashList) {
+      var recent = txs.slice(0, 4);
+      dashList.innerHTML = recent.map(function(tx) {
+        return '<div class="tx-row"><div><div class="tx-type">' + (tx.contractor_email ? tx.contractor_email.split('@')[0] : '—') + '</div><div class="tx-date">' + (tx.note||'Manual') + ' · ' + timeAgo(tx.created_at) + '</div></div><div class="tx-plus">+RM ' + tx.amount + '</div></div>';
+      }).join('') || '<div style="text-align:center;padding:1rem;color:var(--muted);font-size:12px;">No transactions yet</div>';
+    }
+  } catch(e) {
+    console.error('Credits error:', e);
+  }
+}
+
+async function loadManualHistory() {
+  try {
+    var res = await sb.from('credit_transactions').select('*').eq('type', 'manual').order('created_at', { ascending: false }).limit(10);
+    if (res.error) throw res.error;
+    var tbody = document.getElementById('manual-history-tbody');
+    if (!tbody) return;
+    var txs = res.data || [];
+    if (!txs.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--muted);">No manual top-ups yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = txs.map(function(tx) {
+      return '<tr>' +
+        '<td style="font-size:12px;">' + (tx.contractor_email||'—') + '</td>' +
+        '<td class="tx-plus">+RM ' + tx.amount + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);">' + (tx.note||'—') + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);">' + timeAgo(tx.created_at) + '</td>' +
+      '</tr>';
+    }).join('');
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+var mcPreviewData = null;
+
+function setAmount(v) { document.getElementById('mc-amount').value = v; mcPreviewData = null; document.getElementById('mc-preview').style.display = 'none'; document.getElementById('mc-confirm-btn').style.display = 'none'; document.getElementById('mc-preview-btn').style.display = 'inline-flex'; }
+function setQCAmount(v) { document.getElementById('qc-amount').value = v; }
+
+async function previewCredit() {
+  var email  = document.getElementById('mc-email').value.trim();
+  var amount = parseInt(document.getElementById('mc-amount').value);
+  var errEl  = document.getElementById('mc-error');
+  errEl.style.display = 'none';
+
+  if (!email) { errEl.textContent = 'Please enter contractor email'; errEl.style.display = 'block'; return; }
+  if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount'; errEl.style.display = 'block'; return; }
+
+  try {
+    var res = await sb.from('contractor_registrations').select('id, first_name, last_name, email, credit_balance').eq('email', email).single();
+    if (res.error || !res.data) { errEl.textContent = 'Contractor not found with email: ' + email; errEl.style.display = 'block'; return; }
+    mcPreviewData = res.data;
+    var current = mcPreviewData.credit_balance || 0;
+    var name = (mcPreviewData.first_name||'') + ' ' + (mcPreviewData.last_name||'');
+    document.getElementById('mc-preview-name').textContent = name + ' (' + email + ')';
+    document.getElementById('mc-preview-bal').textContent = 'Current balance: RM ' + current;
+    document.getElementById('mc-preview-new').textContent = 'RM ' + (current + amount);
+    document.getElementById('mc-preview').style.display = 'flex';
+    document.getElementById('mc-preview-btn').style.display = 'none';
+    document.getElementById('mc-confirm-btn').style.display = 'inline-flex';
+  } catch(e) {
+    document.getElementById('mc-error').textContent = 'Error: ' + e.message;
+    document.getElementById('mc-error').style.display = 'block';
+  }
+}
+
+async function confirmCredit() {
+  if (!mcPreviewData) return;
+  var amount = parseInt(document.getElementById('mc-amount').value);
+  var note   = document.getElementById('mc-note').value.trim() || 'Manual credit by admin';
+  await addCredit(mcPreviewData.id, mcPreviewData.email, amount, note);
+  document.getElementById('mc-email').value = '';
+  document.getElementById('mc-amount').value = '';
+  document.getElementById('mc-note').value = '';
+  document.getElementById('mc-preview').style.display = 'none';
+  document.getElementById('mc-confirm-btn').style.display = 'none';
+  document.getElementById('mc-preview-btn').style.display = 'inline-flex';
+  mcPreviewData = null;
+}
+
+async function addCredit(contractorId, email, amount, note) {
+  try {
+    var find = await sb.from('contractor_registrations').select('credit_balance, credit_total_added').eq('id', contractorId).single();
+    if (find.error) throw find.error;
+    var current    = find.data.credit_balance || 0;
+    var totalAdded = find.data.credit_total_added || 0;
+    var upd = await sb.from('contractor_registrations').update({ credit_balance: current + amount, credit_total_added: totalAdded + amount }).eq('id', contractorId);
+    if (upd.error) throw upd.error;
+    var log = await sb.from('credit_transactions').insert({ contractor_id: contractorId, contractor_email: email, amount: amount, type: 'manual', note: note, added_by: 'admin' });
+    if (log.error) throw log.error;
+    showToast('✅ Added RM ' + amount + ' to ' + email);
     await loadAllData();
-    closeModal();
   } catch(e) {
     showToast('Error: ' + e.message);
   }
 }
 
-/* ── OPEN DETAIL MODAL ── */
-async function openDetail(id) {
-  var c = null;
-  for (var i = 0; i < allContractors.length; i++) {
-    if (allContractors[i].id === id) { c = allContractors[i]; break; }
-  }
+function openQuickCredit() {
+  var id = document.getElementById('detailModal').dataset.id;
+  var c  = allContractors.find(function(x){ return x.id === id; });
   if (!c) return;
+  document.getElementById('qc-name').textContent = (c.first_name||'') + ' ' + (c.last_name||'') + ' · RM ' + (c.credit_balance||0) + ' current';
+  document.getElementById('qc-amount').value = '';
+  document.getElementById('qc-note').value = '';
+  document.getElementById('quickCreditModal').dataset.id = id;
+  document.getElementById('quickCreditModal').dataset.email = c.email;
+  document.getElementById('quickCreditModal').classList.add('show');
+}
 
+async function submitQuickCredit() {
+  var id     = document.getElementById('quickCreditModal').dataset.id;
+  var email  = document.getElementById('quickCreditModal').dataset.email;
+  var amount = parseInt(document.getElementById('qc-amount').value);
+  var note   = document.getElementById('qc-note').value.trim() || 'Manual credit by admin';
+  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
+  closeModal('quickCreditModal');
+  await addCredit(id, email, amount, note);
+}
+
+async function updateStatus(id, newStatus) {
+  try {
+    var res = await sb.from('contractor_registrations').update({ status: newStatus, reviewed_at: new Date().toISOString(), reviewed_by: 'admin' }).eq('id', id);
+    if (res.error) throw res.error;
+    var msgs = { verified:'✓ Contractor verified', premium_verified:'★ Upgraded to Premium', rejected:'✗ Application rejected', partially_verified:'◑ Partially verified' };
+    showToast(msgs[newStatus] || 'Status updated');
+    await loadAllData();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+}
+
+async function openDetail(id) {
+  var c = allContractors.find(function(x){ return x.id === id; });
+  if (!c) return;
+  currentDetailId = id;
   document.getElementById('modalName').textContent = (c.first_name||'') + ' ' + (c.last_name||'');
-  document.getElementById('md-company').textContent  = c.company_name || '-';
-  document.getElementById('md-ssm').textContent      = c.ssm_number   || '-';
-  document.getElementById('md-cat').textContent      = c.categories ? c.categories.join(', ') : '-';
-  document.getElementById('md-state').textContent    = c.state        || '-';
+  document.getElementById('md-company').textContent  = c.company_name || '—';
+  document.getElementById('md-ssm').textContent      = c.ssm_number   || '—';
+  document.getElementById('md-cat').textContent      = c.categories ? c.categories.join(', ') : '—';
+  document.getElementById('md-state').textContent    = c.state        || '—';
   document.getElementById('md-cidb').textContent     = c.has_cidb ? ((c.cidb_grade||'') + (c.cidb_number ? ' · ' + c.cidb_number : '')) : 'Not registered';
-  document.getElementById('md-email').textContent    = c.email        || '-';
-  document.getElementById('md-phone').textContent    = c.company_phone || c.phone || '-';
-  document.getElementById('md-exp').textContent      = c.years_experience || '-';
-  document.getElementById('md-warranty').textContent = c.has_warranty ? ('Yes · ' + (c.warranty_duration||'')) : 'No';
-  document.getElementById('md-insurance').textContent = c.has_insurance ? 'Yes' : 'No';
+  document.getElementById('md-email').textContent    = c.email        || '—';
+  document.getElementById('md-phone').textContent    = c.company_phone || c.phone || '—';
+  document.getElementById('md-exp').textContent      = c.years_experience || '—';
+  document.getElementById('md-credits').textContent  = 'RM ' + (c.credit_balance||0);
 
   var sel = document.getElementById('md-status');
   var statusMap = { pending:'Pending Verification', partially_verified:'Partially Verified', verified:'Verified', premium_verified:'Premium Verified', rejected:'Rejected' };
-  var targetText = statusMap[c.status] || 'Pending Verification';
-  for (var s = 0; s < sel.options.length; s++) {
-    if (sel.options[s].text === targetText) { sel.selectedIndex = s; break; }
-  }
+  var target = statusMap[c.status] || 'Pending Verification';
+  for (var s = 0; s < sel.options.length; s++) { if (sel.options[s].text === target) { sel.selectedIndex = s; break; } }
 
   var docDefs = [
     { key:'doc_ic_front',  label:'IC Front' },
@@ -791,72 +879,58 @@ async function openDetail(id) {
     { key:'doc_logo',      label:'Company Logo' }
   ];
   var docsHtml = '';
-  for (var dd = 0; dd < docDefs.length; dd++) {
-    var def = docDefs[dd];
+  for (var d = 0; d < docDefs.length; d++) {
+    var def = docDefs[d];
     var path = c[def.key];
     if (path) {
       var url = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + path;
       var isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
       docsHtml += '<div class="doc-item" style="flex-direction:column;align-items:flex-start;gap:6px;">';
-      docsHtml += '<div style="display:flex;align-items:center;gap:8px;width:100%;">';
-      docsHtml += '<div class="doc-icon">✅</div>';
+      docsHtml += '<div style="display:flex;align-items:center;gap:8px;width:100%;"><div style="font-size:16px;">✅</div>';
       docsHtml += '<div style="flex:1;"><div class="doc-label">' + def.label + '</div><div class="doc-status doc-ok">Submitted</div></div>';
-      docsHtml += '<a href="' + url + '" target="_blank" style="font-size:11px;color:#185FA5;text-decoration:none;"><i class="ti ti-external-link"></i> View</a>';
-      docsHtml += '</div>';
+      docsHtml += '<a href="' + url + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:3px;"><i class="ti ti-external-link"></i>View</a></div>';
       if (isImg) docsHtml += '<img src="' + url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;" />';
       docsHtml += '</div>';
     } else {
-      docsHtml += '<div class="doc-item"><div class="doc-icon">📄</div>';
-      docsHtml += '<div><div class="doc-label">' + def.label + '</div><div class="doc-status doc-missing">Not submitted</div></div></div>';
+      docsHtml += '<div class="doc-item"><div style="font-size:16px;">📄</div><div><div class="doc-label">' + def.label + '</div><div class="doc-status doc-missing">Not submitted</div></div></div>';
     }
-  }
-  if (c.doc_projects && c.doc_projects.length) {
-    docsHtml += '<div class="doc-item" style="flex-direction:column;grid-column:1/-1;">';
-    docsHtml += '<div style="font-size:12px;font-weight:500;margin-bottom:6px;">Project Photos (' + c.doc_projects.length + ')</div>';
-    docsHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;">';
-    for (var pp = 0; pp < c.doc_projects.length; pp++) {
-      var purl = SUPABASE_URL + '/storage/v1/object/public/contractor-docs/' + c.doc_projects[pp];
-      docsHtml += '<a href="' + purl + '" target="_blank"><img src="' + purl + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:5px;" /></a>';
-    }
-    docsHtml += '</div></div>';
   }
   document.getElementById('md-docs').innerHTML = docsHtml;
-  document.getElementById('detailModal').dataset.contractorId = id;
+  document.getElementById('detailModal').dataset.id = id;
   document.getElementById('detailModal').classList.add('show');
 }
 
-function closeModal() {
-  document.getElementById('detailModal').classList.remove('show');
-}
-
 function approveFromModal() {
-  var id = document.getElementById('detailModal').dataset.contractorId;
+  var id  = document.getElementById('detailModal').dataset.id;
   var sel = document.getElementById('md-status');
   var revMap = { 'Pending Verification':'pending', 'Partially Verified':'partially_verified', 'Verified':'verified', 'Premium Verified':'premium_verified', 'Rejected':'rejected' };
   var newStatus = revMap[sel.options[sel.selectedIndex].text] || 'verified';
   updateStatus(id, newStatus);
+  closeModal('detailModal');
 }
 
-/* ── NAVIGATION ── */
-var tabs = ['dashboard','pending','contractors','verification','sponsored','credits','users','reports','settings'];
-var titles = { dashboard:'Dashboard', pending:'Pending Review', contractors:'All Contractors', verification:'Verification Queue', sponsored:'Sponsored Ads', credits:'Credits & Billing', users:'Users', reports:'Reports & Analytics', settings:'Settings' };
+var tabs = ['dashboard','pending','contractors','verification','sponsored','credits','manual-credit','users','reports','settings'];
+var titles = { dashboard:'Dashboard', pending:'Pending Review', contractors:'All Contractors', verification:'Verification Queue', sponsored:'Sponsored Ads', credits:'Credits & Billing', 'manual-credit':'Add Manual Credit', users:'Users', reports:'Reports', settings:'Settings' };
 
 function show(tab, navEl) {
-  for (var t = 0; t < tabs.length; t++) {
-    var el = document.getElementById('tab-' + tabs[t]);
-    if (el) el.style.display = (tabs[t] === tab) ? 'block' : 'none';
-  }
+  tabs.forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
-  var navItems = document.querySelectorAll('.nav-item');
-  for (var n = 0; n < navItems.length; n++) navItems[n].classList.remove('active');
+  document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
   if (navEl) navEl.classList.add('active');
+  if (tab === 'manual-credit') { loadManualHistory(); }
+  if (tab === 'credits') { loadCreditsTab(); }
 }
 
-/* ── HELPERS ── */
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
 function timeAgo(ts) {
-  if (!ts) return '-';
+  if (!ts) return '—';
   var diff = Math.floor((new Date() - new Date(ts)) / 1000);
-  if (diff < 3600)   return Math.floor(diff/60)    + ' mins ago';
+  if (diff < 60)     return 'Just now';
+  if (diff < 3600)   return Math.floor(diff/60)   + ' mins ago';
   if (diff < 86400)  return Math.floor(diff/3600)  + ' hrs ago';
   if (diff < 604800) return Math.floor(diff/86400) + ' days ago';
   return new Date(ts).toLocaleDateString('en-MY');
@@ -864,35 +938,38 @@ function timeAgo(ts) {
 
 function showToast(msg) {
   var t = document.getElementById('toast');
-  if (!t) return;
-  t.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
+  t.textContent = msg;
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
 
-function approveContractor(name) { showToast('Use Review button to approve'); }
-function rejectContractor(name)  { showToast('Use Review button to reject'); }
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('button[data-id]');
+  if (!btn) return;
+  var id     = btn.getAttribute('data-id');
+  var action = btn.getAttribute('data-action');
+  if (!id || !action) return;
+  if (action === 'detail') {
+    openDetail(id);
+  } else if (action === 'quick-credit') {
+    var c = allContractors.find(function(x){ return x.id === id; });
+    if (c) {
+      document.getElementById('qc-name').textContent = (c.first_name||'') + ' ' + (c.last_name||'') + ' · Current: RM ' + (c.credit_balance||0);
+      document.getElementById('qc-amount').value = '';
+      document.getElementById('qc-note').value = '';
+      document.getElementById('quickCreditModal').dataset.id = id;
+      document.getElementById('quickCreditModal').dataset.email = c.email;
+      document.getElementById('quickCreditModal').classList.add('show');
+    }
+  } else {
+    updateStatus(id, action);
+  }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
-  var modal = document.getElementById('detailModal');
-  if (modal) {
-    modal.addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-  }
-
-  // Event delegation for dynamically rendered table buttons
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('button[data-id]');
-    if (!btn) return;
-    var id     = btn.getAttribute('data-id');
-    var action = btn.getAttribute('data-action');
-    if (!id || !action) return;
-    if (action === 'detail') {
-      openDetail(id);
-    } else {
-      updateStatus(id, action);
-    }
+  ['detailModal','quickCreditModal'].forEach(function(id) {
+    var m = document.getElementById(id);
+    if (m) m.addEventListener('click', function(e){ if (e.target === this) closeModal(id); });
   });
 });
 </script>
