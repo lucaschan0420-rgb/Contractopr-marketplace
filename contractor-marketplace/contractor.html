@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -20,27 +21,27 @@
       --radius: 8px; --radius-lg: 12px;
     }
     html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: #f0ede8; color: var(--ink); -webkit-font-smoothing: antialiased; }
-
     .portal { display: grid; grid-template-columns: 240px 1fr; height: 100vh; overflow: hidden; }
 
     /* SIDEBAR */
     .sidebar { background: #0f1117; display: flex; flex-direction: column; overflow: hidden; }
     .sidebar-header { padding: 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
-    .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 16px; color: #fff; letter-spacing: -0.02em; }
+    .sidebar-brand { font-family: 'DM Serif Display', serif; font-size: 16px; color: #fff; }
     .sidebar-role { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase; }
-    .sidebar-profile { display: flex; align-items: center; gap: 10px; padding: 1rem 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
-    .profile-av { width: 36px; height: 36px; border-radius: 50%; background: rgba(196,135,58,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--warm); flex-shrink: 0; border: 1px solid rgba(196,135,58,0.3); }
+    .sidebar-profile { display: flex; align-items: center; gap: 10px; padding: 1rem 1.25rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); cursor: pointer; }
+    .sidebar-profile:hover { background: rgba(255,255,255,0.04); }
+    .profile-av { width: 36px; height: 36px; border-radius: 50%; background: rgba(196,135,58,0.15); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--warm); flex-shrink: 0; border: 1px solid rgba(196,135,58,0.3); }
     .profile-name { font-size: 13px; font-weight: 500; color: #fff; }
     .profile-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
-    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .status-dot.pending { background: var(--warm); }
+    .status-dot.rejected { background: var(--red); }
     .nav { flex: 1; padding: 0.75rem; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
     .nav-section { font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 8px 4px; margin-top: 6px; }
     .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; font-size: 13px; color: rgba(255,255,255,0.55); cursor: pointer; transition: all .15s; }
     .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
     .nav-item.active { background: rgba(196,135,58,0.15); color: var(--warm); }
     .nav-item i { font-size: 16px; width: 20px; flex-shrink: 0; }
-    .nav-badge { margin-left: auto; font-size: 10px; background: var(--warm); color: #fff; padding: 1px 6px; border-radius: 10px; }
-    .nav-badge.red { background: var(--red); }
     .credit-panel { margin: 0.75rem; border-radius: 8px; padding: 14px; background: #1a1207; border: 0.5px solid rgba(196,135,58,0.3); }
     .credit-label { font-size: 10px; color: rgba(196,135,58,0.7); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
     .credit-val { font-size: 24px; font-weight: 500; color: var(--warm); letter-spacing: -0.02em; }
@@ -52,345 +53,178 @@
     /* MAIN */
     .main { display: flex; flex-direction: column; overflow: hidden; background: #f0ede8; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #fff; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .hamburger { display: none; width: 34px; height: 34px; border-radius: var(--radius); border: 0.5px solid var(--border); background: #fff; cursor: pointer; align-items: center; justify-content: center; color: var(--ink); font-size: 18px; flex-shrink: 0; }
     .topbar-title { font-size: 15px; font-weight: 500; }
     .topbar-right { display: flex; align-items: center; gap: 8px; }
-    .icon-btn { width: 32px; height: 32px; border-radius: var(--radius); border: 0.5px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); position: relative; }
-    .notif-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); border: 1.5px solid #fff; }
-    .user-chip { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 20px; border: 0.5px solid var(--border); background: #fff; cursor: pointer; }
+    .icon-btn { width: 32px; height: 32px; border-radius: var(--radius); border: 0.5px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 20px; border: 0.5px solid var(--border); background: #fff; cursor: pointer; position: relative; }
     .user-av { width: 24px; height: 24px; border-radius: 50%; background: var(--warm-pale); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--warm); }
     .user-name { font-size: 12px; font-weight: 500; }
+    .user-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 180px; z-index: 200; display: none; }
+    .user-dropdown.show { display: block; }
+    .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; font-size: 13px; color: var(--ink); cursor: pointer; }
+    .dropdown-item:hover { background: var(--bg); }
+    .dropdown-item i { font-size: 15px; color: var(--muted); }
+    .dropdown-divider { height: 0.5px; background: var(--border); }
+    .dropdown-item.danger { color: var(--red); }
+    .dropdown-item.danger i { color: var(--red); }
 
     .content { flex: 1; overflow-y: auto; padding: 1.25rem; }
 
+    /* PENDING BANNER */
+    .pending-banner { background: var(--warm-pale); border: 0.5px solid rgba(196,135,58,0.3); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem; display: flex; align-items: flex-start; gap: 12px; }
+    .pending-banner i { font-size: 20px; color: var(--warm); flex-shrink: 0; margin-top: 1px; }
+    .pending-banner strong { font-weight: 500; display: block; font-size: 13px; color: #7a4e1a; margin-bottom: 3px; }
+    .pending-banner p { font-size: 12px; color: #9a6a2a; }
+
     /* METRICS */
-    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
     .metric { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
-    .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-    .metric-label i { font-size: 14px; }
+    .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
     .metric-val { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 4px; }
-    .metric-change { font-size: 11px; display: flex; align-items: center; gap: 3px; }
-    .up { color: var(--green); }
-    .down { color: var(--red); }
-    .neutral { color: var(--muted); }
+    .metric-sub { font-size: 11px; color: var(--muted); }
 
     /* CARDS */
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
-    .card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+    .card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; }
+    .card:last-child { margin-bottom: 0; }
     .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .card-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
     .card-title i { font-size: 15px; color: var(--muted); }
-    .card-action { font-size: 12px; color: var(--blue); cursor: pointer; display: flex; align-items: center; gap: 3px; }
+    .card-action { font-size: 12px; color: var(--blue); cursor: pointer; }
 
-    /* ADS */
     .ad-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
     .ad-row:last-child { border-bottom: none; padding-bottom: 0; }
     .ad-icon { width: 34px; height: 34px; border-radius: var(--radius); background: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--muted); }
-    .ad-icon i { font-size: 17px; }
     .ad-info { flex: 1; min-width: 0; }
     .ad-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ad-meta { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 8px; }
-    .ad-meta i { font-size: 11px; }
+    .ad-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .pill { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
     .pill-active { background: var(--green-bg); color: var(--green); }
+    .pill-pending { background: var(--warm-pale); color: var(--warm); }
     .pill-draft   { background: var(--warm-pale); color: var(--warm); }
-    .pill-paused  { background: #f0ede8; color: var(--muted); }
 
-    /* REVIEWS */
-    .review-row { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-    .review-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .review-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-    .review-name { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-    .review-av { width: 22px; height: 22px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; color: var(--blue); }
-    .stars { color: var(--warm); font-size: 11px; }
-    .review-text { font-size: 12px; color: var(--muted2); line-height: 1.55; margin-bottom: 6px; }
-    .review-actions { display: flex; gap: 6px; }
-    .review-btn { font-size: 11px; padding: 3px 10px; border: 0.5px solid var(--border2); border-radius: 100px; background: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; gap: 4px; font-family: inherit; }
-    .review-btn:hover { border-color: var(--warm); color: var(--warm); }
-    .review-btn i { font-size: 12px; }
-
-    /* TRANSACTIONS */
-    .tx-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
-    .tx-row:last-child { border-bottom: none; }
-    .tx-type { font-size: 12px; font-weight: 500; }
-    .tx-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .tx-amt { font-size: 13px; font-weight: 500; }
-    .tx-plus { color: var(--green); }
-    .tx-minus { color: var(--red); }
-
-    /* PACKAGES */
-    .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .pkg { border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; text-align: center; cursor: pointer; transition: border-color .15s; }
-    .pkg:hover { border-color: var(--border2); }
-    .pkg.featured { border: 1.5px solid var(--blue); }
-    .pkg-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: var(--radius); background: var(--blue-bg); color: var(--blue); margin-bottom: 8px; }
-    .pkg-name { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .pkg-price { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
-    .pkg-currency { font-size: 15px; vertical-align: super; }
-    .pkg-desc { font-size: 11px; color: var(--muted); margin: 6px 0 12px; }
-    .pkg-features { text-align: left; margin-bottom: 14px; }
-    .pkg-feat { font-size: 11px; color: var(--muted2); display: flex; align-items: center; gap: 6px; padding: 3px 0; }
-    .pkg-feat i { font-size: 13px; color: var(--green); }
-    .pkg-feat.no i { color: var(--muted); }
-    .pkg-feat.no { color: var(--muted); }
-    .pkg-btn { width: 100%; padding: 9px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: none; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--ink); }
-    .pkg-btn:hover { background: var(--bg); }
-    .pkg.featured .pkg-btn { background: var(--blue); color: #fff; border-color: transparent; }
-
-    /* RATING BARS */
-    .rating-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .rating-lbl { font-size: 11px; color: var(--muted); width: 28px; }
-    .rating-track { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
-    .rating-fill { height: 100%; background: var(--warm); border-radius: 3px; }
-    .rating-cnt { font-size: 11px; color: var(--muted); width: 20px; text-align: right; }
-
-    /* PROFILE */
-    .profile-cover { height: 64px; background: var(--blue-bg); border-radius: var(--radius); margin-bottom: -20px; }
-    .profile-av-lg { width: 52px; height: 52px; border-radius: 50%; background: var(--warm-pale); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; color: var(--warm); border: 3px solid #fff; margin-left: 16px; position: relative; z-index: 1; }
     .field-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
     .field-row:last-child { border-bottom: none; }
-    .field-label { font-size: 11px; color: var(--muted); width: 110px; flex-shrink: 0; padding-top: 1px; display: flex; align-items: center; gap: 5px; }
-    .field-label i { font-size: 13px; }
+    .field-label { font-size: 11px; color: var(--muted); width: 110px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding-top: 1px; }
     .field-val { font-size: 12px; flex: 1; }
 
-    /* POST AD FORM */
-    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-    .form-label { font-size: 12px; font-weight: 500; }
-    .form-input { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; }
-    .form-input:focus { border-color: var(--muted); }
-    .form-textarea { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; resize: none; }
-    .form-select { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; }
-    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .form-cost { background: var(--warm-pale); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border: 0.5px solid rgba(196,135,58,0.2); }
-    .form-cost-label { font-size: 12px; color: var(--muted2); }
-    .form-cost-val { font-size: 14px; font-weight: 500; color: var(--warm); }
-    .btn-primary { padding: 11px 20px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
-    .btn-secondary { padding: 11px 20px; background: none; border: 0.5px solid var(--border2); border-radius: 100px; font-size: 13px; cursor: pointer; font-family: inherit; }
-    .btn-row { display: flex; gap: 10px; justify-content: flex-end; }
+    /* PACKAGES */
+    .pkg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .pkg { border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; text-align: center; }
+    .pkg.featured { border: 1.5px solid var(--blue); }
+    .pkg-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: var(--radius); background: var(--blue-bg); color: var(--blue); margin-bottom: 6px; }
+    .pkg-name { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .pkg-price { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; }
+    .pkg-desc { font-size: 11px; color: var(--muted); margin: 5px 0 12px; }
+    .pkg-feat { font-size: 11px; color: var(--muted2); display: flex; align-items: center; gap: 6px; padding: 3px 0; text-align: left; }
+    .pkg-feat i { font-size: 13px; color: var(--green); }
+    .pkg-btn { width: 100%; padding: 8px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: none; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 10px; }
+    .pkg.featured .pkg-btn { background: var(--blue); color: #fff; border-color: transparent; }
 
     /* VERIFY */
     .verify-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
     .verify-row:last-child { border-bottom: none; }
-    .verify-row i { font-size: 16px; }
-    .verify-row .label { font-size: 12px; flex: 1; }
-    .verify-row .status { font-size: 11px; }
-    .done { color: var(--green); }
-    .pending { color: var(--warm); }
+    .verify-row .vlabel { font-size: 12px; flex: 1; }
+    .vstatus-done    { font-size: 11px; color: var(--green); }
+    .vstatus-pending { font-size: 11px; color: var(--warm); }
+    .vstatus-missing { font-size: 11px; color: var(--muted); }
 
-    /* VISIBILITY */
-    .vis-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
-    .vis-row:last-child { border-bottom: none; }
-    .vis-row .label { font-size: 12px; }
+    /* FORM */
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-label { font-size: 12px; font-weight: 500; }
+    .form-input { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; width: 100%; }
+    .form-input:focus { border-color: var(--muted); }
+    .form-textarea { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; resize: none; width: 100%; }
+    .form-select { padding: 9px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--ink); outline: none; width: 100%; }
+    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-cost { background: var(--warm-pale); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border: 0.5px solid rgba(196,135,58,0.2); }
+    .btn-primary { padding: 11px 20px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-secondary { padding: 11px 20px; background: none; border: 0.5px solid var(--border2); border-radius: 100px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .btn-row { display: flex; gap: 10px; justify-content: flex-end; }
 
-    .mb10 { margin-bottom: 10px; }
-    .mb12 { margin-bottom: 12px; }
-    .mt8 { margin-top: 8px; }
-    .mt10 { margin-top: 10px; }
-
-
-
-    /* ── PHOTO UPLOAD ── */
-    .cover-wrap {
-      height: 64px; border-radius: var(--radius);
-      margin-bottom: -20px;
-      background: var(--blue-bg);
-      position: relative; overflow: hidden; cursor: pointer;
-      transition: filter .2s;
-    }
-    .cover-wrap:hover { filter: brightness(0.88); }
-    .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .cover-upload-hint {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      gap: 6px; font-size: 11px; color: rgba(255,255,255,0.9);
-      font-weight: 500;
-      background: rgba(0,0,0,0.3);
-      opacity: 0; transition: opacity .2s;
-      border-radius: var(--radius);
-    }
-    .cover-wrap:hover .cover-upload-hint { opacity: 1; }
-    .cover-upload-hint i { font-size: 15px; }
-
-    .logo-wrap {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: var(--warm-pale);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 500; color: var(--warm);
-      border: 3px solid #fff;
-      margin-left: 16px; position: relative; z-index: 1;
-      cursor: pointer; overflow: hidden; flex-shrink: 0;
-    }
-    .logo-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .logo-upload-hint {
-      position: absolute; inset: 0; border-radius: 50%;
-      background: rgba(0,0,0,0.45);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; transition: opacity .2s;
-    }
-    .logo-wrap:hover .logo-upload-hint { opacity: 1; }
-    .logo-upload-hint i { font-size: 16px; color: #fff; }
-
-    /* ── EDIT MODAL ── */
-    .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 200;
-      backdrop-filter: blur(3px);
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
     .modal-overlay.show { display: flex; }
-    .modal {
-      background: #fff;
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 540px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 0.5px solid var(--border);
-      position: sticky; top: 0; background: #fff; z-index: 1;
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    }
+    .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: #fff; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
     .modal-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-    .modal-title i { font-size: 16px; color: var(--muted); }
-    .modal-close {
-      width: 30px; height: 30px; border-radius: 50%;
-      border: 0.5px solid var(--border);
-      background: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; color: var(--muted);
-    }
-    .modal-close:hover { background: var(--bg); color: var(--ink); }
+    .modal-close { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border); background: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
     .modal-body { padding: 20px; }
-    .modal-footer {
-      padding: 14px 20px;
-      border-top: 0.5px solid var(--border);
-      display: flex; gap: 10px; justify-content: flex-end;
-      position: sticky; bottom: 0; background: #fff;
-      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    }
-    .avail-toggle { display: flex; gap: 8px; }
-    .avail-opt {
-      flex: 1; padding: 8px;
-      border: 0.5px solid var(--border); border-radius: var(--radius);
-      text-align: center; font-size: 12px; cursor: pointer;
-      background: #fff; transition: all .15s;
-    }
-    .avail-opt.selected { border-color: var(--green); background: var(--green-bg); color: var(--green); font-weight: 500; }
-    .avail-opt.busy.selected { border-color: var(--red); background: var(--red-bg); color: var(--red); }
-    .save-toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px);
-      background: var(--ink); color: #fff;
-      padding: 10px 20px; border-radius: 100px;
-      font-size: 13px; font-weight: 500;
-      z-index: 999; opacity: 0;
-      transition: all 0.3s;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .modal-footer { padding: 14px 20px; border-top: 0.5px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 
-    /* ── MOBILE RESPONSIVE ── */
-    .sidebar-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 99;
-      backdrop-filter: blur(2px);
-    }
+    /* PROFILE COVER */
+    .profile-cover { height: 64px; background: var(--blue-bg); border-radius: var(--radius); margin-bottom: -20px; }
+    .profile-av-lg { width: 52px; height: 52px; border-radius: 50%; background: var(--warm-pale); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; color: var(--warm); border: 3px solid #fff; margin-left: 16px; position: relative; z-index: 1; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
     .sidebar-overlay.show { display: block; }
 
-    .hamburger {
-      display: none;
-      align-items: center; justify-content: center;
-      width: 36px; height: 36px;
-      border-radius: var(--radius);
-      border: 0.5px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      color: var(--ink);
-      font-size: 18px;
-      flex-shrink: 0;
-    }
+    .empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); }
+    .empty-state i { font-size: 36px; display: block; margin-bottom: 10px; }
+    .empty-state p { font-size: 13px; line-height: 1.6; }
 
     @media (max-width: 768px) {
       .hamburger { display: flex; }
-
       .portal { grid-template-columns: 1fr; }
-
-      .sidebar {
-        position: fixed;
-        top: 0; left: 0; bottom: 0;
-        width: 260px;
-        z-index: 100;
-        transform: translateX(-100%);
-        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-      }
+      .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; }
       .sidebar.open { transform: translateX(0); }
-
       .main { height: 100vh; }
-
-      .topbar { padding: 12px 14px; gap: 8px; }
-      .topbar-title { font-size: 14px; }
-      .user-chip .user-name { display: none; }
-
       .metrics { grid-template-columns: repeat(2,1fr); }
       .grid2 { grid-template-columns: 1fr; }
-      .grid3 { grid-template-columns: 1fr; }
       .form-row2 { grid-template-columns: 1fr; }
       .pkg-grid { grid-template-columns: 1fr; }
-
-      .content { padding: 1rem; }
     }
-
-    @media (max-width: 480px) {
-      .metrics { grid-template-columns: repeat(2,1fr); }
-    }
-
   </style>
 </head>
 <body>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 <div class="portal">
 
   <!-- SIDEBAR -->
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-brand">ContractorHub</div>
       <div class="sidebar-role">Contractor Portal</div>
     </div>
-    <div class="sidebar-profile">
-      <div class="profile-av">AR</div>
+    <div class="sidebar-profile" onclick="show('profile',null)">
+      <div class="profile-av" id="sidebarAv">?</div>
       <div>
-        <div class="profile-name">Ahmad Razali</div>
-        <div class="profile-status"><span class="status-dot"></span>Available for hire</div>
+        <div class="profile-name" id="sidebarName">Loading...</div>
+        <div class="profile-status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Loading...</span>
+        </div>
       </div>
     </div>
     <div class="nav">
       <div class="nav-item active" onclick="show('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
       <div class="nav-section">Advertising</div>
-      <div class="nav-item" onclick="show('ads',this)"><i class="ti ti-speakerphone"></i>My Ads<span class="nav-badge">3</span></div>
+      <div class="nav-item" onclick="show('ads',this)"><i class="ti ti-speakerphone"></i>My Ads</div>
       <div class="nav-item" onclick="show('post',this)"><i class="ti ti-plus"></i>Post New Ad</div>
       <div class="nav-section">Insights</div>
-      <div class="nav-item" onclick="show('reviews',this)"><i class="ti ti-star"></i>Reviews & Feedback<span class="nav-badge red">2</span></div>
+      <div class="nav-item" onclick="show('reviews',this)"><i class="ti ti-star"></i>Reviews &amp; Feedback</div>
       <div class="nav-item" onclick="show('analytics',this)"><i class="ti ti-chart-bar"></i>Analytics</div>
       <div class="nav-section">Business</div>
       <div class="nav-item" onclick="show('profile',this)"><i class="ti ti-building"></i>Company Profile</div>
-      <div class="nav-item" onclick="show('credits',this)"><i class="ti ti-credit-card"></i>Credits & Billing</div>
+      <div class="nav-item" onclick="show('credits',this)"><i class="ti ti-credit-card"></i>Credits &amp; Billing</div>
       <div class="nav-item" onclick="show('settings',this)"><i class="ti ti-settings"></i>Settings</div>
+      <div class="nav-section">Navigation</div>
+      <div class="nav-item" onclick="window.location.href='marketplace.html'"><i class="ti ti-arrow-left"></i>Back to Marketplace</div>
     </div>
     <div class="credit-panel">
       <div class="credit-label">Credit Balance</div>
-      <div class="credit-val">RM 240</div>
-      <div class="credit-sub">~8 ad postings remaining</div>
-      <div class="credit-bar-bg"><div class="credit-bar-fill"></div></div>
+      <div class="credit-val">RM 0</div>
+      <div class="credit-sub">No credits yet</div>
+      <div class="credit-bar-bg"><div class="credit-bar-fill" style="width:0%;"></div></div>
       <button class="topup-btn" onclick="show('credits',null)">+ Top Up Credits</button>
     </div>
   </div>
@@ -398,17 +232,23 @@
   <!-- MAIN -->
   <div class="main">
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu"><i class="ti ti-menu-2"></i></button>
-        <div class="topbar-title" id="pageTitle">Overview</div>
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+        <div class="topbar-title" id="pageTitle">Dashboard</div>
       </div>
       <div class="topbar-right">
-        <div class="icon-btn"><i class="ti ti-search"></i></div>
-        <div class="icon-btn"><i class="ti ti-bell"></i><div class="notif-dot"></div></div>
-        <div class="user-chip">
-          <div class="user-av">AR</div>
-          <span class="user-name">Ahmad Razali</span>
+        <div class="icon-btn"><i class="ti ti-bell"></i></div>
+        <div class="user-chip" onclick="toggleDropdown()">
+          <div class="user-av" id="topbarAv">?</div>
+          <span class="user-name" id="topbarName">Loading</span>
           <i class="ti ti-chevron-down" style="font-size:13px;color:var(--muted);"></i>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="dropdown-item" onclick="show('profile',null)"><i class="ti ti-user"></i>My Profile</div>
+            <div class="dropdown-item" onclick="show('settings',null)"><i class="ti ti-settings"></i>Settings</div>
+            <div class="dropdown-item" onclick="window.location.href='marketplace.html'"><i class="ti ti-arrow-left"></i>Marketplace</div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item danger" onclick="doSignOut()"><i class="ti ti-logout"></i>Sign out</div>
+          </div>
         </div>
       </div>
     </div>
@@ -417,38 +257,29 @@
 
       <!-- DASHBOARD -->
       <div id="tab-dashboard">
+        <div id="pendingBanner" class="pending-banner" style="display:none;">
+          <i class="ti ti-clock"></i>
+          <div>
+            <strong>Your account is pending verification.</strong>
+            <p>Our team will review your submission within 1–3 business days. You will be notified once approved and your profile goes live on the marketplace.</p>
+          </div>
+        </div>
+
         <div class="metrics">
-          <div class="metric"><div class="metric-label">Active Ads <i class="ti ti-speakerphone"></i></div><div class="metric-val">3</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i> 1 new this week</div></div>
-          <div class="metric"><div class="metric-label">Profile Views <i class="ti ti-eye"></i></div><div class="metric-val">1,284</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i> +18% this month</div></div>
-          <div class="metric"><div class="metric-label">Avg. Rating <i class="ti ti-star"></i></div><div class="metric-val">4.9</div><div class="metric-change neutral">from 42 reviews</div></div>
-          <div class="metric"><div class="metric-label">Enquiries <i class="ti ti-mail"></i></div><div class="metric-val">18</div><div class="metric-change up"><i class="ti ti-trending-up" style="font-size:12px;"></i> +6 this week</div></div>
+          <div class="metric"><div class="metric-label">Status</div><div class="metric-val" id="d-status" style="font-size:14px;margin-top:4px;">—</div></div>
+          <div class="metric"><div class="metric-label">Profile Views</div><div class="metric-val">—</div><div class="metric-sub">Coming soon</div></div>
+          <div class="metric"><div class="metric-label">Avg. Rating</div><div class="metric-val">—</div><div class="metric-sub">No reviews yet</div></div>
+          <div class="metric"><div class="metric-label">Enquiries</div><div class="metric-val">—</div><div class="metric-sub">Coming soon</div></div>
         </div>
-        <div class="grid2 mb10">
+
+        <div class="grid2">
           <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ti ti-speakerphone"></i>Active ads</div><div class="card-action" onclick="show('ads',null)">Manage <i class="ti ti-arrow-right" style="font-size:12px;"></i></div></div>
-            <div class="ad-row"><div class="ad-icon"><i class="ti ti-building-arch"></i></div><div class="ad-info"><div class="ad-title">Civil Engineering Services — KL</div><div class="ad-meta"><i class="ti ti-eye"></i>340 views &nbsp;<i class="ti ti-mail"></i>12 enquiries</div></div><div class="pill pill-active">Active</div></div>
-            <div class="ad-row"><div class="ad-icon"><i class="ti ti-ruler-2"></i></div><div class="ad-info"><div class="ad-title">Structural Assessment & BIM</div><div class="ad-meta"><i class="ti ti-eye"></i>145 views &nbsp;<i class="ti ti-mail"></i>5 enquiries</div></div><div class="pill pill-active">Active</div></div>
-            <div class="ad-row"><div class="ad-icon"><i class="ti ti-home-2"></i></div><div class="ad-info"><div class="ad-title">Renovation Consulting Package</div><div class="ad-meta"><i class="ti ti-edit"></i>Draft — not published</div></div><div class="pill pill-draft">Draft</div></div>
+            <div class="card-header"><div class="card-title"><i class="ti ti-building"></i>Company Info</div><div class="card-action" onclick="show('profile',null)">Edit →</div></div>
+            <div id="dash-company"></div>
           </div>
           <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ti ti-star"></i>Recent reviews</div><div class="card-action" onclick="show('reviews',null)">View all <i class="ti ti-arrow-right" style="font-size:12px;"></i></div></div>
-            <div class="review-row"><div class="review-top"><div class="review-name"><div class="review-av">HM</div>Hazrul M.</div><div class="stars">★★★★★</div></div><div class="review-text">"Excellent work, delivered on time and within budget. Very professional."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>24</button><button class="review-btn"><i class="ti ti-thumb-down"></i>0</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
-            <div class="review-row" style="border:none;padding-bottom:0;"><div class="review-top"><div class="review-name"><div class="review-av">LK</div>Liyana K.</div><div class="stars">★★★★☆</div></div><div class="review-text">"Very professional. Highly recommend for structural work."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>18</button><button class="review-btn"><i class="ti ti-thumb-down"></i>1</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-credit-card"></i>Recent transactions</div><div class="card-action" onclick="show('credits',null)">Full history <i class="ti ti-arrow-right" style="font-size:12px;"></i></div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div>
-              <div class="tx-row"><div><div class="tx-type">Top Up — Standard</div><div class="tx-date">2 May 2025 · Online Banking</div></div><div class="tx-amt tx-plus">+RM 100</div></div>
-              <div class="tx-row"><div><div class="tx-type">Ad Posted — Civil Engineering</div><div class="tx-date">30 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
-              <div class="tx-row" style="border:none;"><div><div class="tx-type">Ad Boost — 7 days</div><div class="tx-date">28 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 50</div></div>
-            </div>
-            <div>
-              <div class="tx-row"><div><div class="tx-type">Top Up — Pro Pack</div><div class="tx-date">25 Apr 2025 · Credit Card</div></div><div class="tx-amt tx-plus">+RM 200</div></div>
-              <div class="tx-row"><div><div class="tx-type">Ad Posted — Structural</div><div class="tx-date">20 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
-              <div class="tx-row" style="border:none;"><div><div class="tx-type">Welcome Credit Promo</div><div class="tx-date">15 Apr 2025</div></div><div class="tx-amt tx-plus">+RM 50</div></div>
-            </div>
+            <div class="card-header"><div class="card-title"><i class="ti ti-shield-check"></i>Verification Status</div></div>
+            <div id="dash-verify"></div>
           </div>
         </div>
       </div>
@@ -459,142 +290,79 @@
           <button class="btn-primary" onclick="show('post',null)"><i class="ti ti-plus"></i>Post New Ad</button>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-speakerphone"></i>All ads (4)</div></div>
-          <div class="ad-row"><div class="ad-icon"><i class="ti ti-building-arch"></i></div><div class="ad-info"><div class="ad-title">Civil Engineering Services — Kuala Lumpur</div><div class="ad-meta"><i class="ti ti-eye"></i>340 views &nbsp;<i class="ti ti-mail"></i>12 enquiries &nbsp;<i class="ti ti-calendar"></i>Expires 30 Jun 2025</div></div><div class="pill pill-active">Active</div></div>
-          <div class="ad-row"><div class="ad-icon"><i class="ti ti-ruler-2"></i></div><div class="ad-info"><div class="ad-title">Structural Assessment & BIM Coordination</div><div class="ad-meta"><i class="ti ti-eye"></i>145 views &nbsp;<i class="ti ti-mail"></i>5 enquiries &nbsp;<i class="ti ti-calendar"></i>Expires 15 Jun 2025</div></div><div class="pill pill-active">Active</div></div>
-          <div class="ad-row"><div class="ad-icon"><i class="ti ti-home-2"></i></div><div class="ad-info"><div class="ad-title">Renovation Consulting Package</div><div class="ad-meta"><i class="ti ti-edit"></i>Draft · Not published · Costs RM 30 to post</div></div><div class="pill pill-draft">Draft</div></div>
-          <div class="ad-row" style="border:none;padding-bottom:0;"><div class="ad-icon"><i class="ti ti-sofa"></i></div><div class="ad-info"><div class="ad-title">Interior Design Consultation</div><div class="ad-meta"><i class="ti ti-eye"></i>80 views &nbsp;<i class="ti ti-mail"></i>5 enquiries &nbsp;<i class="ti ti-player-pause"></i>Paused by you</div></div><div class="pill pill-paused">Paused</div></div>
+          <div class="card-header"><div class="card-title"><i class="ti ti-speakerphone"></i>All Ads</div></div>
+          <div class="empty-state"><i class="ti ti-speakerphone"></i><p>No ads posted yet.<br>Post your first ad to start getting client enquiries.</p></div>
         </div>
       </div>
 
       <!-- POST AD -->
       <div id="tab-post" style="display:none;">
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-plus"></i>Post a new ad</div></div>
-          <div class="form-group"><label class="form-label">Ad title</label><input class="form-input" placeholder="e.g. Civil Engineering Services — Kuala Lumpur" /></div>
-          <div class="form-row2 mb12">
-            <div class="form-group" style="margin:0;"><label class="form-label">Category</label><select class="form-select"><option>Construction</option><option>Electrical</option><option>Design</option><option>Plumbing</option><option>Renovation</option><option>Tech & Dev</option><option>Solar</option><option>Architecture</option></select></div>
+          <div class="card-header"><div class="card-title"><i class="ti ti-plus"></i>Post a New Ad</div></div>
+          <div class="form-group"><label class="form-label">Ad title</label><input class="form-input" placeholder="e.g. Civil Engineering Services — KL" /></div>
+          <div class="form-row2" style="margin-bottom:12px;">
+            <div class="form-group" style="margin:0;"><label class="form-label">Category</label><select class="form-select"><option>Construction</option><option>Renovation</option><option>Electrical</option><option>Plumbing</option><option>Design</option><option>Solar</option></select></div>
             <div class="form-group" style="margin:0;"><label class="form-label">Location</label><input class="form-input" placeholder="e.g. Kuala Lumpur" /></div>
           </div>
           <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" rows="4" placeholder="Describe your services, experience, and what makes you stand out..."></textarea></div>
-          <div class="form-group"><label class="form-label">Skills / Tags (comma separated)</label><input class="form-input" placeholder="e.g. Renovation, Structural, BIM, AutoCAD" /></div>
-          <div class="form-row2 mb12">
-            <div class="form-group" style="margin:0;"><label class="form-label">Hourly rate (RM)</label><input class="form-input" placeholder="e.g. 180" /></div>
-            <div class="form-group" style="margin:0;"><label class="form-label">Ad duration</label><select class="form-select"><option>30 days — RM 30</option><option>60 days — RM 50</option><option>90 days — RM 70</option></select></div>
+          <div class="form-row2" style="margin-bottom:12px;">
+            <div class="form-group" style="margin:0;"><label class="form-label">Hourly Rate (RM)</label><input class="form-input" type="number" placeholder="180" /></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Duration</label><select class="form-select"><option>30 days — RM 30</option><option>60 days — RM 50</option><option>90 days — RM 70</option></select></div>
           </div>
-          <div class="form-cost"><div class="form-cost-label">Ad posting cost · deducted from credit balance</div><div class="form-cost-val">RM 30 &nbsp;·&nbsp; Balance after: RM 210</div></div>
-          <div class="btn-row"><button class="btn-secondary" onclick="show('ads',null)">Cancel</button><button class="btn-primary"><i class="ti ti-check"></i>Publish Ad</button></div>
+          <div class="form-cost"><span style="font-size:12px;color:var(--muted2);">Cost deducted from credit balance</span><span style="font-size:14px;font-weight:500;color:var(--warm);">RM 30</span></div>
+          <div class="btn-row"><button class="btn-secondary" onclick="show('ads',null)">Cancel</button><button class="btn-primary" onclick="showToast('Ad posting coming soon!')"><i class="ti ti-check"></i>Publish Ad</button></div>
         </div>
       </div>
 
       <!-- REVIEWS -->
       <div id="tab-reviews" style="display:none;">
-        <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-          <div class="metric"><div class="metric-label">Total Reviews</div><div class="metric-val">42</div><div class="metric-change up">+3 this month</div></div>
-          <div class="metric"><div class="metric-label">Average Rating</div><div class="metric-val">4.9 ★</div><div class="metric-change neutral">Top 5% of contractors</div></div>
-          <div class="metric"><div class="metric-label">Total Likes</div><div class="metric-val">128</div><div class="metric-change up">+14 this month</div></div>
-        </div>
-        <div class="grid2 mb10">
-          <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Rating breakdown</div></div>
-            <div style="display:flex;align-items:center;gap:16px;">
-              <div style="text-align:center;"><div style="font-size:38px;font-weight:500;letter-spacing:-0.03em;">4.9</div><div class="stars" style="font-size:16px;">★★★★★</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">42 reviews</div></div>
-              <div style="flex:1;">
-                <div class="rating-bar"><div class="rating-lbl">5 ★</div><div class="rating-track"><div class="rating-fill" style="width:85%;"></div></div><div class="rating-cnt">36</div></div>
-                <div class="rating-bar"><div class="rating-lbl">4 ★</div><div class="rating-track"><div class="rating-fill" style="width:12%;"></div></div><div class="rating-cnt">5</div></div>
-                <div class="rating-bar"><div class="rating-lbl">3 ★</div><div class="rating-track"><div class="rating-fill" style="width:3%;"></div></div><div class="rating-cnt">1</div></div>
-                <div class="rating-bar"><div class="rating-lbl">2 ★</div><div class="rating-track"><div class="rating-fill" style="width:0%;"></div></div><div class="rating-cnt">0</div></div>
-                <div class="rating-bar"><div class="rating-lbl">1 ★</div><div class="rating-track"><div class="rating-fill" style="width:0%;"></div></div><div class="rating-cnt">0</div></div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ti ti-activity"></i>Review sentiment</div></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-              <div style="background:var(--green-bg);border-radius:var(--radius);padding:14px;text-align:center;"><div style="font-size:24px;font-weight:500;color:var(--green);">96%</div><div style="font-size:11px;color:var(--green);margin-top:2px;">Positive</div></div>
-              <div style="background:#f0ede8;border-radius:var(--radius);padding:14px;text-align:center;"><div style="font-size:24px;font-weight:500;color:var(--muted);">4%</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Neutral / Neg</div></div>
-            </div>
-            <div style="font-size:11px;color:var(--muted);line-height:1.6;">Top keywords: <strong>professional</strong>, <strong>on-time</strong>, <strong>detailed</strong>, <strong>recommended</strong></div>
-          </div>
-        </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-messages"></i>All reviews</div></div>
-          <div class="review-row"><div class="review-top"><div class="review-name"><div class="review-av">HM</div>Hazrul M. <span style="font-size:10px;color:var(--muted);font-weight:400;">2 May 2025</span></div><div class="stars">★★★★★</div></div><div class="review-text">"Excellent work, delivered on time and within budget. Very professional throughout the entire project. Will definitely hire again."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>24 Likes</button><button class="review-btn"><i class="ti ti-thumb-down"></i>0</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
-          <div class="review-row"><div class="review-top"><div class="review-name"><div class="review-av">LK</div>Liyana K. <span style="font-size:10px;color:var(--muted);font-weight:400;">28 Apr 2025</span></div><div class="stars">★★★★☆</div></div><div class="review-text">"Very professional, highly recommended for structural work. The BIM report was extremely detailed and well-presented."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>18 Likes</button><button class="review-btn"><i class="ti ti-thumb-down"></i>1</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
-          <div class="review-row" style="border:none;padding-bottom:0;"><div class="review-top"><div class="review-name"><div class="review-av">TB</div>TechBuild Sdn Bhd <span style="font-size:10px;color:var(--muted);font-weight:400;">20 Apr 2025</span></div><div class="stars">★★★★★</div></div><div class="review-text">"Great communication throughout. The structural report was clear and all findings well documented. Would recommend to others."</div><div class="review-actions"><button class="review-btn"><i class="ti ti-thumb-up"></i>12 Likes</button><button class="review-btn"><i class="ti ti-thumb-down"></i>0</button><button class="review-btn"><i class="ti ti-message"></i>Reply</button></div></div>
+          <div class="card-header"><div class="card-title"><i class="ti ti-star"></i>Reviews &amp; Feedback</div></div>
+          <div class="empty-state"><i class="ti ti-star"></i><p>No reviews yet.<br>Reviews will appear here once clients rate your work.</p></div>
         </div>
       </div>
 
       <!-- ANALYTICS -->
       <div id="tab-analytics" style="display:none;">
-        <div class="metrics">
-          <div class="metric"><div class="metric-label">Total Views</div><div class="metric-val">1,284</div><div class="metric-change up">+18% vs last month</div></div>
-          <div class="metric"><div class="metric-label">Click-Through</div><div class="metric-val">8.4%</div><div class="metric-change up">+1.2% this month</div></div>
-          <div class="metric"><div class="metric-label">Enquiries</div><div class="metric-val">18</div><div class="metric-change up">+6 this week</div></div>
-          <div class="metric"><div class="metric-label">Conversion Rate</div><div class="metric-val">1.4%</div><div class="metric-change neutral">Industry avg: 1.1%</div></div>
-        </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Profile views — last 30 days</div></div>
-          <div style="position:relative;width:100%;height:200px;">
-            <canvas id="viewsChart" role="img" aria-label="Bar chart of profile views over last 30 days">Profile views data</canvas>
-          </div>
+          <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Analytics</div></div>
+          <div class="empty-state"><i class="ti ti-chart-bar"></i><p>Analytics will be available once your profile is verified and live on the marketplace.</p></div>
         </div>
       </div>
 
       <!-- CREDITS -->
       <div id="tab-credits" style="display:none;">
         <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-          <div class="metric"><div class="metric-label">Current Balance</div><div class="metric-val" style="color:var(--warm);">RM 240</div><div class="metric-change neutral">~8 postings left</div></div>
-          <div class="metric"><div class="metric-label">Total Topped Up</div><div class="metric-val">RM 350</div><div class="metric-change neutral">since Apr 2025</div></div>
-          <div class="metric"><div class="metric-label">Total Spent</div><div class="metric-val">RM 110</div><div class="metric-change neutral">4 ads, 1 boost</div></div>
+          <div class="metric"><div class="metric-label">Current Balance</div><div class="metric-val" style="color:var(--warm);">RM 0</div></div>
+          <div class="metric"><div class="metric-label">Total Topped Up</div><div class="metric-val">RM 0</div></div>
+          <div class="metric"><div class="metric-label">Total Spent</div><div class="metric-val">RM 0</div></div>
         </div>
-        <div class="card mb10">
-          <div class="card-header"><div class="card-title"><i class="ti ti-package"></i>Top up credits</div></div>
+        <div class="card" style="margin-bottom:10px;">
+          <div class="card-header"><div class="card-title"><i class="ti ti-package"></i>Top Up Credits</div></div>
           <div class="pkg-grid">
             <div class="pkg">
-              <div class="pkg-name">Starter</div>
-              <div class="pkg-price"><span class="pkg-currency">RM</span>50</div>
-              <div class="pkg-desc">~1 ad posting</div>
-              <div class="pkg-features">
-                <div class="pkg-feat"><i class="ti ti-check"></i>1 standard ad post</div>
-                <div class="pkg-feat"><i class="ti ti-check"></i>30-day listing</div>
-                <div class="pkg-feat no"><i class="ti ti-x"></i>No boost credits</div>
-              </div>
-              <button class="pkg-btn">Buy RM 50</button>
+              <div class="pkg-name">Starter</div><div class="pkg-price">RM 50</div><div class="pkg-desc">~1 ad posting</div>
+              <div class="pkg-feat"><i class="ti ti-check"></i>1 standard ad post</div>
+              <div class="pkg-feat"><i class="ti ti-check"></i>30-day listing</div>
+              <button class="pkg-btn" onclick="showToast('Payment integration coming soon!')">Buy RM 50</button>
             </div>
             <div class="pkg featured">
-              <div class="pkg-badge">Most popular</div>
-              <div class="pkg-name">Standard</div>
-              <div class="pkg-price"><span class="pkg-currency">RM</span>150</div>
-              <div class="pkg-desc">~5 ad postings</div>
-              <div class="pkg-features">
-                <div class="pkg-feat"><i class="ti ti-check"></i>5 standard ad posts</div>
-                <div class="pkg-feat"><i class="ti ti-check"></i>30–90 day listings</div>
-                <div class="pkg-feat"><i class="ti ti-check"></i>RM 20 boost credit</div>
-              </div>
-              <button class="pkg-btn">Buy RM 150</button>
+              <div class="pkg-badge">Popular</div><div class="pkg-name">Standard</div><div class="pkg-price">RM 150</div><div class="pkg-desc">~5 ad postings</div>
+              <div class="pkg-feat"><i class="ti ti-check"></i>5 standard ad posts</div>
+              <div class="pkg-feat"><i class="ti ti-check"></i>RM 20 boost credit</div>
+              <button class="pkg-btn" onclick="showToast('Payment integration coming soon!')">Buy RM 150</button>
             </div>
             <div class="pkg">
-              <div class="pkg-name">Pro</div>
-              <div class="pkg-price"><span class="pkg-currency">RM</span>300</div>
-              <div class="pkg-desc">~12 ad postings</div>
-              <div class="pkg-features">
-                <div class="pkg-feat"><i class="ti ti-check"></i>12 standard ad posts</div>
-                <div class="pkg-feat"><i class="ti ti-check"></i>Priority listing placement</div>
-                <div class="pkg-feat"><i class="ti ti-check"></i>RM 80 boost credit</div>
-              </div>
-              <button class="pkg-btn">Buy RM 300</button>
+              <div class="pkg-name">Pro</div><div class="pkg-price">RM 300</div><div class="pkg-desc">~12 ad postings</div>
+              <div class="pkg-feat"><i class="ti ti-check"></i>12 ad posts</div>
+              <div class="pkg-feat"><i class="ti ti-check"></i>RM 80 boost credit</div>
+              <button class="pkg-btn" onclick="showToast('Payment integration coming soon!')">Buy RM 300</button>
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>Transaction history</div></div>
-          <div class="tx-row"><div><div class="tx-type">Top Up — Standard Pack</div><div class="tx-date">2 May 2025 · Online Banking (Maybank2u)</div></div><div class="tx-amt tx-plus">+RM 100</div></div>
-          <div class="tx-row"><div><div class="tx-type">Ad Posted — Civil Engineering Services</div><div class="tx-date">30 Apr 2025 · 30-day listing</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
-          <div class="tx-row"><div><div class="tx-type">Ad Boost — Civil Engineering (7 days)</div><div class="tx-date">28 Apr 2025</div></div><div class="tx-amt tx-minus">-RM 50</div></div>
-          <div class="tx-row"><div><div class="tx-type">Top Up — Pro Pack</div><div class="tx-date">25 Apr 2025 · Credit Card (Visa ···4521)</div></div><div class="tx-amt tx-plus">+RM 200</div></div>
-          <div class="tx-row"><div><div class="tx-type">Ad Posted — Structural Assessment</div><div class="tx-date">20 Apr 2025 · 30-day listing</div></div><div class="tx-amt tx-minus">-RM 30</div></div>
-          <div class="tx-row" style="border:none;"><div><div class="tx-type">Welcome Credit Promo</div><div class="tx-date">15 Apr 2025 · Promotional</div></div><div class="tx-amt tx-plus">+RM 50</div></div>
+          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>Transaction History</div></div>
+          <div class="empty-state" style="padding:1.5rem;"><p>No transactions yet.</p></div>
         </div>
       </div>
 
@@ -602,46 +370,28 @@
       <div id="tab-profile" style="display:none;">
         <div class="grid2">
           <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ti ti-building"></i>Company profile</div><div class="card-action" onclick="openEditModal()" style="cursor:pointer;">Edit <i class="ti ti-edit" style="font-size:12px;"></i></div></div>
-            <!-- COVER PHOTO -->
-            <div class="cover-wrap" onclick="document.getElementById('coverInput').click()" title="Upload company photo">
-              <img id="coverImg" src="" alt="" style="display:none;" />
-              <div class="cover-upload-hint"><i class="ti ti-camera"></i>Upload company photo</div>
-            </div>
-            <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="uploadCover(this)" />
-
+            <div class="card-header"><div class="card-title"><i class="ti ti-building"></i>Company Profile</div><div class="card-action" onclick="openEditModal()">Edit <i class="ti ti-edit" style="font-size:12px;"></i></div></div>
+            <div class="profile-cover"></div>
             <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;padding-top:8px;">
-              <!-- LOGO -->
-              <div class="logo-wrap" onclick="document.getElementById('logoInput').click()" title="Upload company logo">
-                <span id="logoInitials">AR</span>
-                <img id="logoImg" src="" alt="" style="display:none;" />
-                <div class="logo-upload-hint"><i class="ti ti-camera"></i></div>
-              </div>
-              <input type="file" id="logoInput" accept="image/*" style="display:none;" onchange="uploadLogo(this)" />
-              <div style="display:flex;gap:6px;"><span class="pill pill-active" style="font-size:11px;padding:3px 10px;">Available</span><span style="font-size:11px;padding:3px 10px;border-radius:10px;background:var(--blue-bg);color:var(--blue);font-weight:500;">Verified ✓</span></div>
+              <div class="profile-av-lg" id="profileAvLg">?</div>
+              <div id="profileBadges" style="display:flex;gap:6px;"></div>
             </div>
-            <div style="margin-bottom:10px;"><div style="font-size:16px;font-weight:500;">Ahmad Razali</div><div style="font-size:13px;color:var(--muted);margin-top:1px;">Civil Engineer · Construction</div></div>
-            <div style="font-size:12px;color:var(--muted2);line-height:1.65;margin-bottom:12px;">Civil engineer with 12+ years delivering residential and commercial projects across Malaysia. Specialist in structural assessments, BIM workflows, and renovation consulting.</div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">Renovation</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">Structural</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">BIM</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">AutoCAD</span><span style="font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);">Concrete</span></div>
-            <div class="field-row"><div class="field-label"><i class="ti ti-map-pin"></i>Location</div><div class="field-val">Kuala Lumpur, Malaysia</div></div>
-            <div class="field-row"><div class="field-label"><i class="ti ti-briefcase"></i>Experience</div><div class="field-val">12+ years</div></div>
-            <div class="field-row"><div class="field-label"><i class="ti ti-clock"></i>Hourly rate</div><div class="field-val">RM 180 / hr</div></div>
-            <div class="field-row"><div class="field-label"><i class="ti ti-phone"></i>Contact</div><div class="field-val">+60 12-345 6789</div></div>
-            <div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-mail"></i>Email</div><div class="field-val">ahmad@razalicivil.com</div></div>
+            <div style="margin-bottom:10px;">
+              <div style="font-size:16px;font-weight:500;" id="profileFullName">—</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:1px;" id="profileSubtitle">—</div>
+            </div>
+            <div id="profileFields"></div>
           </div>
           <div>
-            <div class="card mb10">
-              <div class="card-header"><div class="card-title"><i class="ti ti-eye"></i>Profile visibility</div></div>
-              <div class="vis-row"><div class="label">Profile visibility</div><span class="pill pill-active">Public</span></div>
-              <div class="vis-row"><div class="label">Show contact info</div><span class="pill pill-active">Visible</span></div>
-              <div class="vis-row" style="border:none;"><div class="label">Accept direct enquiries</div><span class="pill pill-active">On</span></div>
+            <div class="card" style="margin-bottom:10px;">
+              <div class="card-header"><div class="card-title"><i class="ti ti-certificate"></i>Verification Status</div></div>
+              <div id="profileVerify"></div>
             </div>
             <div class="card">
-              <div class="card-header"><div class="card-title"><i class="ti ti-certificate"></i>Verification status</div></div>
-              <div class="verify-row"><i class="ti ti-check done"></i><div class="label">Identity verified</div><span class="status done">Done</span></div>
-              <div class="verify-row"><i class="ti ti-check done"></i><div class="label">Business registration</div><span class="status done">Done</span></div>
-              <div class="verify-row"><i class="ti ti-check done"></i><div class="label">Professional cert. uploaded</div><span class="status done">Done</span></div>
-              <div class="verify-row" style="border:none;"><i class="ti ti-clock pending"></i><div class="label">Portfolio review</div><span class="status pending">In review</span></div>
+              <div class="card-header"><div class="card-title"><i class="ti ti-eye"></i>Profile Visibility</div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);"><span style="font-size:12px;">Visibility</span><span class="pill pill-pending">Pending approval</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);"><span style="font-size:12px;">Contact info</span><span class="pill pill-active">Visible</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;"><span style="font-size:12px;">Accept enquiries</span><span class="pill pill-active">On</span></div>
             </div>
           </div>
         </div>
@@ -650,11 +400,11 @@
       <!-- SETTINGS -->
       <div id="tab-settings" style="display:none;">
         <div class="card">
-          <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i>Account settings</div></div>
-          <div class="field-row"><div class="field-label"><i class="ti ti-bell"></i>Notifications</div><div class="field-val">Email + SMS enabled</div></div>
-          <div class="field-row"><div class="field-label"><i class="ti ti-lock"></i>Password</div><div class="field-val">Last changed 3 months ago</div></div>
-          <div class="field-row"><div class="field-label"><i class="ti ti-language"></i>Language</div><div class="field-val">English (Malaysia)</div></div>
-          <div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-trash"></i>Delete account</div><div class="field-val" style="color:var(--red);cursor:pointer;">Request deletion</div></div>
+          <div class="card-header"><div class="card-title"><i class="ti ti-settings"></i>Account Settings</div></div>
+          <div class="field-row"><div class="field-label"><i class="ti ti-mail"></i>Email</div><div class="field-val" id="settingsEmail">—</div></div>
+          <div class="field-row"><div class="field-label"><i class="ti ti-phone"></i>Phone</div><div class="field-val" id="settingsPhone">—</div></div>
+          <div class="field-row"><div class="field-label"><i class="ti ti-bell"></i>Notifications</div><div class="field-val">Email enabled</div></div>
+          <div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-logout"></i>Sign out</div><div class="field-val" style="color:var(--red);cursor:pointer;" onclick="doSignOut()">Sign out of portal</div></div>
         </div>
       </div>
 
@@ -662,166 +412,163 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-edit"></i>Edit Profile</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="edit-company" /></div>
+      <div class="form-group"><label class="form-label">Company Phone</label><input class="form-input" id="edit-phone" /></div>
+      <div class="form-group"><label class="form-label">Website</label><input class="form-input" id="edit-website" placeholder="https://" /></div>
+      <div class="form-group"><label class="form-label">Years of Experience</label><input class="form-input" id="edit-exp" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveProfile()"><i class="ti ti-check"></i>Save Changes</button>
+    </div>
+  </div>
+</div>
 
+<div class="toast" id="toast"></div>
 
-function uploadCover(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = document.getElementById('coverImg');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    showToast('Company photo updated!');
-  };
-  reader.readAsDataURL(file);
-}
-
-function uploadLogo(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = document.getElementById('logoImg');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    document.getElementById('logoInitials').style.display = 'none';
-    // Also update sidebar avatar
-    var sidebarAv = document.querySelector('.profile-av');
-    if (sidebarAv) {
-      sidebarAv.style.backgroundImage = 'url(' + e.target.result + ')';
-      sidebarAv.style.backgroundSize = 'cover';
-      sidebarAv.style.backgroundPosition = 'center';
-      sidebarAv.textContent = '';
-    }
-    showToast('Company logo updated!');
-  };
-  reader.readAsDataURL(file);
-}
-
-function showToast(msg) {
-  var toast = document.getElementById('saveToast');
-  toast.querySelector('span') && (toast.querySelector('span').textContent = msg);
-  // Update toast text
-  var icon = toast.querySelector('i');
-  toast.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
-  toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 3000);
-}
-
-function openEditModal() {
-  document.getElementById('editModal').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeEditModal() {
-  document.getElementById('editModal').classList.remove('show');
-  document.body.style.overflow = '';
-}
-function setAvail(val) {
-  document.getElementById('avail-available').classList.toggle('selected', val === 'available');
-  document.getElementById('avail-busy').classList.toggle('selected', val === 'busy');
-}
-function saveProfile() {
-  // Update displayed values
-  var name    = document.getElementById('edit-name').value;
-  var title   = document.getElementById('edit-title').value;
-  var bio     = document.getElementById('edit-bio').value;
-  var loc     = document.getElementById('edit-location').value;
-  var exp     = document.getElementById('edit-exp').value;
-  var rate    = document.getElementById('edit-rate').value;
-  var phone   = document.getElementById('edit-phone').value;
-  var email   = document.getElementById('edit-email').value;
-  var skills  = document.getElementById('edit-skills').value;
-
-  // Update profile card fields
-  var fields = document.querySelectorAll('.field-val');
-  if (fields.length >= 5) {
-    fields[0].textContent = loc;
-    fields[1].textContent = exp;
-    fields[2].textContent = 'RM ' + rate + ' / hr';
-    fields[3].textContent = phone;
-    fields[4].textContent = email;
-  }
-
-  // Update name and title
-  var nameEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:16px"]');
-  if (nameEl) nameEl.textContent = name;
-  var titleEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:13px"][style*="color:var(--muted)"]');
-  if (titleEl) titleEl.textContent = title;
-
-  // Update bio
-  var bioEl = document.querySelector('#tab-profile .grid2 .card div[style*="line-height:1.65"]');
-  if (bioEl) bioEl.textContent = bio;
-
-  // Update skills
-  var skillsWrap = document.querySelector('#tab-profile .grid2 .card div[style*="flex-wrap:wrap;gap:5px"]');
-  if (skillsWrap) {
-    skillsWrap.innerHTML = '';
-    skills.split(',').forEach(function(s) {
-      s = s.trim();
-      if (s) {
-        var span = document.createElement('span');
-        span.style.cssText = 'font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);';
-        span.textContent = s;
-        skillsWrap.appendChild(span);
-      }
-    });
-  }
-
-  // Update availability
-  var isAvail = document.getElementById('avail-available').classList.contains('selected');
-  var dotEl = document.querySelector('.status-dot');
-  var statusEl = document.querySelector('.profile-status');
-  if (dotEl) dotEl.style.background = isAvail ? 'var(--green)' : 'var(--red)';
-
-  closeEditModal();
-
-  // Show toast
-  var toast = document.getElementById('saveToast');
-  toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 3000);
-}
-
-// Close modal on overlay click
-document.addEventListener('DOMContentLoaded', function() {
-  var modal = document.getElementById('editModal');
-  if (modal) {
-    modal.addEventListener('click', function(e) {
-      if (e.target === this) closeEditModal();
-    });
-  }
-});
-
-function toggleSidebar() {
-  var sidebar = document.querySelector('.sidebar');
-  var overlay = document.getElementById('sidebarOverlay');
-  var isOpen = sidebar.classList.contains('open');
-  if (isOpen) {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('show');
-  } else {
-    sidebar.classList.add('open');
-    overlay.classList.add('show');
-  }
-}
-function closeSidebar() {
-  document.querySelector('.sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
-// Close sidebar when nav item clicked on mobile
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.nav-item').forEach(function(item) {
-    item.addEventListener('click', function() {
-      if (window.innerWidth <= 768) closeSidebar();
-    });
-  });
-});
-
-</script>
 <script>
-var tabs = ['dashboard','ads','post','reviews','analytics','credits','profile','settings'];
-var titles = { dashboard:'Overview', ads:'My Ads', post:'Post New Ad', reviews:'Reviews & Feedback', analytics:'Analytics', credits:'Credits & Billing', profile:'Company Profile', settings:'Settings' };
+var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var cData = null;
+
+async function init() {
+  var email = localStorage.getItem('ch_user_email');
+  if (!email) { window.location.href = 'signin.html'; return; }
+
+  try {
+    var res = await sb.from('contractor_registrations').select('*').eq('email', email).single();
+    if (res.error || !res.data) { window.location.href = 'signin.html'; return; }
+    cData = res.data;
+    render();
+  } catch(e) {
+    console.error(e);
+    showToast('Error loading profile: ' + e.message);
+  }
+}
+
+function render() {
+  var c = cData;
+  var name = ((c.first_name||'') + ' ' + (c.last_name||'')).trim();
+  var ini  = ((c.first_name||'?')[0] + (c.last_name||'?')[0]).toUpperCase();
+
+  // Sidebar + topbar
+  document.getElementById('sidebarAv').textContent  = ini;
+  document.getElementById('sidebarName').textContent = name || 'My Portal';
+  document.getElementById('topbarAv').textContent   = ini;
+  document.getElementById('topbarName').textContent = c.first_name || 'User';
+  document.getElementById('settingsEmail').textContent = c.email || '—';
+  document.getElementById('settingsPhone').textContent = c.company_phone || c.phone || '—';
+
+  // Status
+  var statusLabels = { pending:'Pending verification', partially_verified:'Partially verified', verified:'Verified ✓', premium_verified:'Premium verified ★', rejected:'Application rejected' };
+  var statusColors = { pending:'var(--warm)', partially_verified:'var(--blue)', verified:'var(--green)', premium_verified:'var(--warm)', rejected:'var(--red)' };
+  var sLabel = statusLabels[c.status] || 'Pending';
+  document.getElementById('statusText').textContent = sLabel;
+  document.getElementById('d-status').textContent = sLabel;
+
+  var dot = document.getElementById('statusDot');
+  dot.className = 'status-dot';
+  if (c.status === 'pending' || c.status === 'partially_verified') dot.classList.add('pending');
+  else if (c.status === 'rejected') dot.classList.add('rejected');
+
+  // Show pending banner
+  if (c.status === 'pending' || c.status === 'partially_verified') {
+    document.getElementById('pendingBanner').style.display = 'flex';
+  }
+
+  // Dashboard company card
+  var compHtml = '';
+  compHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-building"></i>Company</div><div class="field-val">' + (c.company_name||'—') + '</div></div>';
+  compHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-file"></i>SSM</div><div class="field-val">' + (c.ssm_number||'—') + '</div></div>';
+  compHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-map-pin"></i>State</div><div class="field-val">' + (c.state||'—') + '</div></div>';
+  compHtml += '<div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-tools"></i>Categories</div><div class="field-val">' + (c.categories ? c.categories.join(', ') : '—') + '</div></div>';
+  document.getElementById('dash-company').innerHTML = compHtml;
+
+  // Dashboard verify card
+  renderVerifyCard('dash-verify', c);
+
+  // Profile tab
+  document.getElementById('profileFullName').textContent = name || '—';
+  document.getElementById('profileSubtitle').textContent = (c.categories ? c.categories[0] : '—') + (c.state ? ' · ' + c.state : '');
+  document.getElementById('profileAvLg').textContent = ini;
+
+  var fieldsHtml = '';
+  fieldsHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-map-pin"></i>Location</div><div class="field-val">' + (c.state||'—') + ', Malaysia</div></div>';
+  fieldsHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-briefcase"></i>Experience</div><div class="field-val">' + (c.years_experience||'—') + '</div></div>';
+  fieldsHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-phone"></i>Phone</div><div class="field-val">' + (c.company_phone||c.phone||'—') + '</div></div>';
+  fieldsHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-mail"></i>Email</div><div class="field-val">' + (c.company_email||c.email||'—') + '</div></div>';
+  if (c.website) fieldsHtml += '<div class="field-row"><div class="field-label"><i class="ti ti-world"></i>Website</div><div class="field-val">' + c.website + '</div></div>';
+  fieldsHtml += '<div class="field-row" style="border:none;"><div class="field-label"><i class="ti ti-certificate"></i>CIDB</div><div class="field-val">' + (c.has_cidb ? ((c.cidb_grade||'') + (c.cidb_number ? ' · ' + c.cidb_number : '')) : 'Not registered') + '</div></div>';
+  document.getElementById('profileFields').innerHTML = fieldsHtml;
+
+  // Profile badges
+  var badge = '';
+  if (c.status === 'premium_verified') badge = '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:#1A1714;color:var(--warm);font-weight:500;">★ Premium</span>';
+  else if (c.status === 'verified') badge = '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:var(--blue-bg);color:var(--blue);font-weight:500;">Verified ✓</span>';
+  else badge = '<span class="pill pill-pending">Pending</span>';
+  document.getElementById('profileBadges').innerHTML = badge;
+
+  renderVerifyCard('profileVerify', c);
+
+  // Edit modal prefill
+  document.getElementById('edit-company').value = c.company_name || '';
+  document.getElementById('edit-phone').value   = c.company_phone || '';
+  document.getElementById('edit-website').value = c.website || '';
+  document.getElementById('edit-exp').value     = c.years_experience || '';
+}
+
+function renderVerifyCard(id, c) {
+  var html = '';
+  var checks = [
+    { label:'SSM Registration', ok: !!c.ssm_number },
+    { label:'CIDB Certificate', ok: c.has_cidb, na: !c.has_cidb },
+    { label:'Identity (IC)',    ok: !!c.doc_ic_front },
+    { label:'Selfie Verification', ok: !!c.doc_selfie },
+    { label:'Portfolio',        ok: c.doc_projects && c.doc_projects.length > 0, optional: true },
+  ];
+  for (var i = 0; i < checks.length; i++) {
+    var ch = checks[i];
+    var icon, cls, label;
+    if (ch.ok) { icon = 'ti-check'; cls = 'vstatus-done'; label = 'Submitted'; }
+    else if (ch.na) { icon = 'ti-minus'; cls = 'vstatus-missing'; label = 'N/A'; }
+    else { icon = 'ti-clock'; cls = 'vstatus-pending'; label = ch.optional ? 'Optional' : 'Pending'; }
+    html += '<div class="verify-row"><i class="ti ' + icon + '" style="font-size:15px;" class="' + cls + '"></i><div class="vlabel">' + ch.label + '</div><span class="' + cls + '">' + label + '</span></div>';
+  }
+  html += '<div class="verify-row" style="border:none;"><i class="ti ti-clock" style="font-size:15px;color:var(--warm);"></i><div class="vlabel">Admin Review</div><span class="vstatus-pending">' + ({ pending:'In queue', partially_verified:'In progress', verified:'Approved ✓', premium_verified:'Approved ★', rejected:'Rejected' }[c.status] || 'Pending') + '</span></div>';
+  document.getElementById(id).innerHTML = html;
+}
+
+async function saveProfile() {
+  if (!cData) return;
+  try {
+    var updates = {
+      company_name: document.getElementById('edit-company').value,
+      company_phone: document.getElementById('edit-phone').value,
+      website: document.getElementById('edit-website').value,
+      years_experience: document.getElementById('edit-exp').value,
+    };
+    var res = await sb.from('contractor_registrations').update(updates).eq('id', cData.id);
+    if (res.error) throw res.error;
+    Object.assign(cData, updates);
+    render();
+    closeEditModal();
+    showToast('Profile updated successfully!');
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+}
+
+var tabs = ['dashboard','ads','post','reviews','analytics','profile','credits','settings'];
+var titles = { dashboard:'Dashboard', ads:'My Ads', post:'Post New Ad', reviews:'Reviews & Feedback', analytics:'Analytics', profile:'Company Profile', credits:'Credits & Billing', settings:'Settings' };
 
 function show(tab, navEl) {
   tabs.forEach(function(t) {
@@ -831,247 +578,51 @@ function show(tab, navEl) {
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
   document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
   if (navEl) navEl.classList.add('active');
-  if (tab === 'analytics') initChart();
+  if (window.innerWidth <= 768) closeSidebar();
 }
 
-var chartInited = false;
-function initChart() {
-  if (chartInited) return;
-  chartInited = true;
-  var ctx = document.getElementById('viewsChart');
-  if (!ctx) return;
-  var labels = [];
-  for (var i = 30; i >= 1; i--) labels.push(i === 1 ? 'Today' : (i % 5 === 0 ? i + 'd' : ''));
-  var data = [18,22,15,28,32,25,20,18,35,42,38,30,25,22,18,28,45,52,48,40,35,30,28,32,38,42,35,28,25,30];
-  new Chart(ctx, {
-    type: 'bar',
-    data: { labels: labels, datasets: [{ label: 'Views', data: data, backgroundColor: 'rgba(196,135,58,0.25)', borderColor: '#C4873A', borderWidth: 1, borderRadius: 3 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } } } }
-  });
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
 }
 
-
-
-function uploadCover(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = document.getElementById('coverImg');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    showToast('Company photo updated!');
-  };
-  reader.readAsDataURL(file);
+function toggleDropdown() {
+  document.getElementById('userDropdown').classList.toggle('show');
 }
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.user-chip')) {
+    var dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.remove('show');
+  }
+});
 
-function uploadLogo(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = document.getElementById('logoImg');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    document.getElementById('logoInitials').style.display = 'none';
-    // Also update sidebar avatar
-    var sidebarAv = document.querySelector('.profile-av');
-    if (sidebarAv) {
-      sidebarAv.style.backgroundImage = 'url(' + e.target.result + ')';
-      sidebarAv.style.backgroundSize = 'cover';
-      sidebarAv.style.backgroundPosition = 'center';
-      sidebarAv.textContent = '';
-    }
-    showToast('Company logo updated!');
-  };
-  reader.readAsDataURL(file);
+function openEditModal()  { document.getElementById('editModal').classList.add('show'); }
+function closeEditModal() { document.getElementById('editModal').classList.remove('show'); }
+document.addEventListener('DOMContentLoaded', function() {
+  var m = document.getElementById('editModal');
+  if (m) m.addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+});
+
+function doSignOut() {
+  localStorage.removeItem('ch_user_role');
+  localStorage.removeItem('ch_user_email');
+  localStorage.removeItem('ch_user_name');
+  localStorage.removeItem('ch_contractor_status');
+  window.location.href = 'signin.html';
 }
 
 function showToast(msg) {
-  var toast = document.getElementById('saveToast');
-  toast.querySelector('span') && (toast.querySelector('span').textContent = msg);
-  // Update toast text
-  var icon = toast.querySelector('i');
-  toast.innerHTML = '<i class="ti ti-check" style="font-size:15px;"></i> ' + msg;
-  toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 
-function openEditModal() {
-  document.getElementById('editModal').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeEditModal() {
-  document.getElementById('editModal').classList.remove('show');
-  document.body.style.overflow = '';
-}
-function setAvail(val) {
-  document.getElementById('avail-available').classList.toggle('selected', val === 'available');
-  document.getElementById('avail-busy').classList.toggle('selected', val === 'busy');
-}
-function saveProfile() {
-  // Update displayed values
-  var name    = document.getElementById('edit-name').value;
-  var title   = document.getElementById('edit-title').value;
-  var bio     = document.getElementById('edit-bio').value;
-  var loc     = document.getElementById('edit-location').value;
-  var exp     = document.getElementById('edit-exp').value;
-  var rate    = document.getElementById('edit-rate').value;
-  var phone   = document.getElementById('edit-phone').value;
-  var email   = document.getElementById('edit-email').value;
-  var skills  = document.getElementById('edit-skills').value;
-
-  // Update profile card fields
-  var fields = document.querySelectorAll('.field-val');
-  if (fields.length >= 5) {
-    fields[0].textContent = loc;
-    fields[1].textContent = exp;
-    fields[2].textContent = 'RM ' + rate + ' / hr';
-    fields[3].textContent = phone;
-    fields[4].textContent = email;
-  }
-
-  // Update name and title
-  var nameEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:16px"]');
-  if (nameEl) nameEl.textContent = name;
-  var titleEl = document.querySelector('#tab-profile .grid2 .card div[style*="font-size:13px"][style*="color:var(--muted)"]');
-  if (titleEl) titleEl.textContent = title;
-
-  // Update bio
-  var bioEl = document.querySelector('#tab-profile .grid2 .card div[style*="line-height:1.65"]');
-  if (bioEl) bioEl.textContent = bio;
-
-  // Update skills
-  var skillsWrap = document.querySelector('#tab-profile .grid2 .card div[style*="flex-wrap:wrap;gap:5px"]');
-  if (skillsWrap) {
-    skillsWrap.innerHTML = '';
-    skills.split(',').forEach(function(s) {
-      s = s.trim();
-      if (s) {
-        var span = document.createElement('span');
-        span.style.cssText = 'font-size:11px;padding:3px 9px;background:#f0ede8;border-radius:5px;color:var(--muted2);';
-        span.textContent = s;
-        skillsWrap.appendChild(span);
-      }
-    });
-  }
-
-  // Update availability
-  var isAvail = document.getElementById('avail-available').classList.contains('selected');
-  var dotEl = document.querySelector('.status-dot');
-  var statusEl = document.querySelector('.profile-status');
-  if (dotEl) dotEl.style.background = isAvail ? 'var(--green)' : 'var(--red)';
-
-  closeEditModal();
-
-  // Show toast
-  var toast = document.getElementById('saveToast');
-  toast.classList.add('show');
-  setTimeout(function() { toast.classList.remove('show'); }, 3000);
-}
-
-// Close modal on overlay click
-document.addEventListener('DOMContentLoaded', function() {
-  var modal = document.getElementById('editModal');
-  if (modal) {
-    modal.addEventListener('click', function(e) {
-      if (e.target === this) closeEditModal();
-    });
-  }
-});
-
-function toggleSidebar() {
-  var sidebar = document.querySelector('.sidebar');
-  var overlay = document.getElementById('sidebarOverlay');
-  var isOpen = sidebar.classList.contains('open');
-  if (isOpen) {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('show');
-  } else {
-    sidebar.classList.add('open');
-    overlay.classList.add('show');
-  }
-}
-function closeSidebar() {
-  document.querySelector('.sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
-// Close sidebar when nav item clicked on mobile
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.nav-item').forEach(function(item) {
-    item.addEventListener('click', function() {
-      if (window.innerWidth <= 768) closeSidebar();
-    });
-  });
-});
-
+init();
 </script>
-
-<!-- EDIT PROFILE MODAL -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title"><i class="ti ti-edit"></i>Edit Company Profile</div>
-      <button class="modal-close" onclick="closeEditModal()"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Full name</label>
-        <input class="form-input" id="edit-name" value="Ahmad Razali" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Professional title</label>
-        <input class="form-input" id="edit-title" value="Civil Engineer · Construction" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">About / Bio</label>
-        <textarea class="form-textarea" id="edit-bio" rows="4">Civil engineer with 12+ years delivering residential and commercial projects across Malaysia. Specialist in structural assessments, BIM workflows, and renovation consulting.</textarea>
-      </div>
-      <div class="form-row2">
-        <div class="form-group" style="margin:0 0 12px;">
-          <label class="form-label">Location</label>
-          <input class="form-input" id="edit-location" value="Kuala Lumpur, Malaysia" />
-        </div>
-        <div class="form-group" style="margin:0 0 12px;">
-          <label class="form-label">Years of experience</label>
-          <input class="form-input" id="edit-exp" value="12+ years" />
-        </div>
-      </div>
-      <div class="form-row2">
-        <div class="form-group" style="margin:0 0 12px;">
-          <label class="form-label">Hourly rate (RM)</label>
-          <input class="form-input" id="edit-rate" value="180" type="number" />
-        </div>
-        <div class="form-group" style="margin:0 0 12px;">
-          <label class="form-label">Phone number</label>
-          <input class="form-input" id="edit-phone" value="+60 12-345 6789" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input class="form-input" id="edit-email" value="ahmad@razalicivil.com" type="email" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Skills / Tags <span style="font-size:11px;color:var(--muted);">(comma separated)</span></label>
-        <input class="form-input" id="edit-skills" value="Renovation, Structural, BIM, AutoCAD, Concrete" />
-      </div>
-      <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label">Availability status</label>
-        <div class="avail-toggle" style="margin-top:6px;">
-          <div class="avail-opt selected" id="avail-available" onclick="setAvail('available')">&#9679; Available for hire</div>
-          <div class="avail-opt busy" id="avail-busy" onclick="setAvail('busy')">&#9675; Currently busy</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-      <button class="btn-primary" onclick="saveProfile()"><i class="ti ti-check"></i>Save changes</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="save-toast" id="saveToast"><i class="ti ti-check" style="font-size:15px;"></i>Profile updated successfully</div>
-
 </body>
 </html>
