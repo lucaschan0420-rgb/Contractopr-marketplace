@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -14,91 +15,55 @@
       --text2: #6b6b6b; --text3: #aaaaaa;
       --border: #e5e3de; --border2: #d0cdc6;
       --green: #0f6e56; --green-bg: #e1f5ee;
-      --amber: #ba7517; --warm: #C4873A; --warm-pale: #FAEEDA;
+      --warm: #C4873A; --warm-pale: #FAEEDA;
       --blue: #185FA5; --blue-bg: #E6F1FB;
-      --purple-bg: #eeedfe; --purple: #534ab7;
       --red: #C0392B;
       --radius: 10px; --radius-lg: 14px;
     }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); line-height: 1.6; }
-
-
-    /* ── VIEW SWITCH TOGGLE ── */
-    .view-switch { display: flex; align-items: center; gap: 8px; }
-    .view-switch-label { font-size: 12px; color: var(--text2); white-space: nowrap; }
-    .switch-track {
-      width: 52px; height: 26px;
-      background: var(--border);
-      border-radius: 100px;
-      position: relative;
-      cursor: pointer;
-      transition: background .25s;
-      flex-shrink: 0;
-      border: 0.5px solid var(--border2);
-    }
-    .switch-track.contractor-mode { background: #0f1117; border-color: #0f1117; }
-    .switch-thumb {
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform .25s cubic-bezier(0.4,0,0.2,1);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    }
-    .switch-track.contractor-mode .switch-thumb { transform: translateX(26px); }
-    .switch-icons { display: flex; align-items: center; gap: 6px; }
-    .switch-icon { font-size: 12px; color: var(--text3); transition: color .2s; }
-    .switch-icon.active { color: var(--text); font-weight: 500; }
-    .contractor-badge {
-      display: none;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 500;
-      padding: 4px 10px;
-      background: var(--warm-pale);
-      color: var(--warm);
-      border-radius: 100px;
-      border: 0.5px solid rgba(196,135,58,0.3);
-    }
-    .contractor-badge.show { display: flex; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); }
 
     /* NAV */
     .nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2.5rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; }
-    .logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); text-decoration: none; }
     .nav-links { display: flex; align-items: center; gap: 1.5rem; }
     .nav-links a { font-size: 14px; color: var(--text2); text-decoration: none; }
     .btn-outline { padding: 7px 16px; border: 0.5px solid var(--border2); border-radius: var(--radius); color: var(--text) !important; font-size: 13px !important; }
     .btn-primary-nav { padding: 7px 16px; background: var(--text); color: #fff !important; border-radius: var(--radius); font-size: 13px !important; }
 
+    /* VIEW SWITCH */
+    .view-switch { display: flex; align-items: center; gap: 8px; }
+    .switch-track { width: 52px; height: 26px; background: var(--border); border-radius: 100px; position: relative; cursor: pointer; transition: background .25s; flex-shrink: 0; border: 0.5px solid var(--border2); }
+    .switch-track.contractor-mode { background: #0f1117; border-color: #0f1117; }
+    .switch-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+    .switch-track.contractor-mode .switch-thumb { transform: translateX(26px); }
+    .switch-icon { font-size: 12px; color: var(--text3); transition: color .2s; }
+    .switch-icon.active { color: var(--text); font-weight: 500; }
+
     /* HERO */
     .hero { text-align: center; padding: 2.5rem 2rem 1.5rem; background: var(--bg); border-bottom: 0.5px solid var(--border); }
     .eyebrow { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.6rem; }
-    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(26px, 4vw, 38px); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(26px,4vw,38px); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
     .subheading { font-size: 14px; color: var(--text2); margin-bottom: 1.25rem; }
     .search-bar { display: flex; gap: 8px; max-width: 580px; margin: 0 auto 1rem; }
-    .search-bar input { flex: 1; padding: 10px 16px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 14px; font-family: 'DM Sans', sans-serif; background: var(--bg); outline: none; }
-    .search-bar select { padding: 10px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text2); outline: none; }
-    .search-bar button { padding: 10px 22px; background: var(--text); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; }
+    .search-bar input { flex: 1; padding: 10px 16px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 14px; font-family: inherit; background: var(--bg); outline: none; }
+    .search-bar select { padding: 10px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: var(--bg); outline: none; }
+    .search-bar button { padding: 10px 22px; background: var(--text); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-family: inherit; font-weight: 500; cursor: pointer; }
     .stats { display: flex; gap: 2rem; justify-content: center; }
     .stat-num { font-family: 'DM Serif Display', serif; font-size: 22px; }
     .stat-label { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
 
     /* TRUST BANNER */
     .trust-banner { background: var(--green-bg); border-bottom: 0.5px solid rgba(15,110,86,0.15); padding: 10px 1.5rem; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--green); }
-    .trust-banner i { font-size: 17px; flex-shrink: 0; }
-    .trust-banner strong { font-weight: 500; }
 
     /* FILTER TOGGLE */
-    .filter-toggle-btn { position: fixed; top: 76px; left: 16px; z-index: 300; display: flex; align-items: center; gap: 7px; padding: 8px 16px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 100px; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: var(--text); cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.1); transition: all .2s; }
+    .filter-toggle-btn { position: fixed; top: 76px; left: 16px; z-index: 300; display: flex; align-items: center; gap: 7px; padding: 8px 16px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 100px; font-size: 13px; font-family: inherit; font-weight: 500; color: var(--text); cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
     .filter-toggle-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-    /* OVERLAY */
+    /* SIDEBAR OVERLAY */
     .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; backdrop-filter: blur(2px); }
     .sidebar-overlay.show { display: block; }
 
-    /* SIDEBAR */
+    /* FILTER SIDEBAR */
     .filter-sidebar { position: fixed; top: 64px; left: 0; bottom: 0; width: 260px; z-index: 250; background: var(--bg); border-right: 0.5px solid var(--border); padding: 1.5rem 1.25rem; overflow-y: auto; transform: translateX(-100%); transition: transform .3s cubic-bezier(0.4,0,0.2,1); box-shadow: 4px 0 24px rgba(0,0,0,0.08); }
     .filter-sidebar.open { transform: translateX(0); }
     .sf-close { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
@@ -110,55 +75,55 @@
     .sf-option input[type="checkbox"] { accent-color: var(--text); width: 13px; height: 13px; cursor: pointer; }
     .sf-option label { font-size: 13px; cursor: pointer; flex: 1; }
     .sf-option .sf-count { font-size: 11px; color: var(--text3); }
-    .sf-range { width: 100%; accent-color: var(--text); margin: 8px 0 4px; }
-    .sf-range-vals { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
-    .sf-star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
-    .sf-star-row input { accent-color: var(--text); cursor: pointer; }
-    .sf-star-row label { font-size: 12px; cursor: pointer; }
-    .stars-gold { color: var(--amber); font-size: 11px; }
     .sf-avail { display: flex; flex-direction: column; gap: 6px; }
-    .sf-avail-btn { padding: 8px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text2); cursor: pointer; text-align: left; transition: all .15s; }
+    .sf-avail-btn { padding: 8px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: inherit; background: var(--bg2); color: var(--text2); cursor: pointer; text-align: left; }
     .sf-avail-btn.active { border-color: var(--text); background: var(--text); color: #fff; }
     .sf-divider { border: none; border-top: 0.5px solid var(--border); margin: 0.25rem 0 1.25rem; }
-    .sf-clear { width: 100%; padding: 9px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: none; color: var(--text2); cursor: pointer; margin-top: 0.5rem; }
-    .sf-clear:hover { border-color: var(--text); color: var(--text); }
+    .sf-clear { width: 100%; padding: 9px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: inherit; background: none; color: var(--text2); cursor: pointer; margin-top: 0.5rem; }
 
     /* MAIN */
     .mp-main { padding: 1.5rem; }
-    .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
-    .af-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 4px 10px; background: var(--text); color: #fff; border-radius: 100px; }
-    .af-tag button { background: none; border: none; color: #fff; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+
+    /* SECTION HEADINGS */
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .section-heading-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 7px; }
+    .section-heading-title i { font-size: 15px; }
+    .section-heading-sub { font-size: 11px; color: var(--text3); }
+
+    /* FEATURED */
+    .featured-section { margin-bottom: 1.75rem; }
+    .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .featured-card { background: var(--bg); border: 1.5px solid rgba(196,135,58,0.35); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all .2s; position: relative; }
+    .featured-card:hover { border-color: var(--warm); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(196,135,58,0.15); }
+    .featured-ribbon { position: absolute; top: 9px; left: 9px; z-index: 3; background: var(--warm); color: #fff; font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 100px; display: flex; align-items: center; gap: 3px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .featured-ribbon i { font-size: 9px; }
+
+    /* BANNER */
+    .banner-section { margin-bottom: 1.75rem; border-radius: var(--radius-lg); overflow: hidden; }
+    .banner-inner { padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+    .banner-text h2 { font-family: 'DM Serif Display', serif; font-size: clamp(18px,2.5vw,24px); color: #fff; margin-bottom: 6px; }
+    .banner-text p { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.55; max-width: 400px; }
+    .banner-cta { padding: 10px 22px; background: #fff; color: #1A1714; border: none; border-radius: 100px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+
+    /* SECTION DIVIDER */
+    .section-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .section-divider-line { flex: 1; height: 0.5px; background: var(--border); }
+    .section-divider-text { font-size: 11px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+
+    /* TOOLBAR */
     .mp-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px; }
     .mp-toolbar-left { display: flex; align-items: center; gap: 10px; }
     .mp-count { font-size: 13px; color: var(--text2); }
-    .mp-fav-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 0.5px solid var(--border); border-radius: 100px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text2); cursor: pointer; transition: all .2s; }
+    .mp-fav-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 0.5px solid var(--border); border-radius: 100px; font-size: 12px; font-family: inherit; background: var(--bg); color: var(--text2); cursor: pointer; }
     .mp-fav-btn.active { background: #fff0f3; border-color: #e05a7a; color: #e05a7a; }
-    .mp-sort { padding: 7px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); cursor: pointer; outline: none; }
+    .mp-sort { padding: 7px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 12px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; cursor: pointer; }
 
     /* GRID */
     .mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
 
-    /* CARD */
-    .mp-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: border-color .15s, transform .2s, box-shadow .2s; text-decoration: none; display: block; color: inherit; position: relative; }
+    /* AD CARD (Live from DB) */
+    .mp-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all .2s; }
     .mp-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
-    .card-photo { position: relative; width: 100%; height: 148px; overflow: hidden; background: var(--bg2); }
-    .card-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; display: block; }
-    .mp-card:hover .card-photo img { transform: scale(1.05); }
-    .card-cat-badge { position: absolute; top: 9px; left: 9px; z-index: 2; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; background: rgba(0,0,0,0.55); color: #fff; backdrop-filter: blur(4px); }
-    .fav-btn { position: absolute; top: 8px; right: 8px; z-index: 2; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.92); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: transform .2s; box-shadow: 0 1px 6px rgba(0,0,0,0.12); }
-    .fav-btn:hover { transform: scale(1.18); }
-    .fav-btn.faved { background: #fff0f3; }
-
-    /* VERIFICATION BADGES */
-    .verify-badges { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 7px; }
-    .vbadge { display: flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 4px; }
-    .vbadge i { font-size: 10px; }
-    .vbadge-premium  { background: #1A1714; color: #C4873A; }
-    .vbadge-verified { background: var(--green-bg); color: var(--green); }
-    .vbadge-ssm      { background: var(--blue-bg); color: var(--blue); }
-    .vbadge-cidb     { background: var(--purple-bg); color: var(--purple); }
-    .vbadge-warranty { background: var(--warm-pale); color: var(--warm); }
-
     .card-body2 { padding: 13px; }
     .card-top2 { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
@@ -168,80 +133,44 @@
     .av-pink   { background: #fbeaf0; color: #993556; }
     .av-purple { background: #eeedfe; color: #534ab7; }
     .av-coral  { background: #faece7; color: #993c1d; }
-    .av-green  { background: #e1f5ee; color: #0a5540; }
-    .c-name { font-size: 13px; font-weight: 500; }
+    .c-name { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .c-role { font-size: 11px; color: var(--text2); margin-top: 1px; }
-    .c-stars { font-size: 11px; color: var(--text3); margin-bottom: 7px; }
-    .c-star-f { color: var(--amber); }
+    .ad-title-text { font-size: 13px; font-weight: 500; margin-bottom: 5px; line-height: 1.35; }
+    .ad-desc-text { font-size: 11px; color: var(--text2); line-height: 1.55; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .skills { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 9px; }
     .skill-tag { font-size: 10px; padding: 2px 8px; background: var(--bg2); border-radius: 4px; color: var(--text2); }
     .card-footer2 { display: flex; justify-content: space-between; align-items: center; padding-top: 9px; border-top: 0.5px solid var(--border); }
     .c-rate2 { font-size: 12px; font-weight: 500; }
-    .c-avail2 { font-size: 10px; color: var(--green); }
-    .c-busy2  { font-size: 10px; color: var(--text3); }
+    .vbadge-verified { background: var(--green-bg); color: var(--green); font-size: 9px; font-weight: 500; padding: 1px 5px; border-radius: 3px; }
 
-
-    /* ── SPONSORED / PINNED ADS ── */
-    .sponsored-section { margin-bottom: 1.5rem; }
-    .sponsored-label { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warm); margin-bottom: 10px; }
-    .sponsored-label::after { content: ''; flex: 1; height: 0.5px; background: linear-gradient(to right, rgba(196,135,58,0.3), transparent); }
-    .sponsored-label i { font-size: 13px; }
-
-    .sponsored-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
-
-    /* Pinned card — same size as regular but with gold accent */
-    .mp-card.pinned { border: 1.5px solid rgba(196,135,58,0.5); background: #fff; position: relative; }
-    .mp-card.pinned:hover { border-color: var(--warm); box-shadow: 0 6px 24px rgba(196,135,58,0.15); }
-
-    .pinned-ribbon {
-      position: absolute; top: 0; left: 0; z-index: 3;
-      background: var(--warm);
-      color: #fff;
-      font-size: 9px; font-weight: 600;
-      padding: 4px 10px 4px 8px;
-      border-radius: 0 0 8px 0;
-      display: flex; align-items: center; gap: 4px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .pinned-ribbon i { font-size: 11px; }
-
-    /* Divider between sponsored and organic */
-    .organic-label { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; margin-top: 4px; }
-    .organic-label::before, .organic-label::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
-
-    .fav-empty { text-align: center; padding: 4rem 2rem; color: var(--text2); font-size: 14px; grid-column: 1/-1; }
-    .no-results2 { text-align: center; padding: 4rem; color: var(--text2); font-size: 14px; grid-column: 1/-1; }
+    /* EMPTY / LOADING */
+    .empty-ads { text-align: center; padding: 3rem; color: var(--text2); grid-column: 1/-1; }
+    .empty-ads i { font-size: 32px; display: block; margin-bottom: 10px; color: var(--text3); }
+    .loading-state { text-align: center; padding: 2.5rem; color: var(--text2); grid-column: 1/-1; font-size: 13px; }
 
     /* FOOTER */
     footer { background: #111; color: #fff; font-family: 'DM Sans', sans-serif; margin-top: 2rem; }
     .ft-top { padding: 2rem; border-bottom: 0.5px solid rgba(255,255,255,0.08); }
     .ft-logo { font-family: 'DM Serif Display', serif; font-size: 18px; color: #fff; margin-bottom: 0.3rem; }
     .ft-tagline { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 1.25rem; }
-    .ft-app-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-    .ft-app-btn { display: flex; align-items: center; gap: 9px; padding: 8px 14px; border: 0.5px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; background: rgba(255,255,255,0.05); text-decoration: none; font-size: 12px; }
     .ft-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 1.5rem 2rem; padding: 2rem; border-bottom: 0.5px solid rgba(255,255,255,0.08); }
     .ft-col-title { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
     .ft-link-list { display: flex; flex-direction: column; gap: 8px; }
     .ft-link-list a { font-size: 12px; color: rgba(255,255,255,0.65); text-decoration: none; }
-    .ft-mid { padding: 1.5rem 2rem; border-bottom: 0.5px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-    .ft-social { display: flex; gap: 8px; }
-    .ft-social-btn { width: 34px; height: 34px; border: 0.5px solid rgba(255,255,255,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.65); font-size: 12px; text-decoration: none; }
     .ft-bottom { padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .ft-legal { display: flex; gap: 1.25rem; flex-wrap: wrap; }
     .ft-legal a { font-size: 11px; color: rgba(255,255,255,0.35); text-decoration: none; }
     .ft-copy { font-size: 11px; color: rgba(255,255,255,0.25); }
 
-    /* RESPONSIVE */
     @media (max-width: 768px) {
       .nav { padding: 0.875rem 1.25rem; }
       .nav-links a:not(.btn-outline):not(.btn-primary-nav) { display: none; }
       .hero { padding: 1.5rem 1.25rem 1rem; }
       .search-bar { flex-direction: column; }
-      .search-bar input, .search-bar select, .search-bar button { width: 100%; }
       .mp-main { padding: 1rem; }
       .mp-grid { grid-template-columns: 1fr; }
-      .ft-links { grid-template-columns: 1fr 1fr; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .banner-inner { flex-direction: column; text-align: center; padding: 1.5rem; }
     }
   </style>
 </head>
@@ -253,25 +182,20 @@
     <a href="#">Browse</a>
     <a href="#">How it works</a>
 
-    <!-- VIEW SWITCH -->
+    <!-- VIEW SWITCH (shown when logged in as contractor) -->
     <div class="view-switch" id="viewSwitch" style="display:none;">
-      <span class="switch-icon active" id="switchIconClient">&#127970; Client</span>
+      <span class="switch-icon active" id="switchIconClient">🏠 Client</span>
       <div class="switch-track" id="switchTrack" onclick="toggleView()">
         <div class="switch-thumb"></div>
       </div>
-      <span class="switch-icon" id="switchIconContractor">&#128296; Contractor</span>
-    </div>
-
-    <div class="contractor-badge" id="contractorBadge">
-      <i class="ti ti-shield-check"></i>
-      <span id="contractorBadgeName">My Portal</span>
+      <span class="switch-icon" id="switchIconContractor">🔧 Contractor</span>
     </div>
 
     <a href="signin.html" class="btn-outline" id="navSignIn">Sign in</a>
-    <div id="navUserChip" style="display:none;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:20px;border:0.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;cursor:pointer;" onclick="doSignOut()">
+    <div id="navUserChip" style="display:none;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:20px;border:0.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;cursor:pointer;" onclick="doSignOut()">
       <div style="width:24px;height:24px;border-radius:50%;background:var(--warm-pale);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--warm);" id="navUserAv">?</div>
       <span id="navUserName">User</span>
-      <i class="ti ti-logout" style="font-size:13px;color:#aaa;" title="Sign out"></i>
+      <i class="ti ti-logout" style="font-size:13px;color:#aaa;"></i>
     </div>
     <a href="#" class="btn-primary-nav">Post a job</a>
   </div>
@@ -291,53 +215,27 @@
   </div>
   <div class="sf-section">
     <div class="sf-heading">Category</div>
-    <div class="sf-option"><input type="checkbox" id="c1" onchange="applyFilters()"><label for="c1">Construction</label><span class="sf-count">320</span></div>
-    <div class="sf-option"><input type="checkbox" id="c2" onchange="applyFilters()"><label for="c2">Tech &amp; Dev</label><span class="sf-count">210</span></div>
-    <div class="sf-option"><input type="checkbox" id="c3" onchange="applyFilters()"><label for="c3">Design</label><span class="sf-count">180</span></div>
-    <div class="sf-option"><input type="checkbox" id="c4" onchange="applyFilters()"><label for="c4">Electrical</label><span class="sf-count">145</span></div>
-    <div class="sf-option"><input type="checkbox" id="c5" onchange="applyFilters()"><label for="c5">Plumbing</label><span class="sf-count">98</span></div>
-    <div class="sf-option"><input type="checkbox" id="c6" onchange="applyFilters()"><label for="c6">Renovation</label><span class="sf-count">260</span></div>
+    <div class="sf-option"><input type="checkbox" id="c1" onchange="filterAds()"><label for="c1">Construction</label></div>
+    <div class="sf-option"><input type="checkbox" id="c2" onchange="filterAds()"><label for="c2">Renovation</label></div>
+    <div class="sf-option"><input type="checkbox" id="c3" onchange="filterAds()"><label for="c3">Electrical</label></div>
+    <div class="sf-option"><input type="checkbox" id="c4" onchange="filterAds()"><label for="c4">Plumbing</label></div>
+    <div class="sf-option"><input type="checkbox" id="c5" onchange="filterAds()"><label for="c5">Design</label></div>
+    <div class="sf-option"><input type="checkbox" id="c6" onchange="filterAds()"><label for="c6">Solar</label></div>
   </div>
   <hr class="sf-divider"/>
   <div class="sf-section">
-    <div class="sf-heading">Hourly Rate (RM)</div>
-    <input type="range" class="sf-range" id="rateRange" min="50" max="300" value="300" oninput="updateRate(this.value);applyFilters()">
-    <div class="sf-range-vals"><span>RM 50</span><span id="rateVal">RM 300+</span></div>
+    <div class="sf-heading">Ad Type</div>
+    <div class="sf-option"><input type="checkbox" id="vFeatured" onchange="filterAds()"><label for="vFeatured">Featured only</label></div>
+    <div class="sf-option"><input type="checkbox" id="vVerified" onchange="filterAds()"><label for="vVerified">Verified contractors</label></div>
   </div>
   <hr class="sf-divider"/>
   <div class="sf-section">
-    <div class="sf-heading">Min. Rating</div>
-    <div class="sf-star-row"><input type="radio" name="rt" id="r0" value="0" checked onchange="applyFilters()"><label for="r0">Any rating</label></div>
-    <div class="sf-star-row"><input type="radio" name="rt" id="r4" value="4" onchange="applyFilters()"><label for="r4"><span class="stars-gold">★★★★</span>☆ &nbsp;4.0+</label></div>
-    <div class="sf-star-row"><input type="radio" name="rt" id="r45" value="4.5" onchange="applyFilters()"><label for="r45"><span class="stars-gold">★★★★</span>½ &nbsp;4.5+</label></div>
-    <div class="sf-star-row"><input type="radio" name="rt" id="r48" value="4.8" onchange="applyFilters()"><label for="r48"><span class="stars-gold">★★★★★</span>&nbsp;Top rated</label></div>
+    <div class="sf-heading">Hourly Rate</div>
+    <input type="range" style="width:100%;accent-color:var(--text);margin:8px 0 4px;" id="rateRange" min="50" max="500" value="500" oninput="document.getElementById('rateVal').textContent='RM '+this.value+(this.value>=500?'+':'');filterAds()">
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);"><span>RM 50</span><span id="rateVal">RM 500+</span></div>
   </div>
   <hr class="sf-divider"/>
-  <div class="sf-section">
-    <div class="sf-heading">Availability</div>
-    <div class="sf-avail">
-      <button class="sf-avail-btn active" id="avAll" onclick="setAvail('all')">All contractors</button>
-      <button class="sf-avail-btn" id="avNow" onclick="setAvail('available')">● Available now</button>
-      <button class="sf-avail-btn" id="avBusy" onclick="setAvail('busy')">○ Currently busy</button>
-    </div>
-  </div>
-  <hr class="sf-divider"/>
-  <div class="sf-section">
-    <div class="sf-heading">Verification</div>
-    <div class="sf-option"><input type="checkbox" id="vVerified" onchange="applyFilters()"><label for="vVerified">Verified only</label></div>
-    <div class="sf-option"><input type="checkbox" id="vCidb" onchange="applyFilters()"><label for="vCidb">CIDB certified</label></div>
-    <div class="sf-option"><input type="checkbox" id="vWarranty" onchange="applyFilters()"><label for="vWarranty">Warranty available</label></div>
-    <div class="sf-option"><input type="checkbox" id="vPremium" onchange="applyFilters()"><label for="vPremium">Premium verified</label></div>
-  </div>
-  <hr class="sf-divider"/>
-  <div class="sf-section">
-    <div class="sf-heading">Experience</div>
-    <div class="sf-option"><input type="checkbox" id="e1" onchange="applyFilters()"><label for="e1">1–3 years</label></div>
-    <div class="sf-option"><input type="checkbox" id="e2" onchange="applyFilters()"><label for="e2">3–7 years</label></div>
-    <div class="sf-option"><input type="checkbox" id="e3" onchange="applyFilters()"><label for="e3">7–12 years</label></div>
-    <div class="sf-option"><input type="checkbox" id="e4" onchange="applyFilters()"><label for="e4">12+ years</label></div>
-  </div>
-  <button class="sf-clear" onclick="clearAll()">✕ Clear all filters</button>
+  <button class="sf-clear" onclick="clearFilters()">✕ Clear all filters</button>
 </aside>
 
 <section class="hero">
@@ -345,105 +243,268 @@
   <h1>Find the right contractor, fast.</h1>
   <p class="subheading">Browse verified professionals across construction, tech, design, and more.</p>
   <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search by name, skill, or keyword..." oninput="applyFilters()" />
-    <select id="catQuick" onchange="applyFilters()">
+    <input type="text" id="searchInput" placeholder="Search by name, skill, or keyword..." oninput="filterAds()" />
+    <select id="catQuick" onchange="filterAds()">
       <option value="">All categories</option>
-      <option>Construction</option><option>Tech &amp; Dev</option><option>Design</option>
-      <option>Electrical</option><option>Plumbing</option><option>Renovation</option>
+      <option>Construction</option><option>Renovation</option><option>Electrical</option>
+      <option>Plumbing</option><option>Design</option><option>Solar</option>
     </select>
-    <button onclick="applyFilters()">Search</button>
+    <button onclick="filterAds()">Search</button>
   </div>
   <div class="stats">
-    <div class="stat"><div class="stat-num">1,240+</div><div class="stat-label">Contractors</div></div>
+    <div class="stat"><div class="stat-num" id="heroAdCount">—</div><div class="stat-label">Active Ads</div></div>
     <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Verified</div></div>
-    <div class="stat"><div class="stat-num">4.8</div><div class="stat-label">Avg rating</div></div>
+    <div class="stat"><div class="stat-num">4.8</div><div class="stat-label">Avg Rating</div></div>
   </div>
 </section>
 
 <div class="trust-banner">
-  <i class="ti ti-shield-check"></i>
-  <div><strong>All contractors are manually reviewed before approval.</strong> Look for verification badges on cards for added assurance.</div>
+  <i class="ti ti-shield-check" style="font-size:17px;flex-shrink:0;"></i>
+  <div><strong>All contractors are manually reviewed before approval.</strong> Look for verification badges for added assurance.</div>
 </div>
 
 <div class="mp-main">
-  <div class="active-filters" id="activeFilters"></div>
-  <div class="mp-toolbar">
-    <div class="mp-toolbar-left">
-      <span class="mp-count" id="mpCount">Showing 12 contractors</span>
-      <button class="mp-fav-btn" id="favToggle" onclick="toggleFavView()">&#129293; Saved <span id="favCount">0</span></button>
+
+  <!-- SECTION 1: FEATURED ADS -->
+  <div class="featured-section" id="featuredSection" style="display:none;">
+    <div class="section-heading">
+      <div class="section-heading-title"><i class="ti ti-star-filled" style="color:var(--warm);"></i>Featured Contractors</div>
+      <div class="section-heading-sub">Boosted placements · Higher visibility</div>
     </div>
-    <select class="mp-sort" id="mpSort" onchange="applyFilters()">
-      <option value="default">Sort: Featured</option>
-      <option value="rating">Highest rated</option>
-      <option value="rate_low">Rate: Low to High</option>
-      <option value="rate_high">Rate: High to Low</option>
-    </select>
+    <div class="featured-grid" id="featuredGrid"></div>
   </div>
-  <div class="mp-grid" id="mpGrid"></div>
+
+  <!-- SECTION 2: BANNER AD (Admin only) -->
+  <div class="banner-section" id="bannerSection" style="display:none;"></div>
+
+  <!-- SECTION 3: ALL ADS -->
+  <div>
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-text">All Contractors — Latest First</div>
+      <div class="section-divider-line"></div>
+    </div>
+    <div class="mp-toolbar">
+      <div class="mp-toolbar-left">
+        <span class="mp-count" id="mpCount">Loading...</span>
+      </div>
+      <select class="mp-sort" id="mpSort" onchange="loadStandardAds()">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="rate_low">Rate: Low → High</option>
+        <option value="rate_high">Rate: High → Low</option>
+      </select>
+    </div>
+    <div class="mp-grid" id="mpGrid">
+      <div class="loading-state">Loading contractors...</div>
+    </div>
+  </div>
+
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="ft-top">
     <div class="ft-logo">ContractorHub</div>
     <div class="ft-tagline">Malaysia's trusted platform for verified contractors</div>
-    <div class="ft-app-btns">
-      <a href="#" class="ft-app-btn">&#127822; <span><span style="font-size:10px;color:rgba(255,255,255,0.5);display:block;">Download on the</span>App Store</span></a>
-      <a href="#" class="ft-app-btn">&#9654; <span><span style="font-size:10px;color:rgba(255,255,255,0.5);display:block;">GET IT ON</span>Google Play</span></a>
-    </div>
   </div>
   <div class="ft-links">
-    <div><div class="ft-col-title">Find Contractors</div><div class="ft-link-list"><a href="#">Contractors in KL</a><a href="#">Contractors in Selangor</a><a href="#">Contractors in Penang</a><a href="#">Contractors in Johor</a><a href="#">View all states →</a></div></div>
-    <div><div class="ft-col-title">By Category</div><div class="ft-link-list"><a href="#">Construction</a><a href="#">Tech &amp; Development</a><a href="#">Interior Design</a><a href="#">Electrical Works</a><a href="#">Renovation</a></div></div>
-    <div><div class="ft-col-title">For Contractors</div><div class="ft-link-list"><a href="signin.html">Join as a contractor</a><a href="#">How it works</a><a href="#">Pricing &amp; plans</a><a href="#">Success stories</a></div></div>
-    <div><div class="ft-col-title">Company</div><div class="ft-link-list"><a href="#">About us</a><a href="#">Careers</a><a href="#">Contact us</a><a href="#">Help centre</a></div></div>
-  </div>
-  <div class="ft-mid">
-    <div class="ft-social">
-      <a href="#" class="ft-social-btn">f</a>
-      <a href="#" class="ft-social-btn">in</a>
-      <a href="#" class="ft-social-btn">&#120143;</a>
-      <a href="#" class="ft-social-btn">ig</a>
-      <a href="#" class="ft-social-btn">yt</a>
-    </div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.4);">Affiliated: contractorhub.sg &nbsp;·&nbsp; buildhub.com.my</div>
+    <div><div class="ft-col-title">Find Contractors</div><div class="ft-link-list"><a href="#">Contractors in KL</a><a href="#">Contractors in Selangor</a><a href="#">Contractors in Penang</a><a href="#">View all states →</a></div></div>
+    <div><div class="ft-col-title">By Category</div><div class="ft-link-list"><a href="#">Construction</a><a href="#">Renovation</a><a href="#">Electrical</a><a href="#">Interior Design</a></div></div>
+    <div><div class="ft-col-title">For Contractors</div><div class="ft-link-list"><a href="signin.html">Join as contractor</a><a href="#">How it works</a><a href="#">Pricing</a></div></div>
+    <div><div class="ft-col-title">Company</div><div class="ft-link-list"><a href="#">About us</a><a href="#">Contact us</a><a href="#">Help centre</a></div></div>
   </div>
   <div class="ft-bottom">
-    <div class="ft-legal"><a href="#">Privacy Policy</a><a href="#">Terms &amp; Conditions</a><a href="#">Cookie Policy</a><a href="#">Contact Us</a></div>
+    <div class="ft-legal"><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Contact</a></div>
     <div class="ft-copy">© 2025 ContractorHub Sdn. Bhd. All rights reserved.</div>
   </div>
 </footer>
 
 <script>
+var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-var sponsoredContractors = [
-  { id:101, name:"TechBuild Construction",  initials:"TC", av:"av-teal",   role:"Premium Builder — G7 Certified",  cat:"Construction", skills:["High-Rise","Commercial","BIM"], rate:250, rating:4.9, reviews:128, available:true,  photo:"https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:"G7", warranty:true, premium:true, pinnedMsg:"🏗️ Now accepting projects across Klang Valley" },
-  { id:102, name:"EcoReno Malaysia",         initials:"ER", av:"av-green",  role:"Renovation & Interior Specialist", cat:"Renovation",   skills:["Eco Design","Smart Home","BCA"], rate:195, rating:4.8, reviews:84,  available:true,  photo:"https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=500&q=80&fit=crop", verified:true, ssm:true, warranty:true, premium:true, pinnedMsg:"✨ Special promo: Free consultation this month" },
-  { id:103, name:"PowerGrid Electrical",     initials:"PG", av:"av-amber",  role:"Licensed Electrical Contractor",   cat:"Electrical",   skills:["Solar","EV Charging","3-Phase"], rate:160, rating:4.7, reviews:206, available:true,  photo:"https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:"G4", warranty:true, pinnedMsg:"⚡ Solar panel installation specialists" },
-];
+var avColors = ['av-teal','av-blue','av-amber','av-pink','av-purple','av-coral'];
+var allStandardAds = [];
 
-var contractors = [
-  { id:1,  name:"Ahmad Razali",      initials:"AR", av:"av-teal",   role:"Civil Engineer",        cat:"Construction", skills:["Renovation","Structural","BIM"],    rate:180, rating:4.9, reviews:42, available:true,  photo:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:"G5", warranty:true, premium:true },
-  { id:2,  name:"Siti Norfazlina",   initials:"SN", av:"av-blue",   role:"Full-Stack Developer",  cat:"Tech & Dev",   skills:["React","Node.js","AWS"],           rate:220, rating:5.0, reviews:31, available:true,  photo:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80&fit=crop", verified:true, ssm:true },
-  { id:3,  name:"Rajan Pillai",      initials:"RP", av:"av-amber",  role:"Electrical Contractor", cat:"Electrical",   skills:["Wiring","Solar","Inspection"],     rate:130, rating:4.7, reviews:58, available:false, photo:"https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:"G3", warranty:true },
-  { id:4,  name:"Mei Ling Tan",      initials:"MT", av:"av-pink",   role:"UI/UX Designer",        cat:"Design",       skills:["Figma","Branding","Research"],     rate:160, rating:4.8, reviews:27, available:true,  photo:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&q=80&fit=crop", verified:true },
-  { id:5,  name:"Farouk Hassan",     initials:"FH", av:"av-purple", role:"Plumbing Specialist",   cat:"Plumbing",     skills:["Piping","HVAC","Sanitation"],      rate:110, rating:4.6, reviews:74, available:true,  photo:"https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&q=80&fit=crop", verified:true, ssm:true, warranty:true },
-  { id:6,  name:"Lim Chee Keong",    initials:"LK", av:"av-coral",  role:"Interior Designer",     cat:"Design",       skills:["3D Render","Space Plan","Fit-out"],rate:195, rating:4.9, reviews:19, available:false, photo:"https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&q=80&fit=crop", verified:true, ssm:true, premium:true },
-  { id:7,  name:"Nurul Ain",         initials:"NA", av:"av-teal",   role:"Android Developer",     cat:"Tech & Dev",   skills:["Kotlin","Firebase","APIs"],        rate:200, rating:4.7, reviews:22, available:true,  photo:"https://images.unsplash.com/photo-1542621334-a254cf47733d?w=500&q=80&fit=crop" },
-  { id:8,  name:"Vinod Krishnan",    initials:"VK", av:"av-blue",   role:"Structural Engineer",   cat:"Construction", skills:["AutoCAD","Steel","Concrete"],      rate:165, rating:4.8, reviews:36, available:false, photo:"https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500&q=80&fit=crop", verified:true, ssm:true, cidb:true, cidbGrade:"G4" },
-  { id:9,  name:"Hafizuddin Omar",   initials:"HO", av:"av-amber",  role:"Network Engineer",      cat:"Tech & Dev",   skills:["Cisco","Networking","Security"],   rate:185, rating:4.5, reviews:44, available:true,  photo:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&fit=crop" },
-  { id:10, name:"Priya Subramaniam", initials:"PS", av:"av-pink",   role:"Graphic Designer",      cat:"Design",       skills:["Illustrator","Branding","Print"],  rate:140, rating:4.6, reviews:33, available:true,  photo:"https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&q=80&fit=crop", verified:true },
-  { id:11, name:"Azrul Hakim",       initials:"AH", av:"av-purple", role:"Renovation Contractor", cat:"Renovation",   skills:["Tiling","Painting","Carpentry"],   rate:95,  rating:4.4, reviews:91, available:true,  photo:"https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=500&q=80&fit=crop", verified:true, ssm:true, warranty:true },
-  { id:12, name:"Chen Wei Liang",    initials:"CW", av:"av-coral",  role:"Data Engineer",         cat:"Tech & Dev",   skills:["Python","SQL","Airflow"],          rate:210, rating:4.8, reviews:17, available:false, photo:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80&fit=crop" }
-];
+function timeAgo(ts) {
+  if (!ts) return '';
+  var diff = Math.floor((new Date() - new Date(ts)) / 1000);
+  if (diff < 60)     return 'Just now';
+  if (diff < 3600)   return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400)  return Math.floor(diff/3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff/86400) + 'd ago';
+  return new Date(ts).toLocaleDateString('en-MY');
+}
 
-var favourites = new Set();
-var showFavOnly = false;
-var availFilter = 'all';
+/* ── FEATURED ADS ── */
+async function loadFeaturedAds() {
+  try {
+    var res = await sb.from('ads')
+      .select('*, contractor_registrations(first_name, last_name, company_name, ssm_number)')
+      .eq('status', 'active')
+      .eq('is_featured', true)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false });
 
-try { favourites = new Set(JSON.parse(localStorage.getItem('ch_favs') || '[]')); } catch(e) {}
-function saveFavs() { try { localStorage.setItem('ch_favs', JSON.stringify(Array.from(favourites))); } catch(e) {} }
+    if (res.error || !res.data || !res.data.length) return;
 
+    var section = document.getElementById('featuredSection');
+    var grid    = document.getElementById('featuredGrid');
+    section.style.display = 'block';
+
+    grid.innerHTML = res.data.map(function(ad, i) {
+      var c    = ad.contractor_registrations || {};
+      var name = ((c.first_name||'') + ' ' + (c.last_name||'')).trim() || (ad.contractor_email||'').split('@')[0] || 'Contractor';
+      var ini  = name.substring(0,2).toUpperCase();
+      var av   = avColors[i % avColors.length];
+      var skills = (ad.skills||[]).slice(0,3).map(function(s){ return '<span class="skill-tag">' + s + '</span>'; }).join('');
+      return '<div class="featured-card">' +
+        '<div class="featured-ribbon"><i class="ti ti-star-filled"></i>Featured</div>' +
+        '<div style="padding:14px;padding-top:36px;">' +
+          '<div class="card-top2"><div class="avatar ' + av + '">' + ini + '</div>' +
+          '<div><div class="c-name">' + name + '</div>' +
+          '<div class="c-role">' + (c.company_name||ad.category||'') + '</div></div></div>' +
+          '<div class="ad-title-text">' + ad.title + '</div>' +
+          (ad.description ? '<div class="ad-desc-text">' + ad.description + '</div>' : '') +
+          (skills ? '<div class="skills">' + skills + '</div>' : '') +
+          '<div class="card-footer2">' +
+            '<span class="c-rate2">RM ' + (ad.hourly_rate||'—') + '/hr</span>' +
+            '<span style="font-size:10px;color:var(--text3);">' + (ad.location||'') + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    console.error('Featured error:', e);
+  }
+}
+
+/* ── BANNER AD ── */
+async function loadBannerAd() {
+  try {
+    var res = await sb.from('banner_ads')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (res.error || !res.data || !res.data.length) return;
+    var b = res.data[0];
+    var section = document.getElementById('bannerSection');
+    section.style.display = 'block';
+    section.innerHTML =
+      '<div class="banner-inner" style="background:' + (b.bg_color||'#1A1714') + ';">' +
+        '<div class="banner-text">' +
+          '<h2>' + (b.title||'') + '</h2>' +
+          '<p>' + (b.subtitle||'') + '</p>' +
+        '</div>' +
+        '<button class="banner-cta" onclick="window.location.href=\'' + (b.cta_url||'#') + '\'">' + (b.cta_text||'Learn More') + '</button>' +
+      '</div>';
+  } catch(e) {
+    console.error('Banner error:', e);
+  }
+}
+
+/* ── STANDARD ADS ── */
+async function loadStandardAds() {
+  var grid    = document.getElementById('mpGrid');
+  var countEl = document.getElementById('mpCount');
+  if (grid) grid.innerHTML = '<div class="loading-state">Loading contractors...</div>';
+
+  try {
+    var sort = (document.getElementById('mpSort')||{}).value || 'newest';
+    var query = sb.from('ads')
+      .select('*, contractor_registrations(first_name, last_name, company_name, ssm_number, state, years_experience)')
+      .eq('status', 'active')
+      .eq('is_featured', false)
+      .gt('expires_at', new Date().toISOString());
+
+    if (sort === 'oldest')    query = query.order('created_at', { ascending: true });
+    else if (sort === 'rate_low')  query = query.order('hourly_rate', { ascending: true });
+    else if (sort === 'rate_high') query = query.order('hourly_rate', { ascending: false });
+    else query = query.order('created_at', { ascending: false });
+
+    var res = await query;
+    if (res.error) throw res.error;
+    allStandardAds = res.data || [];
+
+    var heroCount = document.getElementById('heroAdCount');
+    if (heroCount) heroCount.textContent = allStandardAds.length + '+';
+
+    filterAds();
+  } catch(e) {
+    console.error('Standard ads error:', e);
+    if (grid) grid.innerHTML = '<div class="empty-ads"><i class="ti ti-alert-circle"></i><p>Error loading ads. Please refresh.</p></div>';
+  }
+}
+
+/* ── FILTER & RENDER ── */
+function filterAds() {
+  var q       = ((document.getElementById('searchInput')||{}).value||'').toLowerCase();
+  var qCat    = (document.getElementById('catQuick')||{}).value || '';
+  var maxRate = parseInt((document.getElementById('rateRange')||{}).value) || 500;
+  var cats    = ['c1','c2','c3','c4','c5','c6'].filter(function(id){ var el=document.getElementById(id); return el && el.checked; }).map(function(id){ return document.querySelector('label[for="'+id+'"]').textContent.trim(); });
+  var onlyVerified = document.getElementById('vVerified') && document.getElementById('vVerified').checked;
+
+  var list = allStandardAds.filter(function(ad) {
+    if (q && !(ad.title||'').toLowerCase().includes(q) && !(ad.description||'').toLowerCase().includes(q) && !(ad.category||'').toLowerCase().includes(q)) return false;
+    if (qCat && ad.category !== qCat) return false;
+    if (cats.length && !cats.includes(ad.category)) return false;
+    if (maxRate < 500 && ad.hourly_rate > maxRate) return false;
+    var c = ad.contractor_registrations || {};
+    if (onlyVerified && !c.ssm_number) return false;
+    return true;
+  });
+
+  var grid    = document.getElementById('mpGrid');
+  var countEl = document.getElementById('mpCount');
+  if (countEl) countEl.textContent = 'Showing ' + list.length + ' contractor' + (list.length !== 1 ? 's' : '');
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-ads"><i class="ti ti-speakerphone"></i><p>No ads match your filters.<br><small style="color:var(--text3);">Try adjusting your search or filters.</small></p></div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(function(ad, i) {
+    var c    = ad.contractor_registrations || {};
+    var name = ((c.first_name||'') + ' ' + (c.last_name||'')).trim() || (ad.contractor_email||'').split('@')[0] || 'Contractor';
+    var ini  = name.substring(0,2).toUpperCase();
+    var av   = avColors[i % avColors.length];
+    var skills = (ad.skills||[]).slice(0,3).map(function(s){ return '<span class="skill-tag">' + s + '</span>'; }).join('');
+    var verified = c.ssm_number ? '<span class="vbadge-verified">✓ Verified</span>' : '';
+    return '<div class="mp-card">' +
+      '<div class="card-body2">' +
+        '<div class="card-top2">' +
+          '<div class="avatar ' + av + '">' + ini + '</div>' +
+          '<div><div class="c-name">' + name + ' ' + verified + '</div>' +
+          '<div class="c-role">' + (c.company_name || ad.category || '—') + (c.state ? ' · ' + c.state : '') + '</div></div>' +
+        '</div>' +
+        '<div class="ad-title-text">' + (ad.title||'') + '</div>' +
+        (ad.description ? '<div class="ad-desc-text">' + ad.description + '</div>' : '') +
+        (skills ? '<div class="skills">' + skills + '</div>' : '') +
+        '<div class="card-footer2">' +
+          '<span class="c-rate2">RM ' + (ad.hourly_rate||'—') + '/hr</span>' +
+          '<div style="display:flex;align-items:center;gap:6px;">' +
+            '<span style="font-size:10px;color:var(--text3);">' + (ad.location||'') + '</span>' +
+            '<span style="font-size:10px;color:var(--text3);">· ' + timeAgo(ad.created_at) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('catQuick').value = '';
+  ['c1','c2','c3','c4','c5','c6','vFeatured','vVerified'].forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+  document.getElementById('rateRange').value = 500;
+  document.getElementById('rateVal').textContent = 'RM 500+';
+  filterAds();
+}
+
+/* ── SIDEBAR ── */
 function toggleSidebar() {
   var s = document.getElementById('filterSidebar');
   var o = document.getElementById('sidebarOverlay');
@@ -454,406 +515,46 @@ function toggleSidebar() {
   else { s.classList.add('open'); o.classList.add('show'); b.classList.add('active'); l.textContent = 'Hide filters'; }
 }
 
-function toggleFav(id, e) {
-  e.preventDefault(); e.stopPropagation();
-  if (favourites.has(id)) { favourites.delete(id); } else { favourites.add(id); }
-  saveFavs(); applyFilters();
-
-// ── SESSION & VIEW SWITCH ──
+/* ── SESSION ── */
 function initSession() {
-  var role   = localStorage.getItem('ch_user_role');
-  var name   = localStorage.getItem('ch_user_name') || 'User';
-  var email  = localStorage.getItem('ch_user_email') || '';
-
+  var role  = localStorage.getItem('ch_user_role');
+  var name  = localStorage.getItem('ch_user_name') || '';
+  var email = localStorage.getItem('ch_user_email') || '';
   if (role === 'client' || role === 'contractor') {
-    // Show user chip, hide sign in button
     document.getElementById('navSignIn').style.display = 'none';
     var chip = document.getElementById('navUserChip');
     chip.style.display = 'flex';
-    var displayName = name.trim() || email.split('@')[0] || 'User';
-    document.getElementById('navUserName').textContent = displayName;
-    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
+    var display = name.trim() || email.split('@')[0] || 'User';
+    document.getElementById('navUserName').textContent = display;
+    document.getElementById('navUserAv').textContent   = display[0].toUpperCase();
   }
-
   if (role === 'contractor') {
-    // Show view switch
     document.getElementById('viewSwitch').style.display = 'flex';
-    document.getElementById('contractorBadge').classList.add('show');
-    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
-    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
   }
 }
 
 function toggleView() {
   var track = document.getElementById('switchTrack');
-  var isContractor = track.classList.contains('contractor-mode');
-  if (isContractor) {
-    // Switch to client view
-    track.classList.remove('contractor-mode');
-    document.getElementById('switchIconClient').classList.add('active');
-    document.getElementById('switchIconContractor').classList.remove('active');
-  } else {
-    // Switch to contractor view
-    track.classList.add('contractor-mode');
-    document.getElementById('switchIconClient').classList.remove('active');
-    document.getElementById('switchIconContractor').classList.add('active');
-    // Redirect to contractor portal
-    setTimeout(function() {
-      window.location.href = 'contractor.html';
-    }, 300);
-  }
+  track.classList.add('contractor-mode');
+  setTimeout(function(){ window.location.href = 'contractor.html'; }, 300);
 }
 
 function doSignOut() {
   localStorage.removeItem('ch_user_role');
-  localStorage.removeItem('ch_user_name');
   localStorage.removeItem('ch_user_email');
-  localStorage.removeItem('ch_contractor_status');
+  localStorage.removeItem('ch_user_name');
   window.location.href = 'signin.html';
 }
 
-initSession();
-
+/* ── INIT ── */
+async function init() {
+  initSession();
+  await loadFeaturedAds();
+  await loadBannerAd();
+  await loadStandardAds();
 }
 
-function toggleFavView() {
-  showFavOnly = !showFavOnly;
-  document.getElementById('favToggle').className = 'mp-fav-btn' + (showFavOnly ? ' active' : '');
-  applyFilters();
-
-// ── SESSION & VIEW SWITCH ──
-function initSession() {
-  var role   = localStorage.getItem('ch_user_role');
-  var name   = localStorage.getItem('ch_user_name') || 'User';
-  var email  = localStorage.getItem('ch_user_email') || '';
-
-  if (role === 'client' || role === 'contractor') {
-    // Show user chip, hide sign in button
-    document.getElementById('navSignIn').style.display = 'none';
-    var chip = document.getElementById('navUserChip');
-    chip.style.display = 'flex';
-    var displayName = name.trim() || email.split('@')[0] || 'User';
-    document.getElementById('navUserName').textContent = displayName;
-    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
-  }
-
-  if (role === 'contractor') {
-    // Show view switch
-    document.getElementById('viewSwitch').style.display = 'flex';
-    document.getElementById('contractorBadge').classList.add('show');
-    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
-    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
-  }
-}
-
-function toggleView() {
-  var track = document.getElementById('switchTrack');
-  var isContractor = track.classList.contains('contractor-mode');
-  if (isContractor) {
-    // Switch to client view
-    track.classList.remove('contractor-mode');
-    document.getElementById('switchIconClient').classList.add('active');
-    document.getElementById('switchIconContractor').classList.remove('active');
-  } else {
-    // Switch to contractor view
-    track.classList.add('contractor-mode');
-    document.getElementById('switchIconClient').classList.remove('active');
-    document.getElementById('switchIconContractor').classList.add('active');
-    // Redirect to contractor portal
-    setTimeout(function() {
-      window.location.href = 'contractor.html';
-    }, 300);
-  }
-}
-
-function doSignOut() {
-  localStorage.removeItem('ch_user_role');
-  localStorage.removeItem('ch_user_name');
-  localStorage.removeItem('ch_user_email');
-  localStorage.removeItem('ch_contractor_status');
-  window.location.href = 'signin.html';
-}
-
-initSession();
-
-}
-
-function setAvail(v) {
-  availFilter = v;
-  document.getElementById('avAll').classList.remove('active');
-  document.getElementById('avNow').classList.remove('active');
-  document.getElementById('avBusy').classList.remove('active');
-  if (v === 'all') document.getElementById('avAll').classList.add('active');
-  else if (v === 'available') document.getElementById('avNow').classList.add('active');
-  else document.getElementById('avBusy').classList.add('active');
-  applyFilters();
-
-// ── SESSION & VIEW SWITCH ──
-function initSession() {
-  var role   = localStorage.getItem('ch_user_role');
-  var name   = localStorage.getItem('ch_user_name') || 'User';
-  var email  = localStorage.getItem('ch_user_email') || '';
-
-  if (role === 'client' || role === 'contractor') {
-    // Show user chip, hide sign in button
-    document.getElementById('navSignIn').style.display = 'none';
-    var chip = document.getElementById('navUserChip');
-    chip.style.display = 'flex';
-    var displayName = name.trim() || email.split('@')[0] || 'User';
-    document.getElementById('navUserName').textContent = displayName;
-    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
-  }
-
-  if (role === 'contractor') {
-    // Show view switch
-    document.getElementById('viewSwitch').style.display = 'flex';
-    document.getElementById('contractorBadge').classList.add('show');
-    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
-    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
-  }
-}
-
-function toggleView() {
-  var track = document.getElementById('switchTrack');
-  var isContractor = track.classList.contains('contractor-mode');
-  if (isContractor) {
-    // Switch to client view
-    track.classList.remove('contractor-mode');
-    document.getElementById('switchIconClient').classList.add('active');
-    document.getElementById('switchIconContractor').classList.remove('active');
-  } else {
-    // Switch to contractor view
-    track.classList.add('contractor-mode');
-    document.getElementById('switchIconClient').classList.remove('active');
-    document.getElementById('switchIconContractor').classList.add('active');
-    // Redirect to contractor portal
-    setTimeout(function() {
-      window.location.href = 'contractor.html';
-    }, 300);
-  }
-}
-
-function doSignOut() {
-  localStorage.removeItem('ch_user_role');
-  localStorage.removeItem('ch_user_name');
-  localStorage.removeItem('ch_user_email');
-  localStorage.removeItem('ch_contractor_status');
-  window.location.href = 'signin.html';
-}
-
-initSession();
-
-}
-
-function updateRate(v) { document.getElementById('rateVal').textContent = (v >= 300) ? 'RM 300+' : 'RM ' + v; }
-
-function starsFor(r) {
-  var h = '';
-  for (var i = 1; i <= 5; i++) h += '<span class="' + (i <= Math.round(r) ? 'c-star-f' : '') + '">&#9733;</span>';
-  return h;
-}
-
-function badgesFor(c) {
-  var b = '';
-  if (c.premium)  b += '<span class="vbadge vbadge-premium"><i class="ti ti-star-filled"></i>Premium</span>';
-  if (c.verified) b += '<span class="vbadge vbadge-verified"><i class="ti ti-shield-check"></i>Verified</span>';
-  if (c.ssm)      b += '<span class="vbadge vbadge-ssm"><i class="ti ti-certificate"></i>SSM</span>';
-  if (c.cidb)     b += '<span class="vbadge vbadge-cidb"><i class="ti ti-award"></i>CIDB ' + (c.cidbGrade||'') + '</span>';
-  if (c.warranty) b += '<span class="vbadge vbadge-warranty"><i class="ti ti-shield"></i>Warranty</span>';
-  return b;
-}
-
-function renderSponsoredCard(c) {
-  var isFav = favourites.has(c.id);
-  var skills = '';
-  for (var i = 0; i < c.skills.length; i++) skills += '<span class="skill-tag">' + c.skills[i] + '</span>';
-  var badges = badgesFor(c);
-  var imgTag = '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
-  return '<a href="profile.html?id=' + c.id + '" class="mp-card pinned">' +
-    '<div class="pinned-ribbon"><i class="ti ti-pin"></i>Sponsored</div>' +
-    '<div class="card-photo">' +
-      imgTag +
-      '<span class="card-cat-badge">' + c.cat + '</span>' +
-      '<button class="fav-btn' + (isFav ? ' faved' : '') + '" onclick="toggleFav(' + c.id + ',event)">' + (isFav ? '&#10084;&#65039;' : '&#129293;') + '</button>' +
-    '</div>' +
-    '<div class="card-body2">' +
-      '<div class="card-top2"><div class="avatar ' + c.av + '">' + c.initials + '</div>' +
-      '<div><div class="c-name">' + c.name + '</div><div class="c-role">' + c.role + '</div></div></div>' +
-      '<div class="c-stars">' + starsFor(c.rating) + ' <span style="color:#aaa;font-size:10px;">' + c.rating + ' (' + c.reviews + ')</span></div>' +
-      (badges ? '<div class="verify-badges">' + badges + '</div>' : '') +
-      (c.pinnedMsg ? '<div style="font-size:11px;color:var(--warm);background:var(--warm-pale);border-radius:5px;padding:5px 8px;margin-bottom:8px;font-weight:500;">' + c.pinnedMsg + '</div>' : '') +
-      '<div class="skills">' + skills + '</div>' +
-      '<div class="card-footer2"><span class="c-rate2">RM ' + c.rate + '/hr</span>' +
-      '<span class="' + (c.available ? 'c-avail2' : 'c-busy2') + '">' + (c.available ? '&#9679; Available' : '&#9675; Busy') + '</span></div>' +
-    '</div></a>';
-}
-
-function renderCard(c) {
-  var isFav = favourites.has(c.id);
-  var skills = '';
-  for (var i = 0; i < c.skills.length; i++) skills += '<span class="skill-tag">' + c.skills[i] + '</span>';
-  var badges = badgesFor(c);
-  var imgTag = '<img src="' + c.photo + '" alt="' + c.name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
-  return '<a href="profile.html?id=' + c.id + '" class="mp-card">' +
-    '<div class="card-photo">' +
-      imgTag +
-      '<span class="card-cat-badge">' + c.cat + '</span>' +
-      '<button class="fav-btn' + (isFav ? ' faved' : '') + '" onclick="toggleFav(' + c.id + ',event)">' + (isFav ? '&#10084;&#65039;' : '&#129293;') + '</button>' +
-    '</div>' +
-    '<div class="card-body2">' +
-      '<div class="card-top2"><div class="avatar ' + c.av + '">' + c.initials + '</div>' +
-      '<div><div class="c-name">' + c.name + '</div><div class="c-role">' + c.role + '</div></div></div>' +
-      '<div class="c-stars">' + starsFor(c.rating) + ' <span style="color:#aaa;font-size:10px;">' + c.rating + ' (' + c.reviews + ')</span></div>' +
-      (badges ? '<div class="verify-badges">' + badges + '</div>' : '') +
-      '<div class="skills">' + skills + '</div>' +
-      '<div class="card-footer2"><span class="c-rate2">RM ' + c.rate + '/hr</span>' +
-      '<span class="' + (c.available ? 'c-avail2' : 'c-busy2') + '">' + (c.available ? '&#9679; Available' : '&#9675; Busy') + '</span></div>' +
-    '</div></a>';
-}
-
-function applyFilters() {
-  var q = (document.getElementById('searchInput').value || '').toLowerCase();
-  var qCat = document.getElementById('catQuick').value;
-  var maxRate = parseInt(document.getElementById('rateRange').value);
-  var minRating = parseFloat(document.querySelector('input[name="rt"]:checked').value);
-  var sort = document.getElementById('mpSort').value;
-  var checkedCats = ['c1','c2','c3','c4','c5','c6'].filter(function(id){ return document.getElementById(id).checked; }).map(function(id){ return document.querySelector('label[for="'+id+'"]').textContent.trim(); });
-  var onlyVerified = document.getElementById('vVerified').checked;
-  var onlyCidb     = document.getElementById('vCidb').checked;
-  var onlyWarranty = document.getElementById('vWarranty').checked;
-  var onlyPremium  = document.getElementById('vPremium').checked;
-
-  var list = contractors.filter(function(c) {
-    if (showFavOnly && !favourites.has(c.id)) return false;
-    var mQ = !q || c.name.toLowerCase().indexOf(q) > -1 || c.role.toLowerCase().indexOf(q) > -1 || c.skills.some(function(s){ return s.toLowerCase().indexOf(q) > -1; });
-    var mQC = !qCat || c.cat === qCat;
-    var mC = checkedCats.length === 0 || checkedCats.indexOf(c.cat) > -1;
-    var mR = maxRate >= 300 || c.rate <= maxRate;
-    var mRat = c.rating >= minRating;
-    var mA = availFilter === 'all' || (availFilter === 'available' ? c.available : !c.available);
-    var mV = !onlyVerified || c.verified;
-    var mCidb = !onlyCidb || c.cidb;
-    var mW = !onlyWarranty || c.warranty;
-    var mP = !onlyPremium || c.premium;
-    return mQ && mQC && mC && mR && mRat && mA && mV && mCidb && mW && mP;
-  });
-
-  if (sort === 'rating') list.sort(function(a,b){ return b.rating - a.rating; });
-  else if (sort === 'rate_low') list.sort(function(a,b){ return a.rate - b.rate; });
-  else if (sort === 'rate_high') list.sort(function(a,b){ return b.rate - a.rate; });
-
-  var favSize = favourites.size;
-  document.getElementById('mpCount').textContent = showFavOnly ? favSize + ' saved contractor' + (favSize !== 1 ? 's' : '') : 'Showing ' + list.length + ' contractor' + (list.length !== 1 ? 's' : '');
-  document.getElementById('favToggle').innerHTML = (showFavOnly ? '&#10084;&#65039;' : '&#129293;') + ' Saved <span id="favCount">' + favSize + '</span>';
-
-  var grid = document.getElementById('mpGrid');
-  if (showFavOnly && list.length === 0) {
-    grid.innerHTML = '<div class="fav-empty">&#129293;<br><br>No saved contractors yet.<br><small style="color:#bbb;">Click the heart on any card to save them here.</small></div>';
-  } else if (list.length === 0) {
-    grid.innerHTML = '<div class="no-results2">No contractors match your filters.</div>';
-  } else {
-    var html = '';
-    // Show sponsored section only when not filtering favourites
-    if (!showFavOnly) {
-      html += '<div class="sponsored-label" style="grid-column:1/-1;"><i class="ti ti-pin"></i>Sponsored · Featured Contractors</div>';
-      for (var s = 0; s < sponsoredContractors.length; s++) html += renderSponsoredCard(sponsoredContractors[s]);
-      html += '<div class="organic-label" style="grid-column:1/-1;">All contractors</div>';
-    }
-    for (var i = 0; i < list.length; i++) html += renderCard(list[i]);
-    grid.innerHTML = html;
-  }
-
-  var tags = checkedCats.slice();
-  if (maxRate < 300) tags.push('&#8804; RM ' + maxRate + '/hr');
-  if (minRating > 0) tags.push(minRating + '+ stars');
-  if (availFilter !== 'all') tags.push(availFilter === 'available' ? 'Available now' : 'Currently busy');
-  if (onlyVerified) tags.push('Verified only');
-  if (onlyCidb) tags.push('CIDB certified');
-  if (onlyWarranty) tags.push('Warranty');
-  if (onlyPremium) tags.push('Premium');
-  var th = '';
-  for (var t = 0; t < tags.length; t++) th += '<span class="af-tag">' + tags[t] + ' <button onclick="clearAll()">&#215;</button></span>';
-  document.getElementById('activeFilters').innerHTML = th;
-}
-
-function clearAll() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('catQuick').value = '';
-  ['c1','c2','c3','c4','c5','c6','e1','e2','e3','e4','vVerified','vCidb','vWarranty','vPremium'].forEach(function(id){ document.getElementById(id).checked = false; });
-  document.getElementById('rateRange').value = 300;
-  document.getElementById('rateVal').textContent = 'RM 300+';
-  document.getElementById('r0').checked = true;
-  setAvail('all');
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.nav-item, .sf-avail-btn').forEach(function(item) {
-    item.addEventListener('click', function() {
-      if (window.innerWidth <= 768) {
-        var s = document.getElementById('filterSidebar');
-        if (s && s.classList.contains('open')) toggleSidebar();
-      }
-    });
-  });
-});
-
-applyFilters();
-
-// ── SESSION & VIEW SWITCH ──
-function initSession() {
-  var role   = localStorage.getItem('ch_user_role');
-  var name   = localStorage.getItem('ch_user_name') || 'User';
-  var email  = localStorage.getItem('ch_user_email') || '';
-
-  if (role === 'client' || role === 'contractor') {
-    // Show user chip, hide sign in button
-    document.getElementById('navSignIn').style.display = 'none';
-    var chip = document.getElementById('navUserChip');
-    chip.style.display = 'flex';
-    var displayName = name.trim() || email.split('@')[0] || 'User';
-    document.getElementById('navUserName').textContent = displayName;
-    document.getElementById('navUserAv').textContent = displayName[0].toUpperCase();
-  }
-
-  if (role === 'contractor') {
-    // Show view switch
-    document.getElementById('viewSwitch').style.display = 'flex';
-    document.getElementById('contractorBadge').classList.add('show');
-    var shortName = (localStorage.getItem('ch_user_name') || 'My Portal').split(' ')[0];
-    document.getElementById('contractorBadgeName').textContent = shortName + "'s Portal";
-  }
-}
-
-function toggleView() {
-  var track = document.getElementById('switchTrack');
-  var isContractor = track.classList.contains('contractor-mode');
-  if (isContractor) {
-    // Switch to client view
-    track.classList.remove('contractor-mode');
-    document.getElementById('switchIconClient').classList.add('active');
-    document.getElementById('switchIconContractor').classList.remove('active');
-  } else {
-    // Switch to contractor view
-    track.classList.add('contractor-mode');
-    document.getElementById('switchIconClient').classList.remove('active');
-    document.getElementById('switchIconContractor').classList.add('active');
-    // Redirect to contractor portal
-    setTimeout(function() {
-      window.location.href = 'contractor.html';
-    }, 300);
-  }
-}
-
-function doSignOut() {
-  localStorage.removeItem('ch_user_role');
-  localStorage.removeItem('ch_user_name');
-  localStorage.removeItem('ch_user_email');
-  localStorage.removeItem('ch_contractor_status');
-  window.location.href = 'signin.html';
-}
-
-initSession();
-
+init();
 </script>
 </body>
 </html>

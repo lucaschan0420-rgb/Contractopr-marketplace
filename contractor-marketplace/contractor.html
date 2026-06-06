@@ -297,20 +297,92 @@
 
       <!-- POST AD -->
       <div id="tab-post" style="display:none;">
-        <div class="card">
+        <div class="card" style="max-width:640px;">
           <div class="card-header"><div class="card-title"><i class="ti ti-plus"></i>Post a New Ad</div></div>
-          <div class="form-group"><label class="form-label">Ad title</label><input class="form-input" placeholder="e.g. Civil Engineering Services — KL" /></div>
-          <div class="form-row2" style="margin-bottom:12px;">
-            <div class="form-group" style="margin:0;"><label class="form-label">Category</label><select class="form-select"><option>Construction</option><option>Renovation</option><option>Electrical</option><option>Plumbing</option><option>Design</option><option>Solar</option></select></div>
-            <div class="form-group" style="margin:0;"><label class="form-label">Location</label><input class="form-input" placeholder="e.g. Kuala Lumpur" /></div>
+
+          <div class="form-group">
+            <label class="form-label">Ad Title <span style="color:var(--red);">*</span></label>
+            <input class="form-input" id="ad-title" placeholder="e.g. Locksmith Services — Kuala Lumpur" />
           </div>
-          <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" rows="4" placeholder="Describe your services, experience, and what makes you stand out..."></textarea></div>
+
           <div class="form-row2" style="margin-bottom:12px;">
-            <div class="form-group" style="margin:0;"><label class="form-label">Hourly Rate (RM)</label><input class="form-input" type="number" placeholder="180" /></div>
-            <div class="form-group" style="margin:0;"><label class="form-label">Duration</label><select class="form-select"><option>30 days — RM 30</option><option>60 days — RM 50</option><option>90 days — RM 70</option></select></div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Category <span style="color:var(--red);">*</span></label>
+              <select class="form-select" id="ad-category">
+                <option value="Construction">Construction</option>
+                <option value="Renovation">Renovation</option>
+                <option value="Electrical">Electrical</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Design">Interior Design</option>
+                <option value="Solar">Solar</option>
+                <option value="Roofing">Roofing</option>
+                <option value="Painting">Painting</option>
+                <option value="Landscaping">Landscaping</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Location <span style="color:var(--red);">*</span></label>
+              <input class="form-input" id="ad-location" placeholder="e.g. Kuala Lumpur" />
+            </div>
           </div>
-          <div class="form-cost"><span style="font-size:12px;color:var(--muted2);">Cost deducted from credit balance</span><span style="font-size:14px;font-weight:500;color:var(--warm);">RM 30</span></div>
-          <div class="btn-row"><button class="btn-secondary" onclick="show('ads',null)">Cancel</button><button class="btn-primary" onclick="showToast('Ad posting coming soon!')"><i class="ti ti-check"></i>Publish Ad</button></div>
+
+          <div class="form-group">
+            <label class="form-label">Description <span style="color:var(--red);">*</span></label>
+            <textarea class="form-textarea" id="ad-description" rows="4" placeholder="Describe your services, experience, and what makes you stand out..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Skills / Tags <span style="font-size:11px;color:var(--muted);font-weight:400;">(comma separated)</span></label>
+            <input class="form-input" id="ad-skills" placeholder="e.g. Renovation, BIM, AutoCAD" />
+          </div>
+
+          <div class="form-row2" style="margin-bottom:12px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Hourly Rate (RM) <span style="color:var(--red);">*</span></label>
+              <input class="form-input" id="ad-rate" type="number" placeholder="180" min="1" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Duration</label>
+              <select class="form-select" id="ad-duration" onchange="updateAdCost()">
+                <option value="30|30">30 days — RM 30</option>
+                <option value="60|50">60 days — RM 50</option>
+                <option value="90|70">90 days — RM 70</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- AD TYPE -->
+          <div class="form-group">
+            <label class="form-label">Ad Type</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+              <div id="adTypeStandard" onclick="selectAdType('standard')" style="border:1.5px solid var(--ink);border-radius:var(--radius);padding:12px;cursor:pointer;background:var(--bg);">
+                <div style="font-size:12px;font-weight:500;">Standard</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">Listed in main contractor feed</div>
+                <div style="font-size:13px;font-weight:500;color:var(--warm);margin-top:6px;" id="stdCost">RM 30</div>
+              </div>
+              <div id="adTypeFeatured" onclick="selectAdType('featured')" style="border:0.5px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;background:#fff;">
+                <div style="font-size:12px;font-weight:500;">⭐ Featured</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">Top of marketplace, more visibility</div>
+                <div style="font-size:13px;font-weight:500;color:var(--warm);margin-top:6px;" id="featCost">RM 80</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-cost">
+            <div>
+              <div style="font-size:12px;color:var(--muted2);">Cost deducted from credit balance</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Balance after: <span id="balAfter">RM —</span></div>
+            </div>
+            <div style="font-size:18px;font-weight:500;color:var(--warm);" id="adTotalCost">RM 30</div>
+          </div>
+
+          <div style="font-size:12px;color:var(--red);margin-bottom:10px;display:none;" id="adPostError"></div>
+
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="show('ads',null)">Cancel</button>
+            <button class="btn-primary" id="publishAdBtn" onclick="publishAd()"><i class="ti ti-check"></i>Publish Ad</button>
+          </div>
         </div>
       </div>
 
@@ -447,6 +519,169 @@ var SUPABASE_URL = 'https://jptkcxqrgktaqmaiqfpa.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwdGtjeHFyZ2t0YXFtYWlxZnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MTY5NjUsImV4cCI6MjA5NDk5Mjk2NX0.W6K_m2ya8UKBpkwWcQKv8USj-VFstkLM7iu7tvksOiM';
 var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var cData = null;
+
+var selectedAdType = 'standard';
+var adCosts = { standard: { 30:30, 60:50, 90:70 }, featured: { 30:80, 60:130, 90:180 } };
+
+function selectAdType(type) {
+  selectedAdType = type;
+  var stdEl  = document.getElementById('adTypeStandard');
+  var featEl = document.getElementById('adTypeFeatured');
+  if (stdEl && featEl) {
+    stdEl.style.border  = type === 'standard' ? '1.5px solid var(--ink)' : '0.5px solid var(--border)';
+    stdEl.style.background = type === 'standard' ? 'var(--bg)' : '#fff';
+    featEl.style.border = type === 'featured' ? '1.5px solid var(--warm)' : '0.5px solid var(--border)';
+    featEl.style.background = type === 'featured' ? 'var(--warm-pale)' : '#fff';
+  }
+  updateAdCost();
+}
+
+function updateAdCost() {
+  var durSel = document.getElementById('ad-duration');
+  if (!durSel) return;
+  var parts = durSel.value.split('|');
+  var days = parseInt(parts[0]) || 30;
+  var cost = adCosts[selectedAdType][days] || 30;
+  var el1 = document.getElementById('adTotalCost');
+  var el2 = document.getElementById('stdCost');
+  var el3 = document.getElementById('featCost');
+  var el4 = document.getElementById('balAfter');
+  if (el1) el1.textContent = 'RM ' + cost;
+  if (el2) el2.textContent = 'RM ' + (adCosts.standard[days]||30);
+  if (el3) el3.textContent = 'RM ' + (adCosts.featured[days]||80);
+  if (el4 && cData) el4.textContent = 'RM ' + Math.max(0, (cData.credit_balance||0) - cost);
+}
+
+async function publishAd() {
+  var title    = (document.getElementById('ad-title')       || {}).value || '';
+  var category = (document.getElementById('ad-category')    || {}).value || '';
+  var location = (document.getElementById('ad-location')    || {}).value || '';
+  var desc     = (document.getElementById('ad-description') || {}).value || '';
+  var rate     = parseInt((document.getElementById('ad-rate') || {}).value) || 0;
+  var skills   = (document.getElementById('ad-skills')      || {}).value || '';
+  var durVal   = ((document.getElementById('ad-duration')   || {}).value || '30|30').split('|');
+  var days     = parseInt(durVal[0]) || 30;
+  var cost     = adCosts[selectedAdType][days] || 30;
+  var errEl    = document.getElementById('adPostError');
+  var btn      = document.getElementById('publishAdBtn');
+
+  errEl.style.display = 'none';
+
+  if (!title.trim()) { errEl.textContent = 'Please enter an ad title'; errEl.style.display = 'block'; return; }
+  if (!location.trim()) { errEl.textContent = 'Please enter a location'; errEl.style.display = 'block'; return; }
+  if (!rate || rate < 1) { errEl.textContent = 'Please enter a valid hourly rate'; errEl.style.display = 'block'; return; }
+  if (!cData) { errEl.textContent = 'Session error. Please refresh.'; errEl.style.display = 'block'; return; }
+
+  var balance = cData.credit_balance || 0;
+  if (balance < cost) {
+    errEl.textContent = 'Insufficient credits. You need RM ' + cost + ' but have RM ' + balance + '. Please top up first.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" style="font-size:15px;"></i> Publishing...';
+
+  try {
+    var expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + days);
+
+    var skillsArr = skills.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s; });
+
+    // Insert ad
+    var adRes = await sb.from('ads').insert({
+      contractor_id:    cData.id,
+      contractor_email: cData.email,
+      title:            title.trim(),
+      category:         category,
+      location:         location.trim(),
+      description:      desc.trim(),
+      hourly_rate:      rate,
+      skills:           skillsArr,
+      ad_type:          selectedAdType,
+      status:           'active',
+      duration_days:    days,
+      expires_at:       expiresAt.toISOString(),
+      cost_charged:     cost,
+      is_featured:      selectedAdType === 'featured',
+      featured_until:   selectedAdType === 'featured' ? expiresAt.toISOString() : null
+    });
+    if (adRes.error) throw adRes.error;
+
+    // Deduct credits
+    var newBalance = balance - cost;
+    var updRes = await sb.from('contractor_registrations').update({
+      credit_balance: newBalance
+    }).eq('id', cData.id);
+    if (updRes.error) throw updRes.error;
+
+    // Log transaction
+    await sb.from('credit_transactions').insert({
+      contractor_id:    cData.id,
+      contractor_email: cData.email,
+      amount:           -cost,
+      type:             'ad_post',
+      note:             'Ad posted: ' + title.trim() + ' (' + days + ' days)',
+      added_by:         'system'
+    });
+
+    // Update local data
+    cData.credit_balance = newBalance;
+    render();
+
+    showToast('✅ Ad published successfully!');
+
+    // Clear form
+    document.getElementById('ad-title').value = '';
+    document.getElementById('ad-location').value = '';
+    document.getElementById('ad-description').value = '';
+    document.getElementById('ad-skills').value = '';
+    document.getElementById('ad-rate').value = '';
+
+    // Go to My Ads
+    setTimeout(function(){ show('ads', null); loadMyAds(); }, 1000);
+
+  } catch(e) {
+    errEl.textContent = 'Error: ' + (e.message || 'Failed to publish ad');
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-check"></i>Publish Ad';
+  }
+}
+
+async function loadMyAds() {
+  if (!cData) return;
+  var container = document.getElementById('ads-list');
+  if (!container) return;
+  try {
+    var res = await sb.from('ads').select('*').eq('contractor_id', cData.id).order('created_at', { ascending: false });
+    if (res.error) throw res.error;
+    var ads = res.data || [];
+    if (!ads.length) {
+      container.innerHTML = '<div class="empty-state"><i class="ti ti-speakerphone"></i><p>No ads posted yet.<br>Post your first ad to start getting client enquiries.</p></div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < ads.length; i++) {
+      var a = ads[i];
+      var exp = a.expires_at ? new Date(a.expires_at).toLocaleDateString('en-MY') : '—';
+      var statusClass = a.status === 'active' ? 'pill-active' : 'pill-draft';
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);">';
+      html += '<div style="width:34px;height:34px;border-radius:var(--radius);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);font-size:17px;">';
+      html += '<i class="ti ti-speakerphone"></i></div>';
+      html += '<div style="flex:1;min-width:0;">';
+      html += '<div style="font-size:12px;font-weight:500;">' + a.title + (a.is_featured ? ' ⭐' : '') + '</div>';
+      html += '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + (a.category||'') + ' · ' + (a.location||'') + ' · Expires ' + exp + '</div>';
+      html += '</div>';
+      html += '<span class="pill ' + statusClass + '">' + (a.status||'active') + '</span>';
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:12px;">Error loading ads.</div>';
+  }
+}
 
 async function init() {
   var email = localStorage.getItem('ch_user_email');
@@ -635,6 +870,8 @@ function show(tab, navEl) {
   document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
   if (navEl) navEl.classList.add('active');
   if (tab === 'credits') loadTxHistory();
+  if (tab === 'ads') loadMyAds();
+  if (tab === 'post') updateAdCost();
   if (window.innerWidth <= 768) closeSidebar();
 }
 
