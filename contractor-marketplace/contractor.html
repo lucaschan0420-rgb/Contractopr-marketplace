@@ -222,9 +222,9 @@
     </div>
     <div class="credit-panel">
       <div class="credit-label">Credit Balance</div>
-      <div class="credit-val">RM 0</div>
-      <div class="credit-sub">No credits yet</div>
-      <div class="credit-bar-bg"><div class="credit-bar-fill" style="width:0%;"></div></div>
+      <div class="credit-val" id="sidebarCreditVal">RM 0</div>
+      <div class="credit-sub" id="sidebarCreditSub">No credits yet</div>
+      <div class="credit-bar-bg"><div class="credit-bar-fill" id="sidebarCreditBar" style="width:0%;"></div></div>
       <button class="topup-btn" onclick="show('credits',null)">+ Top Up Credits</button>
     </div>
   </div>
@@ -333,9 +333,9 @@
       <!-- CREDITS -->
       <div id="tab-credits" style="display:none;">
         <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-          <div class="metric"><div class="metric-label">Current Balance</div><div class="metric-val" style="color:var(--warm);">RM 0</div></div>
-          <div class="metric"><div class="metric-label">Total Topped Up</div><div class="metric-val">RM 0</div></div>
-          <div class="metric"><div class="metric-label">Total Spent</div><div class="metric-val">RM 0</div></div>
+          <div class="metric"><div class="metric-label">Current Balance</div><div class="metric-val" style="color:var(--warm);" id="creditBalVal">RM 0</div></div>
+          <div class="metric"><div class="metric-label">Total Topped Up</div><div class="metric-val" id="creditTotalVal">RM 0</div></div>
+          <div class="metric"><div class="metric-label">Total Spent</div><div class="metric-val" id="creditSpentVal">RM 0</div></div>
         </div>
         <div class="card" style="margin-bottom:10px;">
           <div class="card-header"><div class="card-title"><i class="ti ti-package"></i>Top Up Credits</div></div>
@@ -362,7 +362,15 @@
         </div>
         <div class="card">
           <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>Transaction History</div></div>
-          <div class="empty-state" style="padding:1.5rem;"><p>No transactions yet.</p></div>
+          <table class="data-table" style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:.5px solid var(--border);background:#faf9f7;">Type</th>
+              <th style="font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:.5px solid var(--border);background:#faf9f7;">Amount</th>
+              <th style="font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:.5px solid var(--border);background:#faf9f7;">Note</th>
+              <th style="font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:.5px solid var(--border);background:#faf9f7;">Date</th>
+            </tr></thead>
+            <tbody id="txHistoryTbody"><tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--muted);font-size:12px;">Loading...</td></tr></tbody>
+          </table>
         </div>
       </div>
 
@@ -519,6 +527,26 @@ function render() {
 
   renderVerifyCard('profileVerify', c);
 
+  // Update credit display
+  var balance = c.credit_balance || 0;
+  var totalAdded = c.credit_total_added || 0;
+  var maxBar = 300;
+  var barPct = Math.min(100, Math.round((balance / maxBar) * 100));
+
+  // Sidebar
+  var scv = document.getElementById('sidebarCreditVal');
+  var scs = document.getElementById('sidebarCreditSub');
+  var scb = document.getElementById('sidebarCreditBar');
+  if (scv) scv.textContent = 'RM ' + balance;
+  if (scs) scs.textContent = balance > 0 ? ('~' + Math.floor(balance/30) + ' ad postings remaining') : 'No credits yet';
+  if (scb) scb.style.width = barPct + '%';
+
+  // Credits tab
+  var cbv = document.getElementById('creditBalVal');
+  var ctv = document.getElementById('creditTotalVal');
+  if (cbv) cbv.textContent = 'RM ' + balance;
+  if (ctv) ctv.textContent = 'RM ' + totalAdded;
+
   // Edit modal prefill
   document.getElementById('edit-company').value = c.company_name || '';
   document.getElementById('edit-phone').value   = c.company_phone || '';
@@ -567,6 +595,34 @@ async function saveProfile() {
   }
 }
 
+async function loadTxHistory() {
+  if (!cData) return;
+  var tbody = document.getElementById('txHistoryTbody');
+  if (!tbody) return;
+  try {
+    var res = await sb.from('credit_transactions')
+      .select('*')
+      .eq('contractor_id', cData.id)
+      .order('created_at', { ascending: false });
+    if (res.error || !res.data || !res.data.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--muted);font-size:12px;">No transactions yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = res.data.map(function(tx) {
+      var d = new Date(tx.created_at);
+      var dateStr = d.toLocaleDateString('en-MY') + ' ' + d.toLocaleTimeString('en-MY', {hour:'2-digit',minute:'2-digit'});
+      return '<tr>' +
+        '<td style="font-size:12px;padding:10px 12px;border-bottom:.5px solid var(--border);">' + (tx.type === 'manual' ? 'Manual Top-up' : tx.type) + '</td>' +
+        '<td style="font-size:13px;font-weight:500;color:var(--green);padding:10px 12px;border-bottom:.5px solid var(--border);">+RM ' + tx.amount + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);padding:10px 12px;border-bottom:.5px solid var(--border);">' + (tx.note||'—') + '</td>' +
+        '<td style="font-size:11px;color:var(--muted);padding:10px 12px;border-bottom:.5px solid var(--border);">' + dateStr + '</td>' +
+      '</tr>';
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--muted);font-size:12px;">Error loading transactions.</td></tr>';
+  }
+}
+
 var tabs = ['dashboard','ads','post','reviews','analytics','profile','credits','settings'];
 var titles = { dashboard:'Dashboard', ads:'My Ads', post:'Post New Ad', reviews:'Reviews & Feedback', analytics:'Analytics', profile:'Company Profile', credits:'Credits & Billing', settings:'Settings' };
 
@@ -578,6 +634,7 @@ function show(tab, navEl) {
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
   document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
   if (navEl) navEl.classList.add('active');
+  if (tab === 'credits') loadTxHistory();
   if (window.innerWidth <= 768) closeSidebar();
 }
 
