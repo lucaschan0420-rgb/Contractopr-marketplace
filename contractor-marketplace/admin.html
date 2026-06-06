@@ -550,15 +550,16 @@ async function loadAllData() {
     var res = await sb.from('contractor_registrations').select('*').order('created_at', { ascending: false });
     if (res.error) throw res.error;
     allContractors = res.data || [];
-    renderDashboard();
-    renderPending();
-    renderAllContractors();
-    renderVerificationQueue();
-    loadCreditsTab();
-    loadManualHistory();
+    try { renderDashboard(); } catch(e) { console.error('renderDashboard:', e.message); }
+    try { renderPending(); } catch(e) { console.error('renderPending:', e.message); }
+    try { renderAllContractors(); } catch(e) { console.error('renderAllContractors:', e.message); }
+    try { renderVerificationQueue(); } catch(e) { console.error('renderVerificationQueue:', e.message); }
+    try { loadCreditsTab(); } catch(e) { console.error('loadCreditsTab:', e.message); }
+    try { loadManualHistory(); } catch(e) { console.error('loadManualHistory:', e.message); }
   } catch(e) {
-    console.error('Load error:', e);
-    showToast('Error loading data: ' + e.message);
+    var msg = e.message || JSON.stringify(e) || 'Unknown error';
+    console.error('Load error details:', JSON.stringify(e));
+    showToast('Load error: ' + msg);
   }
 }
 
@@ -691,7 +692,13 @@ function renderVerificationQueue() {
 async function loadCreditsTab() {
   try {
     var res = await sb.from('credit_transactions').select('*').order('created_at', { ascending: false }).limit(50);
-    if (res.error) throw res.error;
+    if (res.error) {
+      console.error('credit_transactions error:', res.error);
+      // Table might not exist yet - show empty state
+      var tbody2 = document.getElementById('credits-tbody');
+      if (tbody2) tbody2.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1rem;color:var(--muted);">Run the SQL to create credit_transactions table first.</td></tr>';
+      return;
+    }
     var txs = res.data || [];
     var total = txs.reduce(function(s, t){ return s + (t.amount||0); }, 0);
     var manualCount = txs.filter(function(t){ return t.type === 'manual'; }).length;
@@ -726,14 +733,16 @@ async function loadCreditsTab() {
       }).join('') || '<div style="text-align:center;padding:1rem;color:var(--muted);font-size:12px;">No transactions yet</div>';
     }
   } catch(e) {
-    console.error('Credits error:', e);
+    console.error('Credits error:', e.message || JSON.stringify(e));
+    var tbody = document.getElementById('credits-tbody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1rem;color:var(--muted);">Error loading transactions. Check if credit_transactions table exists.</td></tr>';
   }
 }
 
 async function loadManualHistory() {
   try {
     var res = await sb.from('credit_transactions').select('*').eq('type', 'manual').order('created_at', { ascending: false }).limit(10);
-    if (res.error) throw res.error;
+    if (res.error) { console.error('manual history error:', res.error); return; }
     var tbody = document.getElementById('manual-history-tbody');
     if (!tbody) return;
     var txs = res.data || [];
